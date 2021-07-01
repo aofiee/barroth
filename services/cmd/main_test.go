@@ -3,18 +3,34 @@ package main
 import (
 	"testing"
 
-	barroth_config "github.com/aofiee/barroth/config"
-	utils "github.com/gofiber/fiber/v2/utils"
+	"github.com/stretchr/testify/assert"
 )
 
-func TestMain(t *testing.T) {
-	t.Run("TEST_LOAD_ENV", func(t *testing.T) {
-		var err error
-		barroth_config.ENV, err = barroth_config.LoadConfig("./")
+func TestSetupDatabase(t *testing.T) {
+	t.Run("TEST_LOAD_FAIL_ENV", func(t *testing.T) {
+		dns, err := setupDNSDatabaseConnection("./")
 		if err != nil {
-			utils.AssertEqual(t, `Config File "app" Not Found in "[/Users/aofiee/Documents/Projects/CleanArchitecture/services/cmd]"`, err.Error(), "barroth_config.ENV")
+			assert.NotEqual(t, nil, err, err.Error())
+			assert.Equal(t, "", dns, "dns connection is empty")
 		}
-		barroth_config.ENV, err = barroth_config.LoadConfig("../")
-		utils.AssertEqual(t, "Diablos", barroth_config.ENV.AppName, "barroth_config.ENV")
+	})
+	t.Run("TEST_LOAD_SUCCESS_ENV", func(t *testing.T) {
+		dns, err := setupDNSDatabaseConnection("../")
+		if err != nil {
+			assert.NotEqual(t, nil, err, err.Error())
+			assert.Equal(t, "", dns, "dns connection is empty")
+		}
+		assert.NotEqual(t, "", dns, "dns connection is empty")
+	})
+	t.Run("DATABASE_TEST", func(t *testing.T) {
+		dns, err := setupDNSDatabaseConnection("../")
+		if err != nil {
+			assert.NotEqual(t, nil, err, err.Error())
+			assert.Equal(t, "", dns, "dns connection is empty")
+		}
+		err = createDatabaseConnection(dns)
+		if err != nil {
+			assert.NotEqual(t, nil, err, err.Error())
+		}
 	})
 }

@@ -15,14 +15,38 @@ import (
 )
 
 func main() {
+	dns, err := setupDNSDatabaseConnection("../")
+	if err != nil {
+		log.Println(err)
+	}
+	err = createDatabaseConnection(dns)
+	if err != nil {
+		log.Println(err)
+	}
+	/// Install Routing
+	r := routes.NewInstallationRoutes(barroth_config.ENV)
+	app := r.Setup()
+	r.Install(app)
+	err = app.Listen(":" + barroth_config.ENV.AppPort)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func setupDNSDatabaseConnection(env string) (string, error) {
 	var err error
 	/// Load Configuration
-	barroth_config.ENV, err = barroth_config.LoadConfig("../")
+	barroth_config.ENV, err = barroth_config.LoadConfig(env)
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		return "", err
 	}
 	/// Database Connection
 	dns := databases.NewConfig(barroth_config.ENV).DBConnString()
+	return dns, nil
+}
+
+func createDatabaseConnection(dns string) error {
+	var err error
 	newLogger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags),
 		logger.Config{
@@ -35,16 +59,8 @@ func main() {
 		Logger: newLogger,
 	})
 	if err != nil {
-		log.Println("error", err.Error())
-		log.Fatal(err)
+		return err
 	}
-	databases.DB.AutoMigrate(&models.System{})
-	/// Install Routing
-	r := routes.NewInstallationRoutes(barroth_config.ENV)
-	app := r.Setup()
-	r.Install(app)
-	err = app.Listen(":" + barroth_config.ENV.AppPort)
-	if err != nil {
-		panic(err)
-	}
+	err = databases.DB.AutoMigrate(&models.System{})
+	return err
 }
