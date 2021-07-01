@@ -1,0 +1,62 @@
+version: "3.8"
+services:
+  database:
+    image: mysql:5.7
+    container_name: database
+    ports:
+      - 3306:3306
+    volumes:
+      - "./database/data:/var/lib/mysql"
+      - "./database/my.cnf:/etc/mysql/mysql.conf.d/mysqld.cnf"
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: diablos
+    networks:
+      - diablos
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: pma
+    ports:
+      - 8000:80
+    environment:
+      PMA_PASSWORD: password
+      PMA_USER: root
+      PMA_HOSTS: database
+    networks:
+      - diablos
+  redis:
+    image: "redis:latest"
+    container_name: redis
+    hostname: redis
+    command: ["redis-server", "--include", "/usr/local/etc/redis/redis.conf"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - "./redis/data:/var/lib/redis"
+      - "./redis/redis.conf:/usr/local/etc/redis/redis.conf"
+    environment:
+      - REDIS_REPLICATION_MODE=master
+    networks:
+      - diablos
+  api:
+    # image: golang:1.16-alpine
+    build:
+      context: .
+      dockerfile: ./services/go-dev.Dockerfile
+    container_name: api
+    volumes:
+      - "./services:/services"
+    working_dir: /services/cmd
+    ports:
+      - 8181:8181
+    # command: go run main.go
+    links:
+      - database
+      - redis
+    networks:
+      - diablos
+    depends_on:
+      - database
+networks:
+  diablos:
+    driver: bridge

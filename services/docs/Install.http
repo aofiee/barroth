@@ -1,0 +1,6 @@
+@hostname = localhost
+@port = 8181
+@host = {{hostname}}:{{port}}
+@contentType = application/json
+POST http://{{host}}/installation
+Content-Type: {{contentType}}

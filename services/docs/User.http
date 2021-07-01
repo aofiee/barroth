@@ -1,0 +1,108 @@
+@hostname = localhost
+@port = 8181
+@host = {{hostname}}:{{port}}
+@contentType = application/json
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NfdXVpZCI6Ijc3OWQxZDAyLTA0Y2EtNGE1Zi05ZmUxLWQ1ZTA0M2I2NGQ4MSIsImNvbnRleHQiOnsidXNlciI6ImFvZmllZUBhb2ZpZWUuZGV2IiwiZGlzcGxheV9uYW1lIjoiTXIuIEtob21rcmlkIExlcmRwcnNlcnQiLCJyb2xlIjoiQWRtaW5pc3RyYXRvciJ9LCJleHAiOjE2MjQ4ODY0ODgsImlhdCI6MTYyNDg4NTU4OCwiaXNzIjoiRGlhYmxvcyIsInN1YiI6ImQ4NDYzZjU2LTZlOWItNGRmMC05ZWEzLTM3YjhjMjlmOGI0MSJ9.JYQ5yP2rVejpJD7G20Wwv8Swtl5znBEVeyleqZk4fQc
+
+###
+GET http://{{host}}/
+Content-Type: {{contentType}}
+
+###Create User
+POST http://{{host}}/user
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+{
+    "email":"dsaasd@ssss",
+    "password":"password",
+    "name":"Arnon Kidlerdpol",
+    "telephone":"1-881-603-5600",
+    "role_id":1
+}
+
+###Update User
+PUT  http://{{host}}/user/3b9f9177-ca66-4523-a62f-a6ffb0b0108e
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+{
+    "email":"arnon@twinsynergy.co.th",
+    "password":"password",
+    "name":"Arnon Kidlerdpol",
+    "telephone":"1-881-603-5600",
+    "role_id":4
+}
+
+###Get my profile
+GET http://{{host}}/user/me
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+###Get User Profile by id
+GET http://{{host}}/user/3b9f9177-ca66-4523-a62f-a6ffb0b0108e
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+###Delete User to Trash
+DELETE http://{{host}}/user/aee4a9f0-9b78-48ae-80bd-b760317e448b
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+###Get all users default page = 0 , limit = 10, sort = desc , focus = inbox, keyword = all
+GET http://{{host}}/users?keyword=Khomkrid
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+###Get all users แบบระบุ page และแบ่งหน้า และ sort
+GET http://{{host}}/users?page=0&keyword=K&sort=ASC&field=name&limit=5
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+###Get all users ในถังขยะ
+GET http://{{host}}/users?focus=trash&keyword=all
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+###Delete Users from Inbox
+DELETE http://{{host}}/users
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+{
+    "users_id":[
+        "87344be5-f4a0-4222-8a78-be55e584ec17",
+        "26dbf16e-1f5c-481c-a5a5-4442b531ba58",
+        "35edc017-3337-4bc3-82b1-d2be52c6d0e5"
+    ]
+}
+
+
+###Delete Users from trash
+DELETE http://{{host}}/users?focus=trash
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+{
+    "users_id":[
+        "16a4e078-11b0-48b5-b679-147e6f145f4a"
+    ]
+}
+
+###Restore User from trash to inbox
+PUT http://{{host}}/users
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+{
+    "users_id":[
+        "87344be5-f4a0-4222-8a78-be55e584ec17",
+        "26dbf16e-1f5c-481c-a5a5-4442b531ba58",
+        "35edc017-3337-4bc3-82b1-d2be52c6d0e5"
+    ]
+}
+
+###Show Role Items
+GET http://{{host}}/roles
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}

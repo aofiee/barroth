@@ -1,0 +1,12 @@
+*.code-workspace
+.env
+database/
+queue/
+redis/data/
+queue
+web/node_modules/
+web/
+*.bak
+.DS_Store
+tmp/
+app.env

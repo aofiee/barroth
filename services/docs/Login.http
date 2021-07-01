@@ -1,0 +1,34 @@
+@hostname = localhost
+@port = 8181
+@host = {{hostname}}:{{port}}
+@contentType = application/json
+@accessToken = 
+@refreshToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb250ZXh0IjpudWxsLCJleHAiOjE2MjU0OTAzODgsImlhdCI6MTYyNDg4NTU4OCwiaXNzIjoiRGlhYmxvcyIsInJlZnJlc2hfdXVpZCI6IjU1YTczMmRlLWRhZjYtNGEwMS04YzdlLTMwY2U3NmIwY2MzNSIsInN1YiI6ImQ4NDYzZjU2LTZlOWItNGRmMC05ZWEzLTM3YjhjMjlmOGI0MSJ9.DCzqr71ASgSPGTi_0OfXPLouwvkHPyWoSOLs7NVL4ds
+###
+GET http://{{host}}/
+Content-Type: {{contentType}}
+
+###
+POST http://{{host}}/login
+Content-Type: {{contentType}}
+
+{
+    "username":"aofiee@aofiee.dev",
+    "password":"qwerty"
+}
+
+###
+DELETE  http://{{host}}/logout
+Authorization: Bearer {{refreshToken}}
+
+###
+POST http://{{host}}/refresh
+Content-Type: application/x-www-form-urlencoded
+
+refresh_token={{refreshToken}}
+
+###
+POST http://{{host}}/refresh
+Content-Type: {{contentType}}
+
+{"refresh_token":"{{refreshToken}}"}
