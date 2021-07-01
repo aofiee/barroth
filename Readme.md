@@ -24,3 +24,7 @@ Go fiber JWT token , refresh token on Redis
 > port 5672
 > http://localhost:15672/
 > user = guest , password = guest
+
+## https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html
+
+(https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)[https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html]
