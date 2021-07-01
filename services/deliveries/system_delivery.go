@@ -22,7 +22,7 @@ func (s *systemHandler) SystemInstallation(c *fiber.Ctx) error {
 	var systems models.System
 	err := s.systemUseCase.GetFirstSystemInstallation(&systems)
 	if err != nil {
-		return helpers.FailOnError(c, err, "cannot parse json", fiber.StatusBadRequest)
+		return helpers.FailOnError(c, err, "software not installed.", fiber.StatusBadRequest)
 	}
 	// err = c.BodyParser(&systems)
 	// if err != nil {

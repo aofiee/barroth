@@ -19,7 +19,8 @@ func main() {
 	if err != nil {
 		log.Println(err)
 	}
-	err = createDatabaseConnection(dns)
+	dial := mysql.Open(dns)
+	err = createDatabaseConnection(dial)
 	if err != nil {
 		log.Println(err)
 	}
@@ -45,7 +46,7 @@ func setupDNSDatabaseConnection(env string) (string, error) {
 	return dns, nil
 }
 
-func createDatabaseConnection(dns string) error {
+func createDatabaseConnection(dial gorm.Dialector) error {
 	var err error
 	newLogger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags),
@@ -55,7 +56,7 @@ func createDatabaseConnection(dns string) error {
 			Colorful:      true,
 		},
 	)
-	databases.DB, err = gorm.Open(mysql.Open(dns), &gorm.Config{
+	databases.DB, err = gorm.Open(dial, &gorm.Config{
 		Logger: newLogger,
 	})
 	if err != nil {

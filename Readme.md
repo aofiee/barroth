@@ -7,6 +7,7 @@ Go fiber JWT token , refresh token on Redis
 1. docker-compose up --build
 2. docker-compose up -d
 3. docker-compose logs -t --follow
+4. go test ./...
 
 ## Database
 
