@@ -10,3 +10,4 @@ web/
 .DS_Store
 tmp/
 app.env
+cover.*
