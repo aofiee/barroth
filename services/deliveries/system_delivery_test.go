@@ -3,7 +3,6 @@ package deliveries
 import (
 	"database/sql"
 	"net/http/httptest"
-	"reflect"
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -39,7 +38,6 @@ func SetupMock(t *testing.T) {
 	})
 	rows := mock.NewRows([]string{"VERSION()"}).
 		AddRow("5.7.34")
-	assert.Equal(t, "*sqlmock.Rows", reflect.TypeOf(rows).String(), "new row")
 	mock.ExpectQuery("SELECT VERSION()").
 		WillReturnRows(rows)
 	databases.DB, err = gorm.Open(dial, &gorm.Config{})
@@ -52,12 +50,10 @@ func TestNewSystemHandelr(t *testing.T) {
 	sysRepo := repositories.NewSystemRepository(databases.DB)
 	sysUseCase := usecases.NewSystemUseCase(sysRepo)
 	sysHandler := NewSystemHandelr(sysUseCase)
-	assert.Equal(t, "*deliveries.systemHandler", reflect.TypeOf(sysHandler).String(), "db config")
 
 	t.Run("TEST_SOFTWARE_IS_INSTALLED", func(t *testing.T) {
 		sysRows := mock.NewRows([]string{"id", "app_name", "site_url", "is_install"}).
 			AddRow(1, "MyApplication", "http://localhost:8181", 0)
-		assert.Equal(t, "*sqlmock.Rows", reflect.TypeOf(sysRows).String(), "new row")
 		mock.ExpectQuery("^SELECT (.*)").
 			WillReturnRows(sysRows)
 		app := fiber.New()
