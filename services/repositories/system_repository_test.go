@@ -46,7 +46,7 @@ func SetupMock(t *testing.T) {
 }
 func TestSystemRepo(t *testing.T) {
 	SetupMock(t)
-	t.Run("TEST_NEW_REPO", func(t *testing.T) {
+	t.Run("TEST_SYSTEM_REPO", func(t *testing.T) {
 		repo := NewSystemRepository(databases.DB)
 		assert.Equal(t, "*repositories.systemRepository", reflect.TypeOf(repo).String(), "new repo")
 		s := models.System{

@@ -16,8 +16,8 @@ import (
 )
 
 var (
-	db   *sql.DB
-	mock sqlmock.Sqlmock
+	db    *sql.DB
+	smock sqlmock.Sqlmock
 )
 
 func SetupMock(t *testing.T) {
@@ -26,7 +26,7 @@ func SetupMock(t *testing.T) {
 	if err != nil {
 		assert.NotEqual(t, nil, err, err.Error())
 	}
-	db, mock, err = sqlmock.New()
+	db, smock, err = sqlmock.New()
 	if err != nil {
 		assert.NotEqual(t, nil, err, err.Error())
 	}
@@ -35,10 +35,10 @@ func SetupMock(t *testing.T) {
 		DriverName: "mysql",
 		Conn:       db,
 	})
-	rows := mock.NewRows([]string{"VERSION()"}).
+	rows := smock.NewRows([]string{"VERSION()"}).
 		AddRow("5.7.34")
 	assert.Equal(t, "*sqlmock.Rows", reflect.TypeOf(rows).String(), "new row")
-	mock.ExpectQuery("SELECT VERSION()").
+	smock.ExpectQuery("SELECT VERSION()").
 		WillReturnRows(rows)
 	databases.DB, err = gorm.Open(dial, &gorm.Config{})
 	if err != nil {
