@@ -2,5 +2,5 @@
 @port = 8181
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-POST http://{{host}}/installation
+GET http://{{host}}/install
 Content-Type: {{contentType}}
