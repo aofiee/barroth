@@ -1,6 +1,8 @@
 package deliveries
 
 import (
+	"time"
+
 	barroth_config "github.com/aofiee/barroth/config"
 	"github.com/aofiee/barroth/domains"
 	"github.com/aofiee/barroth/helpers"
@@ -30,6 +32,7 @@ func (s *systemHandler) SystemInstallation(c *fiber.Ctx) error {
 		systems.AppName = barroth_config.ENV.AppName
 		systems.SiteURL = barroth_config.ENV.SiteURL + ":" + barroth_config.ENV.AppPort
 		systems.IsInstall = 0
+		systems.CreatedAt = time.Now()
 		err = s.systemUseCase.CreateSystem(&systems)
 		if err != nil {
 			return helpers.FailOnError(c, err, "can not create new record", fiber.StatusBadRequest)

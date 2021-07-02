@@ -30,3 +30,7 @@ Go fiber JWT token , refresh token on Redis
 ## https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html
 
 ![](https://blog.cleancoder.com/uncle-bob/images/2012-08-13-the-clean-architecture/CleanArchitecture.jpg)
+
+## Mock
+
+go get github.com/vektra/mockery/.../
