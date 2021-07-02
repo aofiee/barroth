@@ -9,7 +9,10 @@ type (
 		gorm.Model
 		ModuleID   uint
 		RoleItemID uint
-		IsExec     int `gorm:"type:TINYINT(1);default:0"`
+		IsGet      int `gorm:"type:TINYINT(1);default:0"`
+		IsPost     int `gorm:"type:TINYINT(1);default:0"`
+		IsPut      int `gorm:"type:TINYINT(1);default:0"`
+		IsDelete   int `gorm:"type:TINYINT(1);default:0"`
 	}
 )
 

@@ -46,7 +46,7 @@ func (i *installationRoutes) Setup() *fiber.App {
 func (i *installationRoutes) Install(app *fiber.App) {
 	sysRepo := repositories.NewSystemRepository(databases.DB)
 	sysUseCase := usecases.NewSystemUseCase(sysRepo)
-	sysHandler := deliveries.NewSystemHandelr(sysUseCase, "Installation", "Installation Module This is an API group for the system installation environment.")
+	installHandler := deliveries.NewSystemHandelr(sysUseCase, "Installation", "Installation Module This is an API group for the system installation environment.", "/install")
 	e := app.Group("/install")
-	e.Get("/", sysHandler.SystemInstallation)
+	e.Get("/", installHandler.SystemInstallation)
 }

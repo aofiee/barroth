@@ -18,7 +18,7 @@ func TMockSetup(t *testing.T) (mockUseCase *mocks.SystemUseCase, sysHandler *sys
 	err := faker.FakeData(&mockSystem)
 	assert.NoError(t, err)
 	mockUseCase = new(mocks.SystemUseCase)
-	sysHandler = NewSystemHandelr(mockUseCase, "expect1", "expect2")
+	sysHandler = NewSystemHandelr(mockUseCase, "expect1", "expect2", "slug")
 	return
 }
 func TestNewSystemHandelrInstallingCompleted(t *testing.T) {
