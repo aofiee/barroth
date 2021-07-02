@@ -62,6 +62,6 @@ func createDatabaseConnection(dial gorm.Dialector) error {
 	if err != nil {
 		return err
 	}
-	err = databases.DB.AutoMigrate(&models.System{})
+	err = databases.DB.AutoMigrate(&models.Users{}, &models.RoleItems{}, &models.UserRoles{}, &models.Modules{}, &models.Permissions{}, &models.System{})
 	return err
 }

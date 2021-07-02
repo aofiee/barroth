@@ -13,7 +13,7 @@ type (
 		Telephone  string    `gorm:"type:VARCHAR(50) CHARACTER SET utf8 COLLATE utf8_general_ci"`
 		Image      string    `gorm:"type:VARCHAR(50) CHARACTER SET utf8 COLLATE utf8_general_ci"`
 		UUID       string    `gorm:"type:VARCHAR(50) CHARACTER SET utf8 COLLATE utf8_general_ci"`
-		UserRoleID UserRoles `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+		UserRoleID UserRoles `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE; foreignKey:UserID;references:ID"`
 		Status     int       `gorm:"type:TINYINT(1)"`
 	}
 	UserRoles struct {
@@ -21,7 +21,7 @@ type (
 		RoleItemID uint
 		UserID     uint
 	}
-)
+) //foreignKey:LocationID;references:ID
 
 func (t *UserRoles) TableName() string {
 	return "user_roles"

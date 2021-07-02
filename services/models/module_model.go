@@ -11,7 +11,7 @@ type (
 		Description   string        `gorm:"type:TEXT CHARACTER SET utf8 COLLATE utf8_general_ci"`
 		Method        string        `gorm:"type:VARCHAR(10) CHARACTER SET utf8 COLLATE utf8_general_ci"`
 		ModuleSlug    string        `gorm:"type:VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci"`
-		PermissionsID []Permissions `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+		PermissionsID []Permissions `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE; foreignKey:ModuleID;references:ID"`
 	}
 )
 
