@@ -34,3 +34,4 @@ Go fiber JWT token , refresh token on Redis
 ## Mock
 
 go get github.com/vektra/mockery/.../
+mockery -all -recursive -dir=./domains
