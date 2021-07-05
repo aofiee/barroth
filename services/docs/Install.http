@@ -8,7 +8,7 @@ GET http://{{host}}/install
 Content-Type: {{contentType}}
 
 ### New Role
-POST http://{{host}}/install
+POST http://{{host}}/role
 Content-Type: {{contentType}}
 Authorization: Bearer {{accessToken}}
 
