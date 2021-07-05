@@ -1,76 +1,73 @@
 package usecases
 
 import (
-	"database/sql"
-	"reflect"
+	"errors"
 	"testing"
 
-	"github.com/DATA-DOG/go-sqlmock"
-	barroth_config "github.com/aofiee/barroth/config"
-	"github.com/aofiee/barroth/databases"
+	"github.com/aofiee/barroth/mocks"
 	"github.com/aofiee/barroth/models"
-	"github.com/aofiee/barroth/repositories"
 	"github.com/stretchr/testify/assert"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
+	"github.com/stretchr/testify/mock"
 )
 
-var (
-	db    *sql.DB
-	smock sqlmock.Sqlmock
-)
-
-func SetupMock(t *testing.T) {
-	var err error
-	barroth_config.ENV, err = barroth_config.LoadConfig("../")
-	if err != nil {
-		assert.NotEqual(t, nil, err, err.Error())
+func TestCreateSystem(t *testing.T) {
+	repo := new(mocks.SystemRepository)
+	m := models.System{
+		AppName:   "test",
+		IsInstall: 0,
+		SiteURL:   "http://",
 	}
-	db, smock, err = sqlmock.New()
-	if err != nil {
-		assert.NotEqual(t, nil, err, err.Error())
-	}
-	dial := mysql.New(mysql.Config{
-		DSN:        "sqlmock_db_0",
-		DriverName: "mysql",
-		Conn:       db,
-	})
-	rows := smock.NewRows([]string{"VERSION()"}).
-		AddRow("5.7.34")
-	assert.Equal(t, "*sqlmock.Rows", reflect.TypeOf(rows).String(), "new row")
-	smock.ExpectQuery("SELECT VERSION()").
-		WillReturnRows(rows)
-	databases.DB, err = gorm.Open(dial, &gorm.Config{})
-	if err != nil {
-		assert.NotEqual(t, nil, err, err.Error())
-	}
+	repo.On("CreateSystem", mock.AnythingOfType("*models.System")).Return(nil).Once()
+	u := NewSystemUseCase(repo)
+	err := u.CreateSystem(&m)
+	assert.NoError(t, err)
 }
-func TestSystemUseCase(t *testing.T) {
-	SetupMock(t)
-	t.Run("TEST_NEW_SYSTEM_USECASE", func(t *testing.T) {
-		s := models.System{
-			AppName:   "Test",
-			IsInstall: 0,
-			SiteURL:   "http://localhost:8181",
-		}
-		repo := repositories.NewSystemRepository(databases.DB)
-		usecase := NewSystemUseCase(repo)
-		assert.Equal(t, "*usecases.systemUseCase", reflect.TypeOf(usecase).String(), "new repo")
-		err := usecase.CreateSystem(&s)
-		if err != nil {
-			assert.NotEqual(t, nil, err, err.Error())
-		}
-		err = usecase.UpdateSystem(&s, "1")
-		if err != nil {
-			assert.NotEqual(t, nil, err, err.Error())
-		}
-		err = usecase.GetFirstSystemInstallation(&s)
-		if err != nil {
-			assert.NotEqual(t, nil, err, err.Error())
-		}
-		err = usecase.GetSystem(&s, "1")
-		if err != nil {
-			assert.NotEqual(t, nil, err, err.Error())
-		}
-	})
+func TestUpdateSystemSuccess(t *testing.T) {
+	repo := new(mocks.SystemRepository)
+	m := models.System{
+		AppName:   "test",
+		IsInstall: 0,
+		SiteURL:   "http://",
+	}
+	repo.On("GetSystem", mock.AnythingOfType("*models.System"), mock.Anything).Return(nil).Once()
+	repo.On("UpdateSystem", mock.AnythingOfType("*models.System"), mock.Anything).Return(nil).Once()
+	u := NewSystemUseCase(repo)
+	err := u.UpdateSystem(&m, "xx")
+	assert.NoError(t, err)
+}
+func TestUpdateSystemFail(t *testing.T) {
+	repo := new(mocks.SystemRepository)
+	m := models.System{
+		AppName:   "test",
+		IsInstall: 0,
+		SiteURL:   "http://",
+	}
+	repo.On("GetSystem", mock.AnythingOfType("*models.System"), mock.Anything).Return(errors.New("error")).Once()
+	u := NewSystemUseCase(repo)
+	err := u.UpdateSystem(&m, "xx")
+	assert.Error(t, err)
+}
+func TestGetSystem(t *testing.T) {
+	repo := new(mocks.SystemRepository)
+	m := models.System{
+		AppName:   "test",
+		IsInstall: 0,
+		SiteURL:   "http://",
+	}
+	repo.On("GetSystem", mock.AnythingOfType("*models.System"), mock.Anything).Return(nil).Once()
+	u := NewSystemUseCase(repo)
+	err := u.GetSystem(&m, "/test")
+	assert.NoError(t, err)
+}
+func TestGetFirstSystemInstallation(t *testing.T) {
+	repo := new(mocks.SystemRepository)
+	m := models.System{
+		AppName:   "test",
+		IsInstall: 0,
+		SiteURL:   "http://",
+	}
+	repo.On("GetFirstSystemInstallation", mock.AnythingOfType("*models.System")).Return(nil).Once()
+	u := NewSystemUseCase(repo)
+	err := u.GetFirstSystemInstallation(&m)
+	assert.NoError(t, err)
 }
