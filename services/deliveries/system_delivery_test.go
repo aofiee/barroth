@@ -50,7 +50,7 @@ func SetupMock(t *testing.T) {
 		assert.NotEqual(t, nil, err, err.Error())
 	}
 }
-func TMockSetup(t *testing.T) (mockUseCase *mocks.SystemUseCase, sysHandler *systemHandler) {
+func SystemMockSetup(t *testing.T) (mockUseCase *mocks.SystemUseCase, sysHandler *systemHandler) {
 	SetupMock(t)
 	var mockSystem models.System
 	err := faker.FakeData(&mockSystem)
@@ -60,7 +60,7 @@ func TMockSetup(t *testing.T) (mockUseCase *mocks.SystemUseCase, sysHandler *sys
 	return
 }
 func TestNewSystemHandelrInstallingCompleted(t *testing.T) {
-	mockUseCase, sysHandler := TMockSetup(t)
+	mockUseCase, sysHandler := SystemMockSetup(t)
 	mockUseCase.On("GetFirstSystemInstallation", mock.AnythingOfType("*models.System")).Return(errors.New("hello world"))
 
 	mockUseCase.On("CreateSystem", mock.AnythingOfType("*models.System")).Return(nil)
@@ -75,7 +75,7 @@ func TestNewSystemHandelrInstallingCompleted(t *testing.T) {
 	assert.Equal(t, 200, resp.StatusCode, "completed")
 }
 func TestNewSystemHandelrInstallingFailed(t *testing.T) {
-	mockUseCase, sysHandler := TMockSetup(t)
+	mockUseCase, sysHandler := SystemMockSetup(t)
 	mockUseCase.On("GetFirstSystemInstallation", mock.AnythingOfType("*models.System")).Return(errors.New("error"))
 	mockUseCase.On("CreateSystem", mock.AnythingOfType("*models.System")).Return(errors.New("error"))
 	app := fiber.New()
@@ -88,7 +88,7 @@ func TestNewSystemHandelrInstallingFailed(t *testing.T) {
 	assert.Equal(t, 400, resp.StatusCode, "completed")
 }
 func TestNewSystemHandelrInstalled(t *testing.T) {
-	mockUseCase, sysHandler := TMockSetup(t)
+	mockUseCase, sysHandler := SystemMockSetup(t)
 	mockUseCase.On("GetFirstSystemInstallation", mock.AnythingOfType("*models.System")).Return(nil)
 	app := fiber.New()
 	app.Get("/install", sysHandler.SystemInstallation)

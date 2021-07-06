@@ -25,9 +25,8 @@ func main() {
 		log.Println(err)
 	}
 	/// Install Routing
-	r := routes.NewInstallationRoutes(barroth_config.ENV)
-	app := r.Setup()
-	r.Install(app)
+	app := routes.InitAllRoutes()
+	///
 	err = app.Listen(":" + barroth_config.ENV.AppPort)
 	if err != nil {
 		panic(err)
