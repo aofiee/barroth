@@ -28,7 +28,7 @@ func (s *systemRepository) CreateSystem(system *models.System) error {
 	return nil
 }
 func (s *systemRepository) UpdateSystem(system *models.System, id string) error {
-	if err := s.conn.Save(system).Error; err != nil {
+	if err := s.conn.Model(system).Omit("id").Where("id = ?").Updates(system).Error; err != nil {
 		return err
 	}
 	return nil

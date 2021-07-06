@@ -1,35 +1,75 @@
 package repositories
 
 import (
+	"errors"
 	"reflect"
 	"testing"
 
+	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/aofiee/barroth/databases"
 	"github.com/aofiee/barroth/models"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestModuleRepo(t *testing.T) {
+func TestCreateModule(t *testing.T) {
 	SetupMock(t)
-	t.Run("TEST_MODULE_REPO", func(t *testing.T) {
-		repo := NewModuleRepository(databases.DB)
-		assert.Equal(t, "*repositories.moduleRepository", reflect.TypeOf(repo).String(), "new repo")
-		m := models.Modules{
-			Name:        "test",
-			Description: "test",
-			ModuleSlug:  "test",
-		}
-		err := repo.CreateModule(&m)
-		if err != nil {
-			assert.NotEqual(t, nil, err, err.Error())
-		}
-		err = repo.UpdateModule(&m, "1")
-		if err != nil {
-			assert.NotEqual(t, nil, err, err.Error())
-		}
-		err = repo.GetModule(&m, "test")
-		if err != nil {
-			assert.NotEqual(t, nil, err, err.Error())
-		}
-	})
+	repo := NewModuleRepository(databases.DB)
+	assert.Equal(t, "*repositories.moduleRepository", reflect.TypeOf(repo).String(), "new repo")
+	module := models.Modules{
+		Name:        "Test",
+		Description: "Test",
+	}
+	mock.ExpectBegin()
+	mock.ExpectExec("INSERT INTO `modules` ").WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectCommit()
+	err := repo.CreateModule(&module)
+	assert.NoError(t, err)
+
+	mock.ExpectBegin()
+	mock.ExpectExec("INSERT INTO `modules` ").WillReturnError(errors.New("error"))
+	mock.ExpectCommit()
+	err = repo.CreateModule(&module)
+	assert.Error(t, err)
+}
+
+func TestUpdateModule(t *testing.T) {
+	SetupMock(t)
+	repo := NewModuleRepository(databases.DB)
+	assert.Equal(t, "*repositories.moduleRepository", reflect.TypeOf(repo).String(), "new repo")
+	module := models.Modules{
+		Name:        "Test",
+		Description: "Test",
+	}
+	mock.ExpectBegin()
+	mock.ExpectExec("UPDATE `modules`").WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectCommit()
+	err := repo.UpdateModule(&module, "1")
+	assert.NoError(t, err)
+
+	mock.ExpectBegin()
+	mock.ExpectExec("UPDATE `modules`").WillReturnError(errors.New("error"))
+	mock.ExpectCommit()
+	err = repo.UpdateModule(&module, "1")
+	assert.Error(t, err)
+}
+
+func TestGetModule(t *testing.T) {
+	SetupMock(t)
+	repo := NewModuleRepository(databases.DB)
+	assert.Equal(t, "*repositories.moduleRepository", reflect.TypeOf(repo).String(), "new repo")
+	module := models.Modules{
+		Name:        "Test",
+		Description: "Test",
+	}
+	columns := []string{"id", "created_at", "updated_at", "deleted_at", "name", "description", "module_slug"}
+
+	mock.ExpectQuery("^SELECT (.+) FROM `modules`*").WithArgs("1").
+		WillReturnRows(sqlmock.NewRows(columns).AddRow(1, nil, nil, nil, "Test", "Desc", "/url"))
+	err := repo.GetModule(&module, "1")
+	assert.NoError(t, err)
+
+	mock.ExpectQuery("^SELECT (.+) FROM `modules`*").WithArgs("1").
+		WillReturnError(errors.New("error"))
+	err = repo.GetModule(&module, "1")
+	assert.Error(t, err)
 }

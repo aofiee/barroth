@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestCreateRoleSuccess(t *testing.T) {
+func TestCreateRole(t *testing.T) {
 	SetupMock(t)
 	repo := NewRoleRepository(databases.DB)
 	assert.Equal(t, "*repositories.roleRepository", reflect.TypeOf(repo).String(), "new repo")
@@ -24,20 +24,11 @@ func TestCreateRoleSuccess(t *testing.T) {
 	mock.ExpectCommit()
 	err := repo.CreateRole(&role)
 	assert.NoError(t, err)
-}
 
-func TestCreateRoleFail(t *testing.T) {
-	SetupMock(t)
-	repo := NewRoleRepository(databases.DB)
-	assert.Equal(t, "*repositories.roleRepository", reflect.TypeOf(repo).String(), "new repo")
-	role := models.RoleItems{
-		Name:        "Test",
-		Description: "Test",
-	}
 	mock.ExpectBegin()
 	mock.ExpectExec("INSERT INTO `role_items` ").WillReturnError(errors.New("error"))
 	mock.ExpectCommit()
-	err := repo.CreateRole(&role)
+	err = repo.CreateRole(&role)
 	assert.Error(t, err)
 }
 

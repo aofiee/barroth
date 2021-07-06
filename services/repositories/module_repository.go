@@ -28,7 +28,7 @@ func (m *moduleRepository) CreateModule(module *models.Modules) error {
 	return nil
 }
 func (m *moduleRepository) UpdateModule(module *models.Modules, id string) error {
-	if err := m.conn.Save(module).Error; err != nil {
+	if err := m.conn.Model(module).Omit("id").Where("id = ?").Updates(module).Error; err != nil {
 		return err
 	}
 	return nil

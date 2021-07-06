@@ -31,9 +31,6 @@ func (r *roleRepository) UpdateRole(role *models.RoleItems, id string) error {
 	if err := r.conn.Model(role).Omit("id").Where("id = ?").Updates(role).Error; err != nil {
 		return err
 	}
-	// if err := r.conn.Save(role).Error; err != nil {
-	// 	return err
-	// }
 	return nil
 }
 func (r *roleRepository) GetAllRoles(roles *[]models.RoleItems) (err error) {
