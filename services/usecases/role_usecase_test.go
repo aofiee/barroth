@@ -31,7 +31,7 @@ func TestUpdateRoleSuccess(t *testing.T) {
 	repo.On("GetRole", mock.AnythingOfType("*models.RoleItems"), mock.Anything).Return(nil).Once()
 	repo.On("UpdateRole", mock.AnythingOfType("*models.RoleItems"), mock.Anything).Return(nil).Once()
 	u := NewRoleUseCase(repo)
-	err := u.UpdateRole(&role, "xx")
+	err := u.UpdateRole(&role, "xxx")
 	assert.NoError(t, err)
 }
 
@@ -43,7 +43,7 @@ func TestUpdateRoleFail(t *testing.T) {
 	}
 	repo.On("GetRole", mock.AnythingOfType("*models.RoleItems"), mock.Anything).Return(errors.New("error")).Once()
 	u := NewRoleUseCase(repo)
-	err := u.UpdateRole(&role, "xx")
+	err := u.UpdateRole(&role, "xxx")
 	assert.Error(t, err)
 }
 
