@@ -26,13 +26,13 @@ func (_m *RoleRepository) CreateRole(m *models.RoleItems) error {
 	return r0
 }
 
-// GetAllRoles provides a mock function with given fields: m
-func (_m *RoleRepository) GetAllRoles(m *[]models.RoleItems) error {
-	ret := _m.Called(m)
+// GetAllRoles provides a mock function with given fields: m, keyword, sorting, sortField, page, limit, focus
+func (_m *RoleRepository) GetAllRoles(m *[]models.RoleItems, keyword string, sorting string, sortField string, page string, limit string, focus string) error {
+	ret := _m.Called(m, keyword, sorting, sortField, page, limit, focus)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(*[]models.RoleItems) error); ok {
-		r0 = rf(m)
+	if rf, ok := ret.Get(0).(func(*[]models.RoleItems, string, string, string, string, string, string) error); ok {
+		r0 = rf(m, keyword, sorting, sortField, page, limit, focus)
 	} else {
 		r0 = ret.Error(0)
 	}

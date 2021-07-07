@@ -33,7 +33,7 @@ func (r *roleUseCase) GetRole(role *models.RoleItems, id string) error {
 	err := r.roleRepo.GetRole(role, id)
 	return err
 }
-func (r *roleUseCase) GetAllRoles(role *[]models.RoleItems) error {
-	err := r.roleRepo.GetAllRoles(role)
+func (r *roleUseCase) GetAllRoles(roles *[]models.RoleItems, keyword, sorting, sortField, page, limit, focus string) error {
+	err := r.roleRepo.GetAllRoles(roles, keyword, sorting, sortField, page, limit, focus)
 	return err
 }

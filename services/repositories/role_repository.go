@@ -1,6 +1,8 @@
 package repositories
 
 import (
+	"strconv"
+
 	"github.com/aofiee/barroth/domains"
 	"github.com/aofiee/barroth/models"
 	"gorm.io/gorm"
@@ -33,8 +35,35 @@ func (r *roleRepository) UpdateRole(role *models.RoleItems, id string) error {
 	}
 	return nil
 }
-func (r *roleRepository) GetAllRoles(roles *[]models.RoleItems) (err error) {
-	if err := r.conn.Find(roles).Error; err != nil {
+func (r *roleRepository) GetAllRoles(roles *[]models.RoleItems, keyword, sorting, sortField, page, limit, focus string) (err error) {
+	l, err := strconv.Atoi(limit)
+	if err != nil {
+		return err
+	}
+	p, err := strconv.Atoi(page)
+	if err != nil {
+		return err
+	}
+	p = p - 1
+	if focus == "inbox" {
+		if keyword == "all" {
+			if err := r.conn.Model(&models.RoleItems{}).Limit(l).Offset(p).Order(sortField + " " + sorting).Find(&roles).Error; err != nil {
+				return err
+			}
+			return nil
+		}
+		if err := r.conn.Model(&models.RoleItems{}).Where("role_items.name like ?", "%"+keyword+"%").Limit(l).Offset(p).Order(sortField + " " + sorting).Find(&roles).Error; err != nil {
+			return err
+		}
+		return nil
+	}
+	if keyword == "all" {
+		if err := r.conn.Unscoped().Model(&models.RoleItems{}).Where("role_items.deleted_at IS NOT NULL").Limit(l).Offset(p).Order(sortField + " " + sorting).Find(&roles).Error; err != nil {
+			return err
+		}
+		return nil
+	}
+	if err := r.conn.Unscoped().Model(&models.RoleItems{}).Where("role_items.deleted_at IS NOT NULL AND role_items.name like ?", "%"+keyword+"%").Limit(l).Offset(p).Order(sortField + " " + sorting).Find(&roles).Error; err != nil {
 		return err
 	}
 	return nil

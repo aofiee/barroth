@@ -60,15 +60,53 @@ func TestGetAllRoles(t *testing.T) {
 	var roles []models.RoleItems
 	columns := []string{"id", "created_at", "updated_at", "deleted_at", "name", "description"}
 
-	mock.ExpectQuery("^SELECT (.+) FROM `role_items`*").
-		WillReturnRows(sqlmock.NewRows(columns).AddRow(1, nil, nil, nil, "Test", "Desc"))
-	err := repo.GetAllRoles(&roles)
-	assert.NoError(t, err)
-
-	mock.ExpectQuery("^SELECT (.+) FROM `role_items`*").
-		WillReturnError(errors.New("error"))
-	err = repo.GetAllRoles(&roles)
+	err := repo.GetAllRoles(&roles, "all", "asc", "id", "xx", "10", "inbox")
 	assert.Error(t, err)
+
+	err = repo.GetAllRoles(&roles, "all", "asc", "id", "1", "xx", "inbox")
+	assert.Error(t, err)
+	t.Run("TEST_INBOX", func(t *testing.T) {
+		mock.ExpectQuery("^SELECT (.+) FROM `role_items`*").
+			WillReturnRows(sqlmock.NewRows(columns).AddRow(1, nil, nil, nil, "Test", "description"))
+		err = repo.GetAllRoles(&roles, "all", "asc", "id", "1", "10", "inbox")
+		assert.NoError(t, err)
+
+		mock.ExpectQuery("^SELECT (.+) FROM `role_items`*").
+			WillReturnError(errors.New("error"))
+		err = repo.GetAllRoles(&roles, "all", "asc", "id", "1", "10", "inbox")
+		assert.Error(t, err)
+
+		mock.ExpectQuery("^SELECT (.+) FROM `role_items`*").
+			WillReturnRows(sqlmock.NewRows(columns).AddRow(1, nil, nil, nil, "Test", "description"))
+		err = repo.GetAllRoles(&roles, "Admin", "asc", "id", "1", "10", "inbox")
+		assert.NoError(t, err)
+
+		mock.ExpectQuery("^SELECT (.+) FROM `role_items`*").
+			WillReturnError(errors.New("error"))
+		err = repo.GetAllRoles(&roles, "Admin", "asc", "id", "1", "10", "inbox")
+		assert.Error(t, err)
+	})
+	t.Run("TEST_TRASH", func(t *testing.T) {
+		mock.ExpectQuery("^SELECT (.+) FROM `role_items`*").
+			WillReturnRows(sqlmock.NewRows(columns).AddRow(1, nil, nil, nil, "Test", "description"))
+		err = repo.GetAllRoles(&roles, "all", "asc", "id", "1", "10", "trash")
+		assert.NoError(t, err)
+
+		mock.ExpectQuery("^SELECT (.+) FROM `role_items`*").
+			WillReturnError(errors.New("error"))
+		err = repo.GetAllRoles(&roles, "all", "asc", "id", "1", "10", "trash")
+		assert.Error(t, err)
+
+		mock.ExpectQuery("^SELECT (.+) FROM `role_items`*").
+			WillReturnRows(sqlmock.NewRows(columns).AddRow(1, nil, nil, nil, "Test", "description"))
+		err = repo.GetAllRoles(&roles, "Admin", "asc", "id", "1", "10", "trash")
+		assert.NoError(t, err)
+
+		mock.ExpectQuery("^SELECT (.+) FROM `role_items`*").
+			WillReturnError(errors.New("error"))
+		err = repo.GetAllRoles(&roles, "Admin", "asc", "id", "1", "10", "trash")
+		assert.Error(t, err)
+	})
 }
 
 func TestUpdateRole(t *testing.T) {

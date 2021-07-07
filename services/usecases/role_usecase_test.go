@@ -65,8 +65,8 @@ func TestGetAllRoles(t *testing.T) {
 		Name:        "Test",
 		Description: "Test",
 	})
-	repo.On("GetAllRoles", mock.AnythingOfType("*[]models.RoleItems")).Return(nil).Once()
+	repo.On("GetAllRoles", mock.AnythingOfType("*[]models.RoleItems"), mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil).Once()
 	u := NewRoleUseCase(repo)
-	err := u.GetAllRoles(&roles)
+	err := u.GetAllRoles(&roles, "all", "asc", "id", "1", "10", "inbox")
 	assert.NoError(t, err)
 }

@@ -16,3 +16,13 @@ Authorization: Bearer {{accessToken}}
     "name": "Administrator",
     "description" : "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s"
 }
+
+### Get All Role
+GET http://{{host}}/roles?page=1&limit=1
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
+
+### Get All Role
+GET http://{{host}}/roles?focus=trash
+Content-Type: {{contentType}}
+Authorization: Bearer {{accessToken}}
