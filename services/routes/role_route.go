@@ -27,6 +27,7 @@ func (r *roleRoutes) Install(app *fiber.App) {
 	e := app.Group("/role")
 	e.Post("/", handler.NewRole)
 	e.Get("/:id", handler.GetRole)
+	e.Put("/:id", handler.UpdateRole)
 
 	e = app.Group("/roles")
 	e.Get("/", handler.GetAllRoles)

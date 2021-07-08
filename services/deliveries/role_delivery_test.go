@@ -280,3 +280,73 @@ func TestGetRoleFail(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, 400, resp.StatusCode, "completed")
 }
+func TestUpdateRoleSuccess(t *testing.T) {
+	params := models.RoleItems{
+		Name:        "TestRole",
+		Description: "Lorem Test",
+	}
+	data, _ := json.Marshal(&params)
+	payload := bytes.NewReader(data)
+	mockUseCase, handler := RoleMockSetup(t)
+	mockUseCase.On("UpdateRole", mock.AnythingOfType("*models.RoleItems"), mock.Anything).Return(nil)
+
+	app := fiber.New()
+	app.Put("/role/:id", handler.UpdateRole)
+	req, err := http.NewRequest("PUT", "/role/2", payload)
+	req.Header.Set("Content-Type", "application/json")
+	assert.NoError(t, err)
+	resp, err := app.Test(req)
+	assert.NoError(t, err)
+	assert.Equal(t, 200, resp.StatusCode, "completed")
+}
+func TestUpdateRoleFail(t *testing.T) {
+	params := models.RoleItems{
+		Name:        "TestRole",
+		Description: "Lorem Test",
+	}
+	data, _ := json.Marshal(&params)
+	payload := bytes.NewReader(data)
+	mockUseCase, handler := RoleMockSetup(t)
+	mockUseCase.On("UpdateRole", mock.AnythingOfType("*models.RoleItems"), mock.Anything).Return(errors.New("error"))
+
+	app := fiber.New()
+	app.Put("/role/:id", handler.UpdateRole)
+	req, err := http.NewRequest("PUT", "/role/2", payload)
+	req.Header.Set("Content-Type", "application/json")
+	assert.NoError(t, err)
+	resp, err := app.Test(req)
+	assert.NoError(t, err)
+	assert.Equal(t, 400, resp.StatusCode, "completed")
+}
+func TestUpdateRoleJsonFail(t *testing.T) {
+	mockUseCase, handler := RoleMockSetup(t)
+	mockUseCase.On("UpdateRole", mock.AnythingOfType("*models.RoleItems"), mock.Anything).Return(nil)
+
+	app := fiber.New()
+	app.Put("/role/:id", handler.UpdateRole)
+	req, err := http.NewRequest("PUT", "/role/2", nil)
+	req.Header.Set("Content-Type", "application/json")
+	assert.NoError(t, err)
+	resp, err := app.Test(req)
+	assert.NoError(t, err)
+	assert.Equal(t, 400, resp.StatusCode, "completed")
+}
+func TestUpdateRoleValidateFail(t *testing.T) {
+	params := models.RoleItems{
+		Name:        "",
+		Description: "",
+	}
+	data, _ := json.Marshal(&params)
+	payload := bytes.NewReader(data)
+	mockUseCase, handler := RoleMockSetup(t)
+	mockUseCase.On("UpdateRole", mock.AnythingOfType("*models.RoleItems"), mock.Anything).Return(errors.New("error"))
+
+	app := fiber.New()
+	app.Put("/role/:id", handler.UpdateRole)
+	req, err := http.NewRequest("PUT", "/role/2", payload)
+	req.Header.Set("Content-Type", "application/json")
+	assert.NoError(t, err)
+	resp, err := app.Test(req)
+	assert.NoError(t, err)
+	assert.Equal(t, 406, resp.StatusCode, "completed")
+}

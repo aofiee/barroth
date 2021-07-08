@@ -198,3 +198,25 @@ func (r *roleHandler) GetRole(c *fiber.Ctx) error {
 		"data":  role,
 	})
 }
+func (r *roleHandler) UpdateRole(c *fiber.Ctx) error {
+	var role models.RoleItems
+	err := c.BodyParser(&role)
+	if err != nil {
+		return helpers.FailOnError(c, err, "cannot parse json", fiber.StatusBadRequest)
+	}
+	errorResponse := helpers.ValidateStruct(&role)
+	if errorResponse != nil {
+		return c.Status(fiber.StatusNotAcceptable).JSON(fiber.Map{
+			"msg":   "input error.",
+			"error": errorResponse,
+		})
+	}
+	err = r.roleUseCase.UpdateRole(&role, c.Params("id"))
+	if err != nil {
+		return helpers.FailOnError(c, err, "cannot update role id "+c.Params("id"), fiber.StatusBadRequest)
+	}
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"msg":   "update role id " + c.Params("id") + " is completed.",
+		"error": nil,
+	})
+}

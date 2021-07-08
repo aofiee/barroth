@@ -30,7 +30,7 @@ func (r *roleRepository) CreateRole(role *models.RoleItems) error {
 	return nil
 }
 func (r *roleRepository) UpdateRole(role *models.RoleItems, id string) error {
-	if err := r.conn.Model(role).Omit("id").Where("id = ?").Updates(role).Error; err != nil {
+	if err := r.conn.Model(role).Omit("id").Where("id = ?", id).Updates(role).Error; err != nil {
 		return err
 	}
 	return nil
