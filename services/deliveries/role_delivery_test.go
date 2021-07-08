@@ -27,8 +27,8 @@ func RoleMockSetup(t *testing.T) (mockUseCase *mocks.RoleUseCase, handler *roleH
 }
 func TestNewHandlerSuccess(t *testing.T) {
 	params := models.RoleItems{
-		Name:        "TestRole",
-		Description: "Lorem Test",
+		Name:        "TestNewHandlerSuccess",
+		Description: "TestNewHandlerSuccess Description",
 	}
 	data, _ := json.Marshal(&params)
 	payload := bytes.NewReader(data)
@@ -66,8 +66,8 @@ func TestNewHandlerSuccess(t *testing.T) {
 }
 func TestNewHandlerFail(t *testing.T) {
 	params := models.RoleItems{
-		Name:        "TestRole",
-		Description: "Lorem Test",
+		Name:        "TestNewHandlerFail",
+		Description: "TestNewHandlerFail Description",
 	}
 	data, _ := json.Marshal(&params)
 	payload := bytes.NewReader(data)
@@ -282,8 +282,8 @@ func TestGetRoleFail(t *testing.T) {
 }
 func TestUpdateRoleSuccess(t *testing.T) {
 	params := models.RoleItems{
-		Name:        "TestRole",
-		Description: "Lorem Test",
+		Name:        "TestUpdateRoleSuccess",
+		Description: "TestUpdateRoleSuccess Description",
 	}
 	data, _ := json.Marshal(&params)
 	payload := bytes.NewReader(data)
@@ -301,8 +301,8 @@ func TestUpdateRoleSuccess(t *testing.T) {
 }
 func TestUpdateRoleFail(t *testing.T) {
 	params := models.RoleItems{
-		Name:        "TestRole",
-		Description: "Lorem Test",
+		Name:        "TestUpdateRoleSuccess",
+		Description: "TestUpdateRoleSuccess Description",
 	}
 	data, _ := json.Marshal(&params)
 	payload := bytes.NewReader(data)
