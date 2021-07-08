@@ -2,7 +2,7 @@
 @port = 8181
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NfdXVpZCI6Ijc3OWQxZDAyLTA0Y2EtNGE1Zi05ZmUxLWQ1ZTA0M2I2NGQ4MSIsImNvbnRleHQiOnsidXNlciI6ImFvZmllZUBhb2ZpZWUuZGV2IiwiZGlzcGxheV9uYW1lIjoiTXIuIEtob21rcmlkIExlcmRwcnNlcnQiLCJyb2xlIjoiQWRtaW5pc3RyYXRvciJ9LCJleHAiOjE2MjQ4ODY0ODgsImlhdCI6MTYyNDg4NTU4OCwiaXNzIjoiRGlhYmxvcyIsInN1YiI6ImQ4NDYzZjU2LTZlOWItNGRmMC05ZWEzLTM3YjhjMjlmOGI0MSJ9.JYQ5yP2rVejpJD7G20Wwv8Swtl5znBEVeyleqZk4fQc
+@accessToken = 
 
 ###
 GET http://{{host}}/

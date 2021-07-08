@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/aofiee/barroth/constants"
 	"github.com/aofiee/barroth/databases"
 	"github.com/aofiee/barroth/domains"
 	"github.com/aofiee/barroth/helpers"
@@ -57,21 +58,21 @@ func (r *roleHandler) NewRole(c *fiber.Ctx) error {
 	var role models.RoleItems
 	err := c.BodyParser(&role)
 	if err != nil {
-		return helpers.FailOnError(c, err, "cannot parse json", fiber.StatusBadRequest)
+		return helpers.FailOnError(c, err, constants.PARSE_JSON_FAIL, fiber.StatusBadRequest)
 	}
 	errorResponse := helpers.ValidateStruct(&role)
 	if errorResponse != nil {
 		return c.Status(fiber.StatusNotAcceptable).JSON(fiber.Map{
-			"msg":   "input error.",
+			"msg":   constants.INPUT_ERROR,
 			"error": errorResponse,
 		})
 	}
 	err = r.roleUseCase.CreateRole(&role)
 	if err != nil {
-		return helpers.FailOnError(c, err, "cannot create role", fiber.StatusBadRequest)
+		return helpers.FailOnError(c, err, constants.CANNOT_CREATE_ROLE, fiber.StatusBadRequest)
 	}
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"msg":   "create role successful.",
+		"msg":   constants.CREATE_ROLE_SUCCESSFUL,
 		"error": nil,
 	})
 }
@@ -116,24 +117,24 @@ func (r *roleHandler) BuildGetAllRolesParam(c *fiber.Ctx) ([]byte, error) {
 func (r *roleHandler) GetAllRoles(c *fiber.Ctx) error {
 	p, err := r.BuildGetAllRolesParam(c)
 	if err != nil {
-		return helpers.FailOnError(c, err, "cannot parse params", fiber.StatusNotAcceptable)
+		return helpers.FailOnError(c, err, constants.CANNOT_PARSE_PARAMS, fiber.StatusNotAcceptable)
 	}
 	var param paramsGetAllRoles
 	json.Unmarshal(p, &param)
 	errorResponse := helpers.ValidateStruct(&param)
 	if errorResponse != nil {
 		return c.Status(fiber.StatusNotAcceptable).JSON(fiber.Map{
-			"msg":   "input error.",
+			"msg":   constants.INPUT_ERROR,
 			"error": errorResponse,
 		})
 	}
 	var roles []models.RoleItems
 	err = r.roleUseCase.GetAllRoles(&roles, param.Keyword, param.Sorting, param.SortField, param.Page, param.Limit, param.Focus)
 	if err != nil {
-		return helpers.FailOnError(c, err, "cannot get all roles", fiber.StatusBadRequest)
+		return helpers.FailOnError(c, err, constants.CANNOT_GET_ALL_ROLES, fiber.StatusBadRequest)
 	}
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"msg":   "get all role successful.",
+		"msg":   constants.GET_ALL_ROLE_SUCCESSFULE,
 		"error": nil,
 		"data":  roles,
 	})
@@ -146,18 +147,18 @@ func (r *roleHandler) DeleteRoles(c *fiber.Ctx) error {
 	var params paramRequestRolesID
 	err := c.BodyParser(&params)
 	if err != nil {
-		return helpers.FailOnError(c, err, "cannot parse json", fiber.StatusBadRequest)
+		return helpers.FailOnError(c, err, constants.PARSE_JSON_FAIL, fiber.StatusBadRequest)
 	}
 	errs := helpers.ValidateStruct(&params)
 	if errs != nil {
 		return c.Status(fiber.StatusNotAcceptable).JSON(fiber.Map{
-			"msg":   "input error.",
+			"msg":   constants.INPUT_ERROR,
 			"error": errs,
 		})
 	}
 	rs, err := r.roleUseCase.DeleteRoles(focus, params.RoleID)
 	if err != nil {
-		return helpers.FailOnError(c, err, "cannot delete roles", fiber.StatusBadRequest)
+		return helpers.FailOnError(c, err, constants.CANNOT_DELETE_ROLE, fiber.StatusBadRequest)
 	}
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"msg":   "deleted " + strconv.FormatInt(rs, 10) + " roles successful.",
@@ -168,18 +169,18 @@ func (r *roleHandler) RestoreRoles(c *fiber.Ctx) error {
 	var params paramRequestRolesID
 	err := c.BodyParser(&params)
 	if err != nil {
-		return helpers.FailOnError(c, err, "cannot parse json", fiber.StatusBadRequest)
+		return helpers.FailOnError(c, err, constants.PARSE_JSON_FAIL, fiber.StatusBadRequest)
 	}
 	errs := helpers.ValidateStruct(&params)
 	if errs != nil {
 		return c.Status(fiber.StatusNotAcceptable).JSON(fiber.Map{
-			"msg":   "input error.",
+			"msg":   constants.INPUT_ERROR,
 			"error": errs,
 		})
 	}
 	rs, err := r.roleUseCase.RestoreRoles(params.RoleID)
 	if err != nil {
-		return helpers.FailOnError(c, err, "cannot restore roles", fiber.StatusBadRequest)
+		return helpers.FailOnError(c, err, constants.CANNOT_RESTORE_ROLES, fiber.StatusBadRequest)
 	}
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"msg":   "restore " + strconv.FormatInt(rs, 10) + " roles successful.",
@@ -190,7 +191,7 @@ func (r *roleHandler) GetRole(c *fiber.Ctx) error {
 	var role models.RoleItems
 	err := r.roleUseCase.GetRole(&role, c.Params("id"))
 	if err != nil {
-		return helpers.FailOnError(c, err, "cannot get role id "+c.Params("id"), fiber.StatusBadRequest)
+		return helpers.FailOnError(c, err, constants.CANNOT_GET_ROLE_ID+c.Params("id"), fiber.StatusBadRequest)
 	}
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"msg":   "get data of role id " + c.Params("id") + " is completed.",
@@ -202,12 +203,12 @@ func (r *roleHandler) UpdateRole(c *fiber.Ctx) error {
 	var role models.RoleItems
 	err := c.BodyParser(&role)
 	if err != nil {
-		return helpers.FailOnError(c, err, "cannot parse json", fiber.StatusBadRequest)
+		return helpers.FailOnError(c, err, constants.PARSE_JSON_FAIL, fiber.StatusBadRequest)
 	}
 	errorResponse := helpers.ValidateStruct(&role)
 	if errorResponse != nil {
 		return c.Status(fiber.StatusNotAcceptable).JSON(fiber.Map{
-			"msg":   "input error.",
+			"msg":   constants.INPUT_ERROR,
 			"error": errorResponse,
 		})
 	}
