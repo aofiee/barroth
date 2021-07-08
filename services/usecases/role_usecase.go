@@ -37,3 +37,7 @@ func (r *roleUseCase) GetAllRoles(roles *[]models.RoleItems, keyword, sorting, s
 	err := r.roleRepo.GetAllRoles(roles, keyword, sorting, sortField, page, limit, focus)
 	return err
 }
+func (r *roleUseCase) DeleteRoles(focus string, id []int) (int64, error) {
+	rs, err := r.roleRepo.DeleteRoles(focus, id)
+	return rs, err
+}

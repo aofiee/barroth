@@ -68,3 +68,17 @@ func (r *roleRepository) GetAllRoles(roles *[]models.RoleItems, keyword, sorting
 	}
 	return nil
 }
+func (r *roleRepository) DeleteRoles(focus string, id []int) (int64, error) {
+	if focus == "inbox" {
+		rs := r.conn.Where("id IN ?", id).Delete(&models.RoleItems{})
+		if rs.Error != nil {
+			return 0, rs.Error
+		}
+		return rs.RowsAffected, nil
+	}
+	rs := r.conn.Unscoped().Where("id IN ?", id).Delete(&models.RoleItems{})
+	if rs.Error != nil {
+		return 0, rs.Error
+	}
+	return rs.RowsAffected, nil
+}

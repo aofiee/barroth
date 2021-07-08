@@ -29,4 +29,5 @@ func (r *roleRoutes) Install(app *fiber.App) {
 
 	e = app.Group("/roles")
 	e.Get("/", handler.GetAllRoles)
+	e.Delete("/", handler.DeleteRoles)
 }

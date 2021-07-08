@@ -70,3 +70,12 @@ func TestGetAllRoles(t *testing.T) {
 	err := u.GetAllRoles(&roles, "all", "asc", "id", "1", "10", "inbox")
 	assert.NoError(t, err)
 }
+
+func TestDeleteRoles(t *testing.T) {
+	repo := new(mocks.RoleRepository)
+	repo.On("DeleteRoles", mock.Anything, mock.AnythingOfType("[]int")).Return(int64(3), nil).Once()
+	u := NewRoleUseCase(repo)
+	rs, err := u.DeleteRoles("inbox", []int{1, 2, 3})
+	assert.NoError(t, err)
+	assert.Equal(t, int64(3), rs)
+}

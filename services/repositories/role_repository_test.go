@@ -130,3 +130,42 @@ func TestUpdateRole(t *testing.T) {
 	err = repo.UpdateRole(&role, "1")
 	assert.Error(t, err)
 }
+
+func TestDeleteRoleSuccess(t *testing.T) {
+	SetupMock(t)
+	repo := NewRoleRepository(databases.DB)
+	assert.Equal(t, "*repositories.roleRepository", reflect.TypeOf(repo).String(), "new repo")
+
+	t.Run("TEST_INBOX", func(t *testing.T) {
+		mock.ExpectBegin()
+		mock.ExpectExec("UPDATE `role_items`").WillReturnResult(sqlmock.NewResult(1, 3))
+		mock.ExpectCommit()
+		_, err := repo.DeleteRoles("inbox", []int{1, 2, 3})
+		assert.NoError(t, err)
+
+		mock.ExpectBegin()
+		mock.ExpectExec("UPDATE `role_items`").WillReturnError(errors.New("error"))
+		mock.ExpectCommit()
+		_, err = repo.DeleteRoles("inbox", []int{1, 2, 3})
+		assert.Error(t, err)
+	})
+
+}
+func TestDeleteRoleFail(t *testing.T) {
+	SetupMock(t)
+	repo := NewRoleRepository(databases.DB)
+	assert.Equal(t, "*repositories.roleRepository", reflect.TypeOf(repo).String(), "new repo")
+	t.Run("TEST_TRASH", func(t *testing.T) {
+		mock.ExpectBegin()
+		mock.ExpectExec("DELETE FROM `role_items`").WithArgs(1, 2, 3).WillReturnResult(sqlmock.NewResult(1, 3))
+		mock.ExpectCommit()
+		_, err := repo.DeleteRoles("trash", []int{1, 2, 3})
+		assert.NoError(t, err)
+
+		mock.ExpectBegin()
+		mock.ExpectExec("DELETE FROM `role_items`").WillReturnError(errors.New("error"))
+		mock.ExpectCommit()
+		_, err = repo.DeleteRoles("trash", []int{1, 2, 3})
+		assert.Error(t, err)
+	})
+}

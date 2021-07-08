@@ -26,6 +26,27 @@ func (_m *RoleRepository) CreateRole(m *models.RoleItems) error {
 	return r0
 }
 
+// DeleteRoles provides a mock function with given fields: focus, id
+func (_m *RoleRepository) DeleteRoles(focus string, id []int) (int64, error) {
+	ret := _m.Called(focus, id)
+
+	var r0 int64
+	if rf, ok := ret.Get(0).(func(string, []int) int64); ok {
+		r0 = rf(focus, id)
+	} else {
+		r0 = ret.Get(0).(int64)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(string, []int) error); ok {
+		r1 = rf(focus, id)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetAllRoles provides a mock function with given fields: m, keyword, sorting, sortField, page, limit, focus
 func (_m *RoleRepository) GetAllRoles(m *[]models.RoleItems, keyword string, sorting string, sortField string, page string, limit string, focus string) error {
 	ret := _m.Called(m, keyword, sorting, sortField, page, limit, focus)

@@ -2,6 +2,7 @@ package deliveries
 
 import (
 	"encoding/json"
+	"strconv"
 	"strings"
 
 	"github.com/aofiee/barroth/databases"
@@ -20,13 +21,16 @@ type (
 		description string
 		slug        string
 	}
-	paramGetAllRoles struct {
+	paramsGetAllRoles struct {
 		Keyword   string `json:"keyword" form:"keyword"`
 		Page      string `json:"page" form:"page"`
 		Limit     string `json:"limit" form:"limit"`
 		Sorting   string `json:"sort" form:"sort" validate:"eq=desc|eq=asc"`
 		SortField string `json:"field" form:"field" validate:"eq=id|eq=name|eq=email|eq=password|eq=telephone|eq=uuid|eq=user_role_id|eq=status"`
 		Focus     string `json:"focus" form:"focus" validate:"eq=inbox|eq=trash"`
+	}
+	paramDeleteRoles struct {
+		RoleID []int `json:"role_id" validate:"required"`
 	}
 )
 
@@ -96,7 +100,7 @@ func (r *roleHandler) BuildGetAllRolesParam(c *fiber.Ctx) ([]byte, error) {
 	if focus == "" {
 		focus = "inbox"
 	}
-	var param paramGetAllRoles
+	var param paramsGetAllRoles
 	param.SortField = field
 	param.Keyword = keyword
 	param.Focus = focus
@@ -114,8 +118,15 @@ func (r *roleHandler) GetAllRoles(c *fiber.Ctx) error {
 	if err != nil {
 		return helpers.FailOnError(c, err, "cannot parse params", fiber.StatusNotAcceptable)
 	}
-	var param paramGetAllRoles
+	var param paramsGetAllRoles
 	json.Unmarshal(p, &param)
+	errorResponse := helpers.ValidateStruct(&param)
+	if errorResponse != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"msg":   "input error.",
+			"error": errorResponse,
+		})
+	}
 	var roles []models.RoleItems
 	err = r.roleUseCase.GetAllRoles(&roles, param.Keyword, param.Sorting, param.SortField, param.Page, param.Limit, param.Focus)
 	if err != nil {
@@ -125,5 +136,31 @@ func (r *roleHandler) GetAllRoles(c *fiber.Ctx) error {
 		"msg":   "get all role successful.",
 		"error": nil,
 		"data":  roles,
+	})
+}
+func (r *roleHandler) DeleteRoles(c *fiber.Ctx) error {
+	focus := strings.ToLower(c.Query("focus"))
+	if focus == "" {
+		focus = "inbox"
+	}
+	var params paramDeleteRoles
+	err := c.BodyParser(&params)
+	if err != nil {
+		return helpers.FailOnError(c, err, "cannot parse json", fiber.StatusBadRequest)
+	}
+	errs := helpers.ValidateStruct(&params)
+	if errs != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"msg":   "input error.",
+			"error": errs,
+		})
+	}
+	rs, err := r.roleUseCase.DeleteRoles(focus, params.RoleID)
+	if err != nil {
+		return helpers.FailOnError(c, err, "cannot delete roles", fiber.StatusBadRequest)
+	}
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"msg":   "deleted " + strconv.FormatInt(rs, 10) + " roles successful.",
+		"error": nil,
 	})
 }
