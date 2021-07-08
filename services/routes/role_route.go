@@ -26,6 +26,7 @@ func (r *roleRoutes) Install(app *fiber.App) {
 	handler := deliveries.NewRoleHandelr(u, "Installation", "Installation Module This is an API group for the system installation environment.", "/role")
 	e := app.Group("/role")
 	e.Post("/", handler.NewRole)
+	e.Get("/:id", handler.GetRole)
 
 	e = app.Group("/roles")
 	e.Get("/", handler.GetAllRoles)

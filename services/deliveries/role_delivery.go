@@ -186,3 +186,15 @@ func (r *roleHandler) RestoreRoles(c *fiber.Ctx) error {
 		"error": nil,
 	})
 }
+func (r *roleHandler) GetRole(c *fiber.Ctx) error {
+	var role models.RoleItems
+	err := r.roleUseCase.GetRole(&role, c.Params("id"))
+	if err != nil {
+		return helpers.FailOnError(c, err, "cannot get role id "+c.Params("id"), fiber.StatusBadRequest)
+	}
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"msg":   "get data of role id " + c.Params("id") + " is completed.",
+		"error": nil,
+		"data":  role,
+	})
+}

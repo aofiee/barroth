@@ -256,3 +256,27 @@ func TestRestoreRolesJsonFail(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, 400, resp.StatusCode, "completed")
 }
+func TestGetRoleSuccess(t *testing.T) {
+	mockUseCase, handler := RoleMockSetup(t)
+	mockUseCase.On("GetRole", mock.AnythingOfType("*models.RoleItems"), mock.Anything).Return(nil)
+	app := fiber.New()
+	app.Get("/role/:id", handler.GetRole)
+	req, err := http.NewRequest("GET", "/role/2", nil)
+	assert.NoError(t, err)
+	req.Header.Set("Content-Type", "application/json")
+	resp, err := app.Test(req)
+	assert.NoError(t, err)
+	assert.Equal(t, 200, resp.StatusCode, "completed")
+}
+func TestGetRoleFail(t *testing.T) {
+	mockUseCase, handler := RoleMockSetup(t)
+	mockUseCase.On("GetRole", mock.AnythingOfType("*models.RoleItems"), mock.Anything).Return(errors.New("error"))
+	app := fiber.New()
+	app.Get("/role/:id", handler.GetRole)
+	req, err := http.NewRequest("GET", "/role/2", nil)
+	assert.NoError(t, err)
+	req.Header.Set("Content-Type", "application/json")
+	resp, err := app.Test(req)
+	assert.NoError(t, err)
+	assert.Equal(t, 400, resp.StatusCode, "completed")
+}
