@@ -7,6 +7,7 @@ import (
 
 	"github.com/DATA-DOG/go-sqlmock"
 	barroth_config "github.com/aofiee/barroth/config"
+	"github.com/aofiee/barroth/constants"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/driver/mysql"
 )
@@ -33,22 +34,22 @@ func TestSetupDatabase(t *testing.T) {
 		dns, err := setupDNSDatabaseConnection("./")
 		if err != nil {
 			assert.NotEqual(t, nil, err, err.Error())
-			assert.Equal(t, "", dns, "dns connection is empty")
+			assert.Equal(t, "", dns, constants.ERR_DNS_CONNECTION_EMPTY)
 		}
 	})
 	t.Run("TEST_LOAD_SUCCESS_ENV", func(t *testing.T) {
 		dns, err := setupDNSDatabaseConnection("../")
 		if err != nil {
 			assert.NotEqual(t, nil, err, err.Error())
-			assert.Equal(t, "", dns, "dns connection is empty")
+			assert.Equal(t, "", dns, constants.ERR_DNS_CONNECTION_EMPTY)
 		}
-		assert.NotEqual(t, "", dns, "dns connection is empty")
+		assert.NotEqual(t, "", dns, constants.ERR_DNS_CONNECTION_EMPTY)
 	})
 	t.Run("DATABASE_TEST", func(t *testing.T) {
 		dns, err := setupDNSDatabaseConnection("../")
 		if err != nil {
 			assert.NotEqual(t, nil, err, err.Error())
-			assert.Equal(t, "", dns, "dns connection is empty")
+			assert.Equal(t, "", dns, constants.ERR_DNS_CONNECTION_EMPTY)
 		}
 		dial := mysql.New(mysql.Config{
 			DSN:        "sqlmock_db_0",
