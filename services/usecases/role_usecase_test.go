@@ -79,3 +79,12 @@ func TestDeleteRoles(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, int64(3), rs)
 }
+
+func TestRestoreRoles(t *testing.T) {
+	repo := new(mocks.RoleRepository)
+	repo.On("RestoreRoles", mock.AnythingOfType("[]int")).Return(int64(3), nil).Once()
+	u := NewRoleUseCase(repo)
+	rs, err := u.RestoreRoles([]int{1, 2, 3})
+	assert.NoError(t, err)
+	assert.Equal(t, int64(3), rs)
+}

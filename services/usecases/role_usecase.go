@@ -41,3 +41,7 @@ func (r *roleUseCase) DeleteRoles(focus string, id []int) (int64, error) {
 	rs, err := r.roleRepo.DeleteRoles(focus, id)
 	return rs, err
 }
+func (r *roleUseCase) RestoreRoles(id []int) (int64, error) {
+	rs, err := r.roleRepo.RestoreRoles(id)
+	return rs, err
+}

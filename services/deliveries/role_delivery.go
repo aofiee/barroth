@@ -29,7 +29,7 @@ type (
 		SortField string `json:"field" form:"field" validate:"eq=id|eq=name|eq=email|eq=password|eq=telephone|eq=uuid|eq=user_role_id|eq=status"`
 		Focus     string `json:"focus" form:"focus" validate:"eq=inbox|eq=trash"`
 	}
-	paramDeleteRoles struct {
+	paramRequestRolesID struct {
 		RoleID []int `json:"role_id" validate:"required"`
 	}
 )
@@ -61,7 +61,7 @@ func (r *roleHandler) NewRole(c *fiber.Ctx) error {
 	}
 	errorResponse := helpers.ValidateStruct(&role)
 	if errorResponse != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+		return c.Status(fiber.StatusNotAcceptable).JSON(fiber.Map{
 			"msg":   "input error.",
 			"error": errorResponse,
 		})
@@ -122,7 +122,7 @@ func (r *roleHandler) GetAllRoles(c *fiber.Ctx) error {
 	json.Unmarshal(p, &param)
 	errorResponse := helpers.ValidateStruct(&param)
 	if errorResponse != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+		return c.Status(fiber.StatusNotAcceptable).JSON(fiber.Map{
 			"msg":   "input error.",
 			"error": errorResponse,
 		})
@@ -143,14 +143,14 @@ func (r *roleHandler) DeleteRoles(c *fiber.Ctx) error {
 	if focus == "" {
 		focus = "inbox"
 	}
-	var params paramDeleteRoles
+	var params paramRequestRolesID
 	err := c.BodyParser(&params)
 	if err != nil {
 		return helpers.FailOnError(c, err, "cannot parse json", fiber.StatusBadRequest)
 	}
 	errs := helpers.ValidateStruct(&params)
 	if errs != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+		return c.Status(fiber.StatusNotAcceptable).JSON(fiber.Map{
 			"msg":   "input error.",
 			"error": errs,
 		})
@@ -161,6 +161,28 @@ func (r *roleHandler) DeleteRoles(c *fiber.Ctx) error {
 	}
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"msg":   "deleted " + strconv.FormatInt(rs, 10) + " roles successful.",
+		"error": nil,
+	})
+}
+func (r *roleHandler) RestoreRoles(c *fiber.Ctx) error {
+	var params paramRequestRolesID
+	err := c.BodyParser(&params)
+	if err != nil {
+		return helpers.FailOnError(c, err, "cannot parse json", fiber.StatusBadRequest)
+	}
+	errs := helpers.ValidateStruct(&params)
+	if errs != nil {
+		return c.Status(fiber.StatusNotAcceptable).JSON(fiber.Map{
+			"msg":   "input error.",
+			"error": errs,
+		})
+	}
+	rs, err := r.roleUseCase.RestoreRoles(params.RoleID)
+	if err != nil {
+		return helpers.FailOnError(c, err, "cannot restore roles", fiber.StatusBadRequest)
+	}
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"msg":   "restore " + strconv.FormatInt(rs, 10) + " roles successful.",
 		"error": nil,
 	})
 }

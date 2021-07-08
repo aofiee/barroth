@@ -169,3 +169,23 @@ func TestDeleteRoleFail(t *testing.T) {
 		assert.Error(t, err)
 	})
 }
+func TestRestoreRoleSuccess(t *testing.T) {
+	SetupMock(t)
+	repo := NewRoleRepository(databases.DB)
+	assert.Equal(t, "*repositories.roleRepository", reflect.TypeOf(repo).String(), "new repo")
+
+	t.Run("TEST_RESTORE_SUCCESS", func(t *testing.T) {
+		mock.ExpectBegin()
+		mock.ExpectExec("UPDATE `role_items`").WillReturnResult(sqlmock.NewResult(1, 3))
+		mock.ExpectCommit()
+		_, err := repo.RestoreRoles([]int{1, 2, 3})
+		assert.NoError(t, err)
+
+		mock.ExpectBegin()
+		mock.ExpectExec("UPDATE `role_items`").WillReturnError(errors.New("error"))
+		mock.ExpectCommit()
+		_, err = repo.RestoreRoles([]int{1, 2, 3})
+		assert.Error(t, err)
+	})
+
+}

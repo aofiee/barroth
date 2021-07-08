@@ -82,3 +82,10 @@ func (r *roleRepository) DeleteRoles(focus string, id []int) (int64, error) {
 	}
 	return rs.RowsAffected, nil
 }
+func (r *roleRepository) RestoreRoles(id []int) (int64, error) {
+	rs := r.conn.Unscoped().Model(&models.RoleItems{}).Where("id IN ?", id).Update("deleted_at", nil)
+	if rs.Error != nil {
+		return 0, rs.Error
+	}
+	return rs.RowsAffected, nil
+}
