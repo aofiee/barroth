@@ -20,7 +20,7 @@ const (
 func TestCreateModule(t *testing.T) {
 	SetupMock(t)
 	repo := NewModuleRepository(databases.DB)
-	assert.Equal(t, modelRepositoryType, reflect.TypeOf(repo).String(), "new repo")
+	assert.Equal(t, modelRepositoryType, reflect.TypeOf(repo).String(), "TestCreateModule")
 	module := models.Modules{
 		Name:        modelName,
 		Description: modelName,
@@ -32,7 +32,7 @@ func TestCreateModule(t *testing.T) {
 	assert.NoError(t, err)
 
 	mock.ExpectBegin()
-	mock.ExpectExec("INSERT INTO `modules` ").WillReturnError(errors.New("error"))
+	mock.ExpectExec("INSERT INTO `modules` ").WillReturnError(errors.New("error TestCreateModule"))
 	mock.ExpectCommit()
 	err = repo.CreateModule(&module)
 	assert.Error(t, err)
@@ -41,7 +41,7 @@ func TestCreateModule(t *testing.T) {
 func TestUpdateModule(t *testing.T) {
 	SetupMock(t)
 	repo := NewModuleRepository(databases.DB)
-	assert.Equal(t, modelRepositoryType, reflect.TypeOf(repo).String(), "new repo")
+	assert.Equal(t, modelRepositoryType, reflect.TypeOf(repo).String(), "TestUpdateModule")
 	module := models.Modules{
 		Name:        modelName,
 		Description: modelName,
@@ -53,7 +53,7 @@ func TestUpdateModule(t *testing.T) {
 	assert.NoError(t, err)
 
 	mock.ExpectBegin()
-	mock.ExpectExec("UPDATE `modules`").WillReturnError(errors.New("error"))
+	mock.ExpectExec("UPDATE `modules`").WillReturnError(errors.New("error TestUpdateModule"))
 	mock.ExpectCommit()
 	err = repo.UpdateModule(&module, "1")
 	assert.Error(t, err)
@@ -62,7 +62,7 @@ func TestUpdateModule(t *testing.T) {
 func TestGetModule(t *testing.T) {
 	SetupMock(t)
 	repo := NewModuleRepository(databases.DB)
-	assert.Equal(t, modelRepositoryType, reflect.TypeOf(repo).String(), "new repo")
+	assert.Equal(t, modelRepositoryType, reflect.TypeOf(repo).String(), "TestGetModule")
 	module := models.Modules{
 		Name:        modelName,
 		Description: modelName,
@@ -75,7 +75,7 @@ func TestGetModule(t *testing.T) {
 	assert.NoError(t, err)
 
 	mock.ExpectQuery("^SELECT (.+) FROM `modules`*").WithArgs("1").
-		WillReturnError(errors.New("error"))
+		WillReturnError(errors.New("error TestGetModule"))
 	err = repo.GetModule(&module, "1")
 	assert.Error(t, err)
 }

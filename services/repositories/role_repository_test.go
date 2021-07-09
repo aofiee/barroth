@@ -78,7 +78,7 @@ func TestGetAllRoles(t *testing.T) {
 		assert.NoError(t, err)
 
 		mock.ExpectQuery("^SELECT (.+) FROM `role_items`*").
-			WillReturnError(errors.New("error TestGetAllRoles"))
+			WillReturnError(errors.New("error TestGetAllRoles Inbox "))
 		err = repo.GetAllRoles(&roles, "all", "asc", "id", "1", "10", "inbox")
 		assert.Error(t, err)
 
@@ -88,7 +88,7 @@ func TestGetAllRoles(t *testing.T) {
 		assert.NoError(t, err)
 
 		mock.ExpectQuery("^SELECT (.+) FROM `role_items`*").
-			WillReturnError(errors.New("error TestGetAllRoles"))
+			WillReturnError(errors.New("error TestGetAllRoles Inbox with Keyword"))
 		err = repo.GetAllRoles(&roles, "Admin", "asc", "id", "1", "10", "inbox")
 		assert.Error(t, err)
 	})
@@ -99,7 +99,7 @@ func TestGetAllRoles(t *testing.T) {
 		assert.NoError(t, err)
 
 		mock.ExpectQuery("^SELECT (.+) FROM `role_items`*").
-			WillReturnError(errors.New("error TestGetAllRoles"))
+			WillReturnError(errors.New("error TestGetAllRoles Trash"))
 		err = repo.GetAllRoles(&roles, "all", "asc", "id", "1", "10", "trash")
 		assert.Error(t, err)
 
@@ -109,7 +109,7 @@ func TestGetAllRoles(t *testing.T) {
 		assert.NoError(t, err)
 
 		mock.ExpectQuery("^SELECT (.+) FROM `role_items`*").
-			WillReturnError(errors.New("error TestGetAllRoles"))
+			WillReturnError(errors.New("error TestGetAllRoles Trash with Keyword"))
 		err = repo.GetAllRoles(&roles, "Admin", "asc", "id", "1", "10", "trash")
 		assert.Error(t, err)
 	})
