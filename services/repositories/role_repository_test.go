@@ -190,5 +190,4 @@ func TestRestoreRoleSuccess(t *testing.T) {
 		_, err = repo.RestoreRoles([]int{1, 2, 3})
 		assert.Error(t, err)
 	})
-
 }
