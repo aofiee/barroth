@@ -10,14 +10,21 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
+const (
+	moduleModelType = "*models.Modules"
+	moduleName      = "Test"
+	moduleDesc      = "Test"
+	moduleSlug      = "/test"
+)
+
 func TestCreateModule(t *testing.T) {
 	repo := new(mocks.ModuleRepository)
 	module := models.Modules{
-		Name:        "test",
-		Description: "test",
-		ModuleSlug:  "/test",
+		Name:        moduleName,
+		Description: moduleDesc,
+		ModuleSlug:  moduleSlug,
 	}
-	repo.On("CreateModule", mock.AnythingOfType("*models.Modules")).Return(nil).Once()
+	repo.On("CreateModule", mock.AnythingOfType(moduleModelType)).Return(nil).Once()
 	u := NewModuleUseCase(repo)
 	err := u.CreateModule(&module)
 	assert.NoError(t, err)
@@ -26,12 +33,12 @@ func TestCreateModule(t *testing.T) {
 func TestUpdateModuleSuccess(t *testing.T) {
 	repo := new(mocks.ModuleRepository)
 	module := models.Modules{
-		Name:        "test",
-		Description: "test",
-		ModuleSlug:  "/test",
+		Name:        moduleName,
+		Description: moduleDesc,
+		ModuleSlug:  moduleSlug,
 	}
-	repo.On("GetModule", mock.AnythingOfType("*models.Modules"), mock.Anything).Return(nil).Once()
-	repo.On("UpdateModule", mock.AnythingOfType("*models.Modules"), mock.Anything).Return(nil).Once()
+	repo.On("GetModule", mock.AnythingOfType(moduleModelType), mock.Anything).Return(nil).Once()
+	repo.On("UpdateModule", mock.AnythingOfType(moduleModelType), mock.Anything).Return(nil).Once()
 	u := NewModuleUseCase(repo)
 	err := u.UpdateModule(&module, "xx")
 	assert.NoError(t, err)
@@ -40,11 +47,11 @@ func TestUpdateModuleSuccess(t *testing.T) {
 func TestUpdateModuleFail(t *testing.T) {
 	repo := new(mocks.ModuleRepository)
 	module := models.Modules{
-		Name:        "test",
-		Description: "test",
-		ModuleSlug:  "/test",
+		Name:        moduleName,
+		Description: moduleDesc,
+		ModuleSlug:  moduleSlug,
 	}
-	repo.On("GetModule", mock.AnythingOfType("*models.Modules"), mock.Anything).Return(errors.New("error")).Once()
+	repo.On("GetModule", mock.AnythingOfType(moduleModelType), mock.Anything).Return(errors.New("error")).Once()
 	u := NewModuleUseCase(repo)
 	err := u.UpdateModule(&module, "xx")
 	assert.Error(t, err)
@@ -53,11 +60,11 @@ func TestUpdateModuleFail(t *testing.T) {
 func TestGetModule(t *testing.T) {
 	repo := new(mocks.ModuleRepository)
 	module := models.Modules{
-		Name:        "test",
-		Description: "test",
-		ModuleSlug:  "/test",
+		Name:        moduleName,
+		Description: moduleDesc,
+		ModuleSlug:  moduleSlug,
 	}
-	repo.On("GetModule", mock.AnythingOfType("*models.Modules"), mock.Anything).Return(nil).Once()
+	repo.On("GetModule", mock.AnythingOfType(moduleModelType), mock.Anything).Return(nil).Once()
 	u := NewModuleUseCase(repo)
 	err := u.GetModule(&module, "/test")
 	assert.NoError(t, err)
