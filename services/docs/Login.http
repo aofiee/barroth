@@ -3,7 +3,7 @@
 @host = {{hostname}}:{{port}}
 @contentType = application/json
 @accessToken = 
-@refreshToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb250ZXh0IjpudWxsLCJleHAiOjE2MjU0OTAzODgsImlhdCI6MTYyNDg4NTU4OCwiaXNzIjoiRGlhYmxvcyIsInJlZnJlc2hfdXVpZCI6IjU1YTczMmRlLWRhZjYtNGEwMS04YzdlLTMwY2U3NmIwY2MzNSIsInN1YiI6ImQ4NDYzZjU2LTZlOWItNGRmMC05ZWEzLTM3YjhjMjlmOGI0MSJ9.DCzqr71ASgSPGTi_0OfXPLouwvkHPyWoSOLs7NVL4ds
+@refreshToken = 
 ###
 GET http://{{host}}/
 Content-Type: {{contentType}}
