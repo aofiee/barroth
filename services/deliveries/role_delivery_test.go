@@ -17,9 +17,8 @@ import (
 )
 
 const (
-	mockType      = "*models.RoleItems"
-	mockTypeSlice = "*[]models.RoleItems"
-	contentType   = "application/json"
+	mockRoleType      = "*models.RoleItems"
+	mockRoleTypeSlice = "*[]models.RoleItems"
 )
 
 func RoleMockSetup(t *testing.T) (mockUseCase *mocks.RoleUseCase, handler *roleHandler) {
@@ -39,7 +38,7 @@ func TestNewHandlerSuccess(t *testing.T) {
 	data, _ := json.Marshal(&params)
 	payload := bytes.NewReader(data)
 	mockUseCase, handler := RoleMockSetup(t)
-	mockUseCase.On("CreateRole", mock.AnythingOfType(mockType)).Return(nil)
+	mockUseCase.On("CreateRole", mock.AnythingOfType(mockRoleType)).Return(nil)
 
 	app := fiber.New()
 	app.Post("/role", handler.NewRole)
@@ -78,7 +77,7 @@ func TestNewHandlerFail(t *testing.T) {
 	data, _ := json.Marshal(&params)
 	payload := bytes.NewReader(data)
 	mockUseCase, handler := RoleMockSetup(t)
-	mockUseCase.On("CreateRole", mock.AnythingOfType(mockType)).Return(errors.New("error"))
+	mockUseCase.On("CreateRole", mock.AnythingOfType(mockRoleType)).Return(errors.New("error"))
 
 	app := fiber.New()
 	app.Post("/role", handler.NewRole)
@@ -92,7 +91,7 @@ func TestNewHandlerFail(t *testing.T) {
 }
 func TestGetAllRolesSuccess(t *testing.T) {
 	mockUseCase, handler := RoleMockSetup(t)
-	mockUseCase.On("GetAllRoles", mock.AnythingOfType(mockTypeSlice), "all", "asc", "id", "0", "10", "inbox").Return(nil)
+	mockUseCase.On("GetAllRoles", mock.AnythingOfType(mockRoleTypeSlice), "all", "asc", "id", "0", "10", "inbox").Return(nil)
 	app := fiber.New()
 	app.Get("/roles", handler.GetAllRoles)
 	req, err := http.NewRequest("GET", "/roles", nil)
@@ -104,7 +103,7 @@ func TestGetAllRolesSuccess(t *testing.T) {
 }
 func TestGetAllRolesFail(t *testing.T) {
 	mockUseCase, handler := RoleMockSetup(t)
-	mockUseCase.On("GetAllRoles", mock.AnythingOfType(mockTypeSlice), "all", "asc", "id", "0", "10", "inbox").Return(errors.New("error"))
+	mockUseCase.On("GetAllRoles", mock.AnythingOfType(mockRoleTypeSlice), "all", "asc", "id", "0", "10", "inbox").Return(errors.New("error"))
 	app := fiber.New()
 	app.Get("/roles", handler.GetAllRoles)
 	req, err := http.NewRequest("GET", "/roles", nil)
@@ -114,7 +113,7 @@ func TestGetAllRolesFail(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, 400, resp.StatusCode, "completed")
 
-	mockUseCase.On("GetAllRoles", mock.AnythingOfType(mockTypeSlice), "all", "asc", "id", "0", "10", "inbox").Return(errors.New("error"))
+	mockUseCase.On("GetAllRoles", mock.AnythingOfType(mockRoleTypeSlice), "all", "asc", "id", "0", "10", "inbox").Return(errors.New("error"))
 	app.Get("/roles", handler.GetAllRoles)
 	req, err = http.NewRequest("GET", "/roles?sort=abab", nil)
 	assert.NoError(t, err)
@@ -264,7 +263,7 @@ func TestRestoreRolesJsonFail(t *testing.T) {
 }
 func TestGetRoleSuccess(t *testing.T) {
 	mockUseCase, handler := RoleMockSetup(t)
-	mockUseCase.On("GetRole", mock.AnythingOfType(mockType), mock.Anything).Return(nil)
+	mockUseCase.On("GetRole", mock.AnythingOfType(mockRoleType), mock.Anything).Return(nil)
 	app := fiber.New()
 	app.Get("/role/:id", handler.GetRole)
 	req, err := http.NewRequest("GET", "/role/2", nil)
@@ -276,7 +275,7 @@ func TestGetRoleSuccess(t *testing.T) {
 }
 func TestGetRoleFail(t *testing.T) {
 	mockUseCase, handler := RoleMockSetup(t)
-	mockUseCase.On("GetRole", mock.AnythingOfType(mockType), mock.Anything).Return(errors.New("error"))
+	mockUseCase.On("GetRole", mock.AnythingOfType(mockRoleType), mock.Anything).Return(errors.New("error"))
 	app := fiber.New()
 	app.Get("/role/:id", handler.GetRole)
 	req, err := http.NewRequest("GET", "/role/2", nil)
@@ -294,7 +293,7 @@ func TestUpdateRoleSuccess(t *testing.T) {
 	data, _ := json.Marshal(&params)
 	payload := bytes.NewReader(data)
 	mockUseCase, handler := RoleMockSetup(t)
-	mockUseCase.On("UpdateRole", mock.AnythingOfType(mockType), mock.Anything).Return(nil)
+	mockUseCase.On("UpdateRole", mock.AnythingOfType(mockRoleType), mock.Anything).Return(nil)
 
 	app := fiber.New()
 	app.Put("/role/:id", handler.UpdateRole)
@@ -313,7 +312,7 @@ func TestUpdateRoleFail(t *testing.T) {
 	data, _ := json.Marshal(&params)
 	payload := bytes.NewReader(data)
 	mockUseCase, handler := RoleMockSetup(t)
-	mockUseCase.On("UpdateRole", mock.AnythingOfType(mockType), mock.Anything).Return(errors.New("error"))
+	mockUseCase.On("UpdateRole", mock.AnythingOfType(mockRoleType), mock.Anything).Return(errors.New("error"))
 
 	app := fiber.New()
 	app.Put("/role/:id", handler.UpdateRole)
@@ -326,7 +325,7 @@ func TestUpdateRoleFail(t *testing.T) {
 }
 func TestUpdateRoleJsonFail(t *testing.T) {
 	mockUseCase, handler := RoleMockSetup(t)
-	mockUseCase.On("UpdateRole", mock.AnythingOfType(mockType), mock.Anything).Return(nil)
+	mockUseCase.On("UpdateRole", mock.AnythingOfType(mockRoleType), mock.Anything).Return(nil)
 
 	app := fiber.New()
 	app.Put("/role/:id", handler.UpdateRole)
@@ -345,7 +344,7 @@ func TestUpdateRoleValidateFail(t *testing.T) {
 	data, _ := json.Marshal(&params)
 	payload := bytes.NewReader(data)
 	mockUseCase, handler := RoleMockSetup(t)
-	mockUseCase.On("UpdateRole", mock.AnythingOfType(mockType), mock.Anything).Return(errors.New("error"))
+	mockUseCase.On("UpdateRole", mock.AnythingOfType(mockRoleType), mock.Anything).Return(errors.New("error"))
 
 	app := fiber.New()
 	app.Put("/role/:id", handler.UpdateRole)

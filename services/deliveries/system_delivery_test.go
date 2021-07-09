@@ -25,6 +25,12 @@ var (
 	smock sqlmock.Sqlmock
 )
 
+const (
+	contentType         = "application/json"
+	mockSystemType      = "*models.System"
+	mockSystemTypeSlice = "*[]models.System"
+)
+
 func SetupMock(t *testing.T) {
 	var err error
 	barroth_config.ENV, err = barroth_config.LoadConfig("../")
@@ -61,14 +67,14 @@ func SystemMockSetup(t *testing.T) (mockUseCase *mocks.SystemUseCase, sysHandler
 }
 func TestNewSystemHandelrInstallingCompleted(t *testing.T) {
 	mockUseCase, sysHandler := SystemMockSetup(t)
-	mockUseCase.On("GetFirstSystemInstallation", mock.AnythingOfType("*models.System")).Return(errors.New("hello world"))
+	mockUseCase.On("GetFirstSystemInstallation", mock.AnythingOfType(mockSystemType)).Return(errors.New("hello world"))
 
-	mockUseCase.On("CreateSystem", mock.AnythingOfType("*models.System")).Return(nil)
+	mockUseCase.On("CreateSystem", mock.AnythingOfType(mockSystemType)).Return(nil)
 
 	app := fiber.New()
 	app.Get("/install", sysHandler.SystemInstallation)
 	req, err := http.NewRequest("GET", "/install", nil)
-	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Content-Type", contentType)
 	assert.NoError(t, err)
 	resp, err := app.Test(req)
 	assert.NoError(t, err)
@@ -76,12 +82,12 @@ func TestNewSystemHandelrInstallingCompleted(t *testing.T) {
 }
 func TestNewSystemHandelrInstallingFailed(t *testing.T) {
 	mockUseCase, sysHandler := SystemMockSetup(t)
-	mockUseCase.On("GetFirstSystemInstallation", mock.AnythingOfType("*models.System")).Return(errors.New("error"))
-	mockUseCase.On("CreateSystem", mock.AnythingOfType("*models.System")).Return(errors.New("error"))
+	mockUseCase.On("GetFirstSystemInstallation", mock.AnythingOfType(mockSystemType)).Return(errors.New("error"))
+	mockUseCase.On("CreateSystem", mock.AnythingOfType(mockSystemType)).Return(errors.New("error"))
 	app := fiber.New()
 	app.Get("/install", sysHandler.SystemInstallation)
 	req, err := http.NewRequest("GET", "/install", nil)
-	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Content-Type", contentType)
 	assert.NoError(t, err)
 	resp, err := app.Test(req)
 	assert.NoError(t, err)
@@ -89,11 +95,11 @@ func TestNewSystemHandelrInstallingFailed(t *testing.T) {
 }
 func TestNewSystemHandelrInstalled(t *testing.T) {
 	mockUseCase, sysHandler := SystemMockSetup(t)
-	mockUseCase.On("GetFirstSystemInstallation", mock.AnythingOfType("*models.System")).Return(nil)
+	mockUseCase.On("GetFirstSystemInstallation", mock.AnythingOfType(mockSystemType)).Return(nil)
 	app := fiber.New()
 	app.Get("/install", sysHandler.SystemInstallation)
 	req, err := http.NewRequest("GET", "/install", nil)
-	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Content-Type", contentType)
 	assert.NoError(t, err)
 	resp, err := app.Test(req)
 	assert.NoError(t, err)

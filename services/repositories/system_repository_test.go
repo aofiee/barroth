@@ -20,6 +20,12 @@ var (
 	mock sqlmock.Sqlmock
 )
 
+const (
+	systemRepositoryType = "*repositories.systemRepository"
+	appName              = "Test"
+	appUrl               = "http://"
+)
+
 func SetupMock(t *testing.T) {
 	var err error
 	barroth_config.ENV, err = barroth_config.LoadConfig("../")
@@ -37,7 +43,7 @@ func SetupMock(t *testing.T) {
 	})
 	rows := mock.NewRows([]string{"VERSION()"}).
 		AddRow("5.7.34")
-	assert.Equal(t, "*sqlmock.Rows", reflect.TypeOf(rows).String(), "new row")
+	assert.Equal(t, "*sqlmock.Rows", reflect.TypeOf(rows).String(), "SetupMock")
 	mock.ExpectQuery("SELECT VERSION()").
 		WillReturnRows(rows)
 	databases.DB, err = gorm.Open(dial, &gorm.Config{})
@@ -48,10 +54,10 @@ func SetupMock(t *testing.T) {
 func TestCreateSystem(t *testing.T) {
 	SetupMock(t)
 	repo := NewSystemRepository(databases.DB)
-	assert.Equal(t, "*repositories.systemRepository", reflect.TypeOf(repo).String(), "new repo")
+	assert.Equal(t, systemRepositoryType, reflect.TypeOf(repo).String(), "TestCreateSystem")
 	sys := models.System{
-		AppName:   "Test",
-		SiteURL:   "http://",
+		AppName:   appName,
+		SiteURL:   appUrl,
 		IsInstall: 0,
 	}
 	mock.ExpectBegin()
@@ -61,7 +67,7 @@ func TestCreateSystem(t *testing.T) {
 	assert.NoError(t, err)
 
 	mock.ExpectBegin()
-	mock.ExpectExec("INSERT INTO `system` ").WillReturnError(errors.New("error"))
+	mock.ExpectExec("INSERT INTO `system` ").WillReturnError(errors.New("error TestCreateSystem"))
 	mock.ExpectCommit()
 	err = repo.CreateSystem(&sys)
 	assert.Error(t, err)
@@ -69,31 +75,31 @@ func TestCreateSystem(t *testing.T) {
 func TestGetSystem(t *testing.T) {
 	SetupMock(t)
 	repo := NewSystemRepository(databases.DB)
-	assert.Equal(t, "*repositories.systemRepository", reflect.TypeOf(repo).String(), "new repo")
+	assert.Equal(t, systemRepositoryType, reflect.TypeOf(repo).String(), "TestGetSystem")
 	sys := models.System{
-		AppName:   "Test",
-		SiteURL:   "http://",
+		AppName:   appName,
+		SiteURL:   appUrl,
 		IsInstall: 0,
 	}
 	columns := []string{"id", "created_at", "updated_at", "deleted_at", "app_name", "site_url", "is_install"}
 
 	mock.ExpectQuery("^SELECT (.+) FROM `system`*").WithArgs("1").
-		WillReturnRows(sqlmock.NewRows(columns).AddRow(1, nil, nil, nil, "Test", "http://", 0))
+		WillReturnRows(sqlmock.NewRows(columns).AddRow(1, nil, nil, nil, appName, appUrl, 0))
 	err := repo.GetSystem(&sys, "1")
 	assert.NoError(t, err)
 
 	mock.ExpectQuery("^SELECT (.+) FROM `system`*").WithArgs("1").
-		WillReturnError(errors.New("error"))
+		WillReturnError(errors.New("error TestGetSystem"))
 	err = repo.GetSystem(&sys, "1")
 	assert.Error(t, err)
 }
 func TestUpdateSystem(t *testing.T) {
 	SetupMock(t)
 	repo := NewSystemRepository(databases.DB)
-	assert.Equal(t, "*repositories.systemRepository", reflect.TypeOf(repo).String(), "new repo")
+	assert.Equal(t, systemRepositoryType, reflect.TypeOf(repo).String(), "TestUpdateSystem")
 	sys := models.System{
-		AppName:   "Test",
-		SiteURL:   "http://",
+		AppName:   appName,
+		SiteURL:   appUrl,
 		IsInstall: 0,
 	}
 	mock.ExpectBegin()
@@ -103,7 +109,7 @@ func TestUpdateSystem(t *testing.T) {
 	assert.NoError(t, err)
 
 	mock.ExpectBegin()
-	mock.ExpectExec("UPDATE `system`").WillReturnError(errors.New("error"))
+	mock.ExpectExec("UPDATE `system`").WillReturnError(errors.New("error TestUpdateSystem"))
 	mock.ExpectCommit()
 	err = repo.UpdateSystem(&sys, "1")
 	assert.Error(t, err)
@@ -111,21 +117,21 @@ func TestUpdateSystem(t *testing.T) {
 func TestGetFirstSystemInstallation(t *testing.T) {
 	SetupMock(t)
 	repo := NewSystemRepository(databases.DB)
-	assert.Equal(t, "*repositories.systemRepository", reflect.TypeOf(repo).String(), "new repo")
+	assert.Equal(t, systemRepositoryType, reflect.TypeOf(repo).String(), "TestGetFirstSystemInstallation")
 	sys := models.System{
-		AppName:   "Test",
-		SiteURL:   "http://",
+		AppName:   appName,
+		SiteURL:   appUrl,
 		IsInstall: 0,
 	}
 	columns := []string{"id", "created_at", "updated_at", "deleted_at", "app_name", "site_url", "is_install"}
 
 	mock.ExpectQuery("^SELECT (.+) FROM `system` WHERE `system`.`deleted_at` IS NULL ORDER BY `system`.`id` LIMIT 1").
-		WillReturnRows(sqlmock.NewRows(columns).AddRow(1, nil, nil, nil, "Test", "http://", 0))
+		WillReturnRows(sqlmock.NewRows(columns).AddRow(1, nil, nil, nil, appName, appUrl, 0))
 	err := repo.GetFirstSystemInstallation(&sys)
 	assert.NoError(t, err)
 
 	mock.ExpectQuery("^SELECT (.+) FROM `system` WHERE `system`.`deleted_at` IS NULL ORDER BY `system`.`id` LIMIT 1").
-		WillReturnError(errors.New("error"))
+		WillReturnError(errors.New("error TestGetFirstSystemInstallation"))
 	err = repo.GetFirstSystemInstallation(&sys)
 	assert.Error(t, err)
 }

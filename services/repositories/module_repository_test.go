@@ -11,13 +11,19 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+const (
+	modelRepositoryType = "*repositories.moduleRepository"
+	modelName           = "Test"
+	modelDesc           = "Description"
+)
+
 func TestCreateModule(t *testing.T) {
 	SetupMock(t)
 	repo := NewModuleRepository(databases.DB)
-	assert.Equal(t, "*repositories.moduleRepository", reflect.TypeOf(repo).String(), "new repo")
+	assert.Equal(t, modelRepositoryType, reflect.TypeOf(repo).String(), "new repo")
 	module := models.Modules{
-		Name:        "Test",
-		Description: "Test",
+		Name:        modelName,
+		Description: modelName,
 	}
 	mock.ExpectBegin()
 	mock.ExpectExec("INSERT INTO `modules` ").WillReturnResult(sqlmock.NewResult(1, 1))
@@ -35,10 +41,10 @@ func TestCreateModule(t *testing.T) {
 func TestUpdateModule(t *testing.T) {
 	SetupMock(t)
 	repo := NewModuleRepository(databases.DB)
-	assert.Equal(t, "*repositories.moduleRepository", reflect.TypeOf(repo).String(), "new repo")
+	assert.Equal(t, modelRepositoryType, reflect.TypeOf(repo).String(), "new repo")
 	module := models.Modules{
-		Name:        "Test",
-		Description: "Test",
+		Name:        modelName,
+		Description: modelName,
 	}
 	mock.ExpectBegin()
 	mock.ExpectExec("UPDATE `modules`").WillReturnResult(sqlmock.NewResult(1, 1))
@@ -56,15 +62,15 @@ func TestUpdateModule(t *testing.T) {
 func TestGetModule(t *testing.T) {
 	SetupMock(t)
 	repo := NewModuleRepository(databases.DB)
-	assert.Equal(t, "*repositories.moduleRepository", reflect.TypeOf(repo).String(), "new repo")
+	assert.Equal(t, modelRepositoryType, reflect.TypeOf(repo).String(), "new repo")
 	module := models.Modules{
-		Name:        "Test",
-		Description: "Test",
+		Name:        modelName,
+		Description: modelName,
 	}
 	columns := []string{"id", "created_at", "updated_at", "deleted_at", "name", "description", "module_slug"}
 
 	mock.ExpectQuery("^SELECT (.+) FROM `modules`*").WithArgs("1").
-		WillReturnRows(sqlmock.NewRows(columns).AddRow(1, nil, nil, nil, "Test", "Desc", "/url"))
+		WillReturnRows(sqlmock.NewRows(columns).AddRow(1, nil, nil, nil, modelName, "Desc", "/url"))
 	err := repo.GetModule(&module, "1")
 	assert.NoError(t, err)
 
