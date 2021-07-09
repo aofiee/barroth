@@ -17,14 +17,17 @@ const (
 	roleDesc           = "Description"
 )
 
+func getRole(name, desc string) models.RoleItems {
+	return models.RoleItems{
+		Name:        name,
+		Description: desc,
+	}
+}
 func TestCreateRole(t *testing.T) {
 	SetupMock(t)
 	repo := NewRoleRepository(databases.DB)
 	assert.Equal(t, roleRepositoryType, reflect.TypeOf(repo).String(), "TestCreateRole")
-	role := models.RoleItems{
-		Name:        roleName,
-		Description: roleDesc,
-	}
+	role := getRole(roleName, roleDesc)
 	mock.ExpectBegin()
 	mock.ExpectExec("INSERT INTO `role_items` ").WillReturnResult(sqlmock.NewResult(1, 1))
 	mock.ExpectCommit()
@@ -42,10 +45,7 @@ func TestGetRole(t *testing.T) {
 	SetupMock(t)
 	repo := NewRoleRepository(databases.DB)
 	assert.Equal(t, roleRepositoryType, reflect.TypeOf(repo).String(), "TestGetRole")
-	role := models.RoleItems{
-		Name:        roleName,
-		Description: roleDesc,
-	}
+	role := getRole(roleName, roleDesc)
 	columns := []string{"id", "created_at", "updated_at", "deleted_at", "name", "description"}
 
 	mock.ExpectQuery("^SELECT (.+) FROM `role_items`*").WithArgs("1").
@@ -120,10 +120,7 @@ func TestUpdateRole(t *testing.T) {
 	// now := time.Now()
 	repo := NewRoleRepository(databases.DB)
 	assert.Equal(t, roleRepositoryType, reflect.TypeOf(repo).String(), TestUpdateRole)
-	role := models.RoleItems{
-		Name:        roleName,
-		Description: roleName,
-	}
+	role := getRole(roleName, roleDesc)
 	mock.ExpectBegin()
 	mock.ExpectExec("UPDATE `role_items`").WillReturnResult(sqlmock.NewResult(1, 1))
 	mock.ExpectCommit()
