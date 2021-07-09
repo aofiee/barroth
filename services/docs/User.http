@@ -72,8 +72,6 @@ Authorization: Bearer {{accessToken}}
 {
     "users_id":[
         "87344be5-f4a0-4222-8a78-be55e584ec17",
-        "26dbf16e-1f5c-481c-a5a5-4442b531ba58",
-        "35edc017-3337-4bc3-82b1-d2be52c6d0e5"
     ]
 }
 
