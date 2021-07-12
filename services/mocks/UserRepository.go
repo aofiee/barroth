@@ -47,8 +47,8 @@ func (_m *UserRepository) DeleteUsers(focus string, id []int) (int64, error) {
 	return r0, r1
 }
 
-// GetAllUser provides a mock function with given fields: m, keyword, sorting, sortField, page, limit, focus
-func (_m *UserRepository) GetAllUser(m *[]models.Users, keyword string, sorting string, sortField string, page string, limit string, focus string) error {
+// GetAllUsers provides a mock function with given fields: m, keyword, sorting, sortField, page, limit, focus
+func (_m *UserRepository) GetAllUsers(m *[]models.Users, keyword string, sorting string, sortField string, page string, limit string, focus string) error {
 	ret := _m.Called(m, keyword, sorting, sortField, page, limit, focus)
 
 	var r0 error

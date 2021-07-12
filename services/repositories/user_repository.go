@@ -29,7 +29,7 @@ func (u *userRepository) GetUser(m *models.Users, uuid string) error {
 	}
 	return nil
 }
-func (u *userRepository) GetAllUser(m *[]models.Users, keyword, sorting, sortField, page, limit, focus string) (err error) {
+func (u *userRepository) GetAllUsers(m *[]models.Users, keyword, sorting, sortField, page, limit, focus string) (err error) {
 	l, err := strconv.Atoi(limit)
 	if err != nil {
 		return err

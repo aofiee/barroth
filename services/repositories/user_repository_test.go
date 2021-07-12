@@ -13,10 +13,10 @@ import (
 
 const (
 	userRepositoryType = "*repositories.userRepository"
-	userEmail          = "Test"
-	userPassword       = ""
-	userFullName       = ""
-	userTelephone      = ""
+	userEmail          = "Test@test.com"
+	userPassword       = "password"
+	userFullName       = "Arashi L."
+	userTelephone      = "0925905444"
 )
 
 func getUser(email, password, name, telephone string) models.Users {
@@ -68,51 +68,51 @@ func TestGetAllUser(t *testing.T) {
 	var users []models.Users
 	columns := []string{"id", "created_at", "updated_at", "deleted_at", "email", "password", "name", "telephone", "image", "uuid", "status"}
 
-	err := repo.GetAllUser(&users, "all", "asc", "id", "xx", "10", "inbox")
+	err := repo.GetAllUsers(&users, "all", "asc", "id", "xx", "10", "inbox")
 	assert.Error(t, err)
 
-	err = repo.GetAllUser(&users, "all", "asc", "id", "1", "xx", "inbox")
+	err = repo.GetAllUsers(&users, "all", "asc", "id", "1", "xx", "inbox")
 	assert.Error(t, err)
 	t.Run("TEST_INBOX", func(t *testing.T) {
 		mock.ExpectQuery("^SELECT (.+) FROM `users`*").
 			WillReturnRows(sqlmock.NewRows(columns).AddRow(1, nil, nil, nil, userEmail, userPassword, userFullName, userTelephone, "image", "uuid", 0))
-		err = repo.GetAllUser(&users, "all", "asc", "id", "1", "10", "inbox")
+		err = repo.GetAllUsers(&users, "all", "asc", "id", "1", "10", "inbox")
 		assert.NoError(t, err)
 
 		mock.ExpectQuery("^SELECT (.+) FROM `users`*").
 			WillReturnError(errors.New("error TestGetAllUser Inbox "))
-		err = repo.GetAllUser(&users, "all", "asc", "id", "1", "10", "inbox")
+		err = repo.GetAllUsers(&users, "all", "asc", "id", "1", "10", "inbox")
 		assert.Error(t, err)
 
 		mock.ExpectQuery("^SELECT (.+) FROM `users`*").
 			WillReturnRows(sqlmock.NewRows(columns).AddRow(1, nil, nil, nil, userEmail, userPassword, userFullName, userTelephone, "image", "uuid", 0))
-		err = repo.GetAllUser(&users, "Admin", "asc", "id", "1", "10", "inbox")
+		err = repo.GetAllUsers(&users, "Admin", "asc", "id", "1", "10", "inbox")
 		assert.NoError(t, err)
 
 		mock.ExpectQuery("^SELECT (.+) FROM `users`*").
 			WillReturnError(errors.New("error TestGetAllUser Inbox with Keyword"))
-		err = repo.GetAllUser(&users, "Admin", "asc", "id", "1", "10", "inbox")
+		err = repo.GetAllUsers(&users, "Admin", "asc", "id", "1", "10", "inbox")
 		assert.Error(t, err)
 	})
 	t.Run("TEST_TRASH", func(t *testing.T) {
 		mock.ExpectQuery("^SELECT (.+) FROM `users`*").
 			WillReturnRows(sqlmock.NewRows(columns).AddRow(1, nil, nil, nil, userEmail, userPassword, userFullName, userTelephone, "image", "uuid", 0))
-		err = repo.GetAllUser(&users, "all", "asc", "id", "1", "10", "trash")
+		err = repo.GetAllUsers(&users, "all", "asc", "id", "1", "10", "trash")
 		assert.NoError(t, err)
 
 		mock.ExpectQuery("^SELECT (.+) FROM `users`*").
 			WillReturnError(errors.New("error TestGetAllUser Trash"))
-		err = repo.GetAllUser(&users, "all", "asc", "id", "1", "10", "trash")
+		err = repo.GetAllUsers(&users, "all", "asc", "id", "1", "10", "trash")
 		assert.Error(t, err)
 
 		mock.ExpectQuery("^SELECT (.+) FROM `users`*").
 			WillReturnRows(sqlmock.NewRows(columns).AddRow(1, nil, nil, nil, userEmail, userPassword, userFullName, userTelephone, "image", "uuid", 0))
-		err = repo.GetAllUser(&users, "Admin", "asc", "id", "1", "10", "trash")
+		err = repo.GetAllUsers(&users, "Admin", "asc", "id", "1", "10", "trash")
 		assert.NoError(t, err)
 
 		mock.ExpectQuery("^SELECT (.+) FROM `users`*").
 			WillReturnError(errors.New("error TestGetAllUser Trash with Keyword"))
-		err = repo.GetAllUser(&users, "Admin", "asc", "id", "1", "10", "trash")
+		err = repo.GetAllUsers(&users, "Admin", "asc", "id", "1", "10", "trash")
 		assert.Error(t, err)
 	})
 }
