@@ -119,7 +119,7 @@ func TestUpdateRole(t *testing.T) {
 	SetupMock(t)
 	// now := time.Now()
 	repo := NewRoleRepository(databases.DB)
-	assert.Equal(t, roleRepositoryType, reflect.TypeOf(repo).String(), TestUpdateRole)
+	assert.Equal(t, roleRepositoryType, reflect.TypeOf(repo).String(), "TestUpdateRole")
 	role := getRole(roleName, roleDesc)
 	mock.ExpectBegin()
 	mock.ExpectExec("UPDATE `role_items`").WillReturnResult(sqlmock.NewResult(1, 1))

@@ -285,6 +285,7 @@ func TestGetRoleFail(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, 400, resp.StatusCode, "completed")
 }
+
 func TestUpdateRoleSuccess(t *testing.T) {
 	params := models.RoleItems{
 		Name:        "TestUpdateRoleSuccess",

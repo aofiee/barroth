@@ -16,6 +16,9 @@ Authorization: Bearer {{accessToken}}
     "name": "Artist Manager",
     "description" : "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s"
 }
+###option
+OPTIONS  http://{{host}}/role
+
 ### Get Role
 GET http://{{host}}/role/2
 Content-Type: {{contentType}}
@@ -27,11 +30,11 @@ Content-Type: {{contentType}}
 Authorization: Bearer {{accessToken}}
 
 {
-    "name": "Artist Manager",
+    "name": "Artist2 Manager2",
     "description" : "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s"
 }
 ### Get All Roles
-GET http://{{host}}/roles?page=1&limit=10
+GET http://{{host}}/roles?page=1&limit=10&sort=asc&softing=name
 Content-Type: {{contentType}}
 Authorization: Bearer {{accessToken}}
 
@@ -59,7 +62,7 @@ Authorization: Bearer {{accessToken}}
 
 {
    "role_id":[
-      3
+      4
    ]
 }
 
@@ -70,7 +73,6 @@ Authorization: Bearer {{accessToken}}
 
 {
    "role_id":[
-      2,
-      4
+      2
    ]
 }
