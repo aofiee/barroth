@@ -1,5 +1,7 @@
 # Readme
 
+[![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=aofiee_golang-clean-architecture)](https://sonarcloud.io/dashboard?id=aofiee_golang-clean-architecture)
+
 Go fiber JWT token , refresh token on Redis
 
 ## Setup
@@ -26,10 +28,6 @@ Go fiber JWT token , refresh token on Redis
 > port 5672
 > http://localhost:15672/
 > user = guest , password = guest
-
-## https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html
-
-![](https://blog.cleancoder.com/uncle-bob/images/2012-08-13-the-clean-architecture/CleanArchitecture.jpg)
 
 ## Mock
 
