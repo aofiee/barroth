@@ -11,4 +11,6 @@ const (
 	ERR_CANNOT_DELETE_ROLE       = "cannot delete roles"
 	ERR_CANNOT_RESTORE_ROLES     = "cannot restore roles"
 	ERR_CANNOT_GET_ROLE_ID       = "cannot get role id "
+
+	ERR_CREATE_USER_SUCCESSFUL = "create user successful."
 )

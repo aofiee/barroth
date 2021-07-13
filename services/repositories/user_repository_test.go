@@ -61,6 +61,23 @@ func TestGetUser(t *testing.T) {
 	err = repo.GetUser(&user, "1")
 	assert.Error(t, err)
 }
+func TestGetUserByEmail(t *testing.T) {
+	SetupMock(t)
+	repo := NewUserRepository(databases.DB)
+	assert.Equal(t, userRepositoryType, reflect.TypeOf(repo).String(), "TestGetUserByEmail")
+	user := getUser(userEmail, userPassword, userFullName, userTelephone)
+	columns := []string{"id", "created_at", "updated_at", "deleted_at", "email", "password", "name", "telephone", "image", "uuid", "status"}
+
+	mock.ExpectQuery("^SELECT (.+) FROM `users`*").WithArgs(userEmail).
+		WillReturnRows(sqlmock.NewRows(columns).AddRow(1, nil, nil, nil, userEmail, userPassword, userFullName, userTelephone, "image", "uuid", 0))
+	err := repo.GetUserByEmail(&user, userEmail)
+	assert.NoError(t, err)
+
+	mock.ExpectQuery("^SELECT (.+) FROM `users`*").WithArgs(userEmail).
+		WillReturnError(errors.New("error TestGetUser"))
+	err = repo.GetUserByEmail(&user, userEmail)
+	assert.Error(t, err)
+}
 func TestGetAllUser(t *testing.T) {
 	SetupMock(t)
 	repo := NewUserRepository(databases.DB)

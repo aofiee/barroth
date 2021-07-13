@@ -1,8 +1,12 @@
 package usecases
 
 import (
+	"errors"
+
 	"github.com/aofiee/barroth/domains"
 	"github.com/aofiee/barroth/models"
+	"github.com/gofiber/fiber/v2/utils"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type (
@@ -17,8 +21,17 @@ func NewUserUseCase(repo domains.UserRepository) domains.UserUseCase {
 	}
 }
 func (u *userUseCase) CreateUser(user *models.Users) error {
-	err := u.userRepo.CreateUser(user)
-	return err
+	err := u.HashPassword(user)
+	if err != nil {
+		return err
+	}
+	err = u.userRepo.GetUserByEmail(user, user.Email)
+	if err != nil {
+		user.UUID = utils.UUIDv4()
+		err = u.userRepo.CreateUser(user)
+		return err
+	}
+	return errors.New("email is duplicated")
 }
 func (u *userUseCase) UpdateUser(user *models.Users, uuid string) error {
 	var chk models.Users
@@ -44,4 +57,13 @@ func (u *userUseCase) DeleteUsers(focus string, uuid []int) (int64, error) {
 func (u *userUseCase) RestoreUsers(uuid []int) (int64, error) {
 	rs, err := u.userRepo.RestoreUsers(uuid)
 	return rs, err
+}
+func (u *userUseCase) HashPassword(user *models.Users) error {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(user.Password), 14)
+	user.Password = string(bytes)
+	return err
+}
+func (u *userUseCase) CheckPasswordHash(user *models.Users, password string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	return err == nil
 }

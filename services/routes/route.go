@@ -12,5 +12,8 @@ func InitAllRoutes() *fiber.App {
 
 	role := NewRoleRoutes(barroth_config.ENV)
 	role.Install(app)
+
+	user := NewUserRoutes(barroth_config.ENV)
+	user.Install(app)
 	return app
 }

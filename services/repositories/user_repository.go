@@ -29,6 +29,12 @@ func (u *userRepository) GetUser(m *models.Users, uuid string) error {
 	}
 	return nil
 }
+func (u *userRepository) GetUserByEmail(m *models.Users, email string) (err error) {
+	if err := u.conn.Where("email = ?", email).First(m).Error; err != nil {
+		return err
+	}
+	return nil
+}
 func (u *userRepository) GetAllUsers(m *[]models.Users, keyword, sorting, sortField, page, limit, focus string) (err error) {
 	l, err := strconv.Atoi(limit)
 	if err != nil {

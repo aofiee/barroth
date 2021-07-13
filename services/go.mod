@@ -12,6 +12,7 @@ require (
 	github.com/spf13/viper v1.8.1
 	github.com/stretchr/objx v0.1.1 // indirect
 	github.com/stretchr/testify v1.7.0
+	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gorm.io/driver/mysql v1.1.1
 	gorm.io/gorm v1.21.11

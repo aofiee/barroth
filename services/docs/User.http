@@ -14,10 +14,10 @@ Content-Type: {{contentType}}
 Authorization: Bearer {{accessToken}}
 
 {
-    "email":"dsaasd@ssss",
+    "email":"khomkrid@twinsynergy.co.th",
     "password":"password",
-    "name":"Arnon Kidlerdpol",
-    "telephone":"1-881-603-5600",
+    "name":"Khomkrid Lerdprasert",
+    "telephone":"0925905444",
     "role_id":1
 }
 

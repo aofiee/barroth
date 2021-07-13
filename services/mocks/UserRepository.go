@@ -75,6 +75,20 @@ func (_m *UserRepository) GetUser(m *models.Users, id string) error {
 	return r0
 }
 
+// GetUserByEmail provides a mock function with given fields: m, email
+func (_m *UserRepository) GetUserByEmail(m *models.Users, email string) error {
+	ret := _m.Called(m, email)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(*models.Users, string) error); ok {
+		r0 = rf(m, email)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // RestoreUsers provides a mock function with given fields: id
 func (_m *UserRepository) RestoreUsers(id []int) (int64, error) {
 	ret := _m.Called(id)
