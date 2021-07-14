@@ -12,51 +12,16 @@ type AuthenticationUseCase struct {
 	mock.Mock
 }
 
-// Login provides a mock function with given fields: m, username, password
-func (_m *AuthenticationUseCase) Login(m *models.Users, username string, password string) error {
-	ret := _m.Called(m, username, password)
+// Login provides a mock function with given fields: m, email, password
+func (_m *AuthenticationUseCase) Login(m *models.Users, email string, password string) error {
+	ret := _m.Called(m, email, password)
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func(*models.Users, string, string) error); ok {
-		r0 = rf(m, username, password)
+		r0 = rf(m, email, password)
 	} else {
 		r0 = ret.Error(0)
 	}
 
 	return r0
-}
-
-// Logout provides a mock function with given fields:
-func (_m *AuthenticationUseCase) Logout() error {
-	ret := _m.Called()
-
-	var r0 error
-	if rf, ok := ret.Get(0).(func() error); ok {
-		r0 = rf()
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
-}
-
-// RefreshToken provides a mock function with given fields: ExpireRefreshToken
-func (_m *AuthenticationUseCase) RefreshToken(ExpireRefreshToken string) (string, error) {
-	ret := _m.Called(ExpireRefreshToken)
-
-	var r0 string
-	if rf, ok := ret.Get(0).(func(string) string); ok {
-		r0 = rf(ExpireRefreshToken)
-	} else {
-		r0 = ret.Get(0).(string)
-	}
-
-	var r1 error
-	if rf, ok := ret.Get(1).(func(string) error); ok {
-		r1 = rf(ExpireRefreshToken)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
 }

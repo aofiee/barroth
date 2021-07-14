@@ -12,20 +12,6 @@ type UserUseCase struct {
 	mock.Mock
 }
 
-// CheckPasswordHash provides a mock function with given fields: user, password
-func (_m *UserUseCase) CheckPasswordHash(user *models.Users, password string) bool {
-	ret := _m.Called(user, password)
-
-	var r0 bool
-	if rf, ok := ret.Get(0).(func(*models.Users, string) bool); ok {
-		r0 = rf(user, password)
-	} else {
-		r0 = ret.Get(0).(bool)
-	}
-
-	return r0
-}
-
 // CreateUser provides a mock function with given fields: m
 func (_m *UserUseCase) CreateUser(m *models.Users) error {
 	ret := _m.Called(m)
@@ -82,20 +68,6 @@ func (_m *UserUseCase) GetUser(m *models.Users, id string) error {
 	var r0 error
 	if rf, ok := ret.Get(0).(func(*models.Users, string) error); ok {
 		r0 = rf(m, id)
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
-}
-
-// HashPassword provides a mock function with given fields: user
-func (_m *UserUseCase) HashPassword(user *models.Users) error {
-	ret := _m.Called(user)
-
-	var r0 error
-	if rf, ok := ret.Get(0).(func(*models.Users) error); ok {
-		r0 = rf(user)
 	} else {
 		r0 = ret.Error(0)
 	}

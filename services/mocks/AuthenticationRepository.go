@@ -12,51 +12,30 @@ type AuthenticationRepository struct {
 	mock.Mock
 }
 
-// Login provides a mock function with given fields: m, username, password
-func (_m *AuthenticationRepository) Login(m *models.Users, username string, password string) error {
-	ret := _m.Called(m, username, password)
+// CheckPasswordHash provides a mock function with given fields: m, password
+func (_m *AuthenticationRepository) CheckPasswordHash(m *models.Users, password string) bool {
+	ret := _m.Called(m, password)
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(*models.Users, string, string) error); ok {
-		r0 = rf(m, username, password)
+	var r0 bool
+	if rf, ok := ret.Get(0).(func(*models.Users, string) bool); ok {
+		r0 = rf(m, password)
 	} else {
-		r0 = ret.Error(0)
+		r0 = ret.Get(0).(bool)
 	}
 
 	return r0
 }
 
-// Logout provides a mock function with given fields:
-func (_m *AuthenticationRepository) Logout() error {
-	ret := _m.Called()
+// Login provides a mock function with given fields: m, email
+func (_m *AuthenticationRepository) Login(m *models.Users, email string) error {
+	ret := _m.Called(m, email)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func() error); ok {
-		r0 = rf()
+	if rf, ok := ret.Get(0).(func(*models.Users, string) error); ok {
+		r0 = rf(m, email)
 	} else {
 		r0 = ret.Error(0)
 	}
 
 	return r0
-}
-
-// RefreshToken provides a mock function with given fields: ExpireRefreshToken
-func (_m *AuthenticationRepository) RefreshToken(ExpireRefreshToken string) (string, error) {
-	ret := _m.Called(ExpireRefreshToken)
-
-	var r0 string
-	if rf, ok := ret.Get(0).(func(string) string); ok {
-		r0 = rf(ExpireRefreshToken)
-	} else {
-		r0 = ret.Get(0).(string)
-	}
-
-	var r1 error
-	if rf, ok := ret.Get(1).(func(string) error); ok {
-		r1 = rf(ExpireRefreshToken)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
 }

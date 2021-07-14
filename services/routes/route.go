@@ -15,5 +15,8 @@ func InitAllRoutes() *fiber.App {
 
 	user := NewUserRoutes(barroth_config.ENV)
 	user.Install(app)
+
+	auth := NewAuthenticationRoutes(barroth_config.ENV)
+	auth.Install(app)
 	return app
 }

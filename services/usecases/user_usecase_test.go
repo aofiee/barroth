@@ -29,14 +29,27 @@ func getUser(email, password, name, telephone string) models.Users {
 func TestCreateUser(t *testing.T) {
 	repo := new(mocks.UserRepository)
 	user := getUser(userEmail, userPassword, userFullName, userTelephone)
+	repo.On("HashPassword", mock.AnythingOfType(userModelType)).Return(nil).Once()
+
 	repo.On("GetUserByEmail", mock.AnythingOfType(userModelType), mock.Anything).Return(errors.New("record not found")).Once()
+
 	repo.On("CreateUser", mock.AnythingOfType(userModelType)).Return(nil).Once()
 	u := NewUserUseCase(repo)
 	err := u.CreateUser(&user)
 	assert.NoError(t, err)
 
+	repo.On("HashPassword", mock.AnythingOfType(userModelType)).Return(nil).Once()
+
 	repo.On("GetUserByEmail", mock.AnythingOfType(userModelType), mock.Anything).Return(nil).Once()
+
 	repo.On("CreateUser", mock.AnythingOfType(userModelType)).Return(errors.New("email is duplicated")).Once()
+
+	u = NewUserUseCase(repo)
+	err = u.CreateUser(&user)
+	assert.Error(t, err)
+
+	repo.On("HashPassword", mock.AnythingOfType(userModelType)).Return(errors.New("hash error")).Once()
+
 	u = NewUserUseCase(repo)
 	err = u.CreateUser(&user)
 	assert.Error(t, err)

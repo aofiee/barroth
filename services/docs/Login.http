@@ -9,12 +9,12 @@ GET http://{{host}}/
 Content-Type: {{contentType}}
 
 ###
-POST http://{{host}}/login
+POST http://{{host}}/auth
 Content-Type: {{contentType}}
 
 {
-    "username":"aofiee@aofiee.dev",
-    "password":"qwerty"
+    "email":"khomkrid@twinsynergy.co.th",
+    "password":"password"
 }
 
 ###

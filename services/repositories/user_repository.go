@@ -5,6 +5,7 @@ import (
 
 	"github.com/aofiee/barroth/domains"
 	"github.com/aofiee/barroth/models"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -94,4 +95,9 @@ func (u *userRepository) RestoreUsers(id []int) (int64, error) {
 		return 0, rs.Error
 	}
 	return rs.RowsAffected, nil
+}
+func (u *userRepository) HashPassword(user *models.Users) error {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(user.Password), 14)
+	user.Password = string(bytes)
+	return err
 }

@@ -89,6 +89,20 @@ func (_m *UserRepository) GetUserByEmail(m *models.Users, email string) error {
 	return r0
 }
 
+// HashPassword provides a mock function with given fields: user
+func (_m *UserRepository) HashPassword(user *models.Users) error {
+	ret := _m.Called(user)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(*models.Users) error); ok {
+		r0 = rf(user)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // RestoreUsers provides a mock function with given fields: id
 func (_m *UserRepository) RestoreUsers(id []int) (int64, error) {
 	ret := _m.Called(id)

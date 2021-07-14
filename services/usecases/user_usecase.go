@@ -6,7 +6,6 @@ import (
 	"github.com/aofiee/barroth/domains"
 	"github.com/aofiee/barroth/models"
 	"github.com/gofiber/fiber/v2/utils"
-	"golang.org/x/crypto/bcrypt"
 )
 
 type (
@@ -21,7 +20,7 @@ func NewUserUseCase(repo domains.UserRepository) domains.UserUseCase {
 	}
 }
 func (u *userUseCase) CreateUser(user *models.Users) error {
-	err := u.HashPassword(user)
+	err := u.userRepo.HashPassword(user)
 	if err != nil {
 		return err
 	}
@@ -57,13 +56,4 @@ func (u *userUseCase) DeleteUsers(focus string, uuid []int) (int64, error) {
 func (u *userUseCase) RestoreUsers(uuid []int) (int64, error) {
 	rs, err := u.userRepo.RestoreUsers(uuid)
 	return rs, err
-}
-func (u *userUseCase) HashPassword(user *models.Users) error {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(user.Password), 14)
-	user.Password = string(bytes)
-	return err
-}
-func (u *userUseCase) CheckPasswordHash(user *models.Users, password string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
-	return err == nil
 }
