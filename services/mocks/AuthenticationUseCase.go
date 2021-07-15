@@ -12,6 +12,55 @@ type AuthenticationUseCase struct {
 	mock.Mock
 }
 
+// CreateToken provides a mock function with given fields: m
+func (_m *AuthenticationUseCase) CreateToken(m *models.Users) (models.TokenDetail, error) {
+	ret := _m.Called(m)
+
+	var r0 models.TokenDetail
+	if rf, ok := ret.Get(0).(func(*models.Users) models.TokenDetail); ok {
+		r0 = rf(m)
+	} else {
+		r0 = ret.Get(0).(models.TokenDetail)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(*models.Users) error); ok {
+		r1 = rf(m)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GenerateAccessTokenBy provides a mock function with given fields: u, t
+func (_m *AuthenticationUseCase) GenerateAccessTokenBy(u *models.Users, t *models.TokenDetail) error {
+	ret := _m.Called(u, t)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(*models.Users, *models.TokenDetail) error); ok {
+		r0 = rf(u, t)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// GenerateRefreshTokenBy provides a mock function with given fields: u, t
+func (_m *AuthenticationUseCase) GenerateRefreshTokenBy(u *models.Users, t *models.TokenDetail) error {
+	ret := _m.Called(u, t)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(*models.Users, *models.TokenDetail) error); ok {
+		r0 = rf(u, t)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // Login provides a mock function with given fields: m, email, password
 func (_m *AuthenticationUseCase) Login(m *models.Users, email string, password string) error {
 	ret := _m.Called(m, email, password)

@@ -17,4 +17,7 @@ const (
 	ERR_CREATE_USER_SUCCESSFUL      = "create user successful"
 	ERR_LOGIN_SUCCESSFUL            = "login successful"
 	ERR_USERNAME_PASSWORD_INCORRECT = "username and password is incorrect"
+
+	ERR_CANNOT_GET_ROLE_NAME    = "cannot get role name from uuid"
+	ERR_TOKEN_CANNOT_SIGNED_KEY = "token cannot signed with a key"
 )

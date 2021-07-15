@@ -16,6 +16,8 @@ const (
 	authPassword                 = "password"
 	authFullName                 = "Arashi L."
 	authTelephone                = "0925905444"
+	authID                       = uint(3)
+	authRoleName                 = "RoleName"
 )
 
 func TestLogin(t *testing.T) {
@@ -36,7 +38,7 @@ func TestLogin(t *testing.T) {
 func TestCheckPasswordHash(t *testing.T) {
 	SetupMock(t)
 	repo := NewAuthenticationRepository(databases.DB)
-	assert.Equal(t, authenticationRepositoryType, reflect.TypeOf(repo).String(), "TestLogin")
+	assert.Equal(t, authenticationRepositoryType, reflect.TypeOf(repo).String(), "TestCheckPasswordHash")
 
 	repoHash := NewUserRepository(databases.DB)
 	user := models.Users{
@@ -46,4 +48,29 @@ func TestCheckPasswordHash(t *testing.T) {
 	assert.NoError(t, err)
 	ok := repo.CheckPasswordHash(&user, authPassword)
 	assert.Equal(t, true, ok)
+}
+
+func TestGetRoleNameByUserIDSuccess(t *testing.T) {
+	SetupMock(t)
+	repo := NewAuthenticationRepository(databases.DB)
+	assert.Equal(t, authenticationRepositoryType, reflect.TypeOf(repo).String(), "TestGetRoleNameByUserID")
+
+	column := []string{"role_items.name"}
+	mock.ExpectQuery("^SELECT (.+) FROM `users`*").WithArgs(authID).
+		WillReturnRows(sqlmock.NewRows(column).AddRow(authRoleName))
+	var role models.TokenRoleName
+	err := repo.GetRoleNameByUserID(&role, authID)
+	assert.NoError(t, err)
+}
+func TestGetRoleNameByUserIDFail(t *testing.T) {
+	SetupMock(t)
+	repo := NewAuthenticationRepository(databases.DB)
+	assert.Equal(t, authenticationRepositoryType, reflect.TypeOf(repo).String(), "TestGetRoleNameByUserID")
+
+	column := []string{"role_items.name"}
+	mock.ExpectQuery("^SELECT (.+) FROM `users`*").WithArgs(nil).
+		WillReturnRows(sqlmock.NewRows(column).AddRow(authRoleName))
+	var role models.TokenRoleName
+	err := repo.GetRoleNameByUserID(&role, authID)
+	assert.Error(t, err)
 }

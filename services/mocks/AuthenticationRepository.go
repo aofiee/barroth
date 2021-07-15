@@ -26,6 +26,20 @@ func (_m *AuthenticationRepository) CheckPasswordHash(m *models.Users, password 
 	return r0
 }
 
+// GetRoleNameByUserID provides a mock function with given fields: m, id
+func (_m *AuthenticationRepository) GetRoleNameByUserID(m *models.TokenRoleName, id uint) error {
+	ret := _m.Called(m, id)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(*models.TokenRoleName, uint) error); ok {
+		r0 = rf(m, id)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // Login provides a mock function with given fields: m, email
 func (_m *AuthenticationRepository) Login(m *models.Users, email string) error {
 	ret := _m.Called(m, email)

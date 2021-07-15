@@ -62,8 +62,21 @@ func (a *authenticationHandler) Login(c *fiber.Ctx) error {
 	if err != nil {
 		return helpers.FailOnError(c, err, constants.ERR_USERNAME_PASSWORD_INCORRECT, fiber.StatusUnauthorized)
 	}
+	token, err := a.authenticationUseCase.CreateToken(&u)
+	if err != nil {
+		return helpers.FailOnError(c, err, constants.ERR_CANNOT_GET_ROLE_NAME, fiber.StatusBadRequest)
+	}
+	err = a.authenticationUseCase.GenerateAccessTokenBy(&u, &token)
+	if err != nil {
+		return helpers.FailOnError(c, err, constants.ERR_TOKEN_CANNOT_SIGNED_KEY, fiber.StatusBadRequest)
+	}
+	err = a.authenticationUseCase.GenerateRefreshTokenBy(&u, &token)
+	if err != nil {
+		return helpers.FailOnError(c, err, constants.ERR_TOKEN_CANNOT_SIGNED_KEY, fiber.StatusBadRequest)
+	}
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"msg":   constants.ERR_LOGIN_SUCCESSFUL,
 		"error": nil,
+		"data":  token.Token,
 	})
 }

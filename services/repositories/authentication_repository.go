@@ -25,3 +25,11 @@ func (a *authenticationRepository) CheckPasswordHash(m *models.Users, password s
 	err := bcrypt.CompareHashAndPassword([]byte(m.Password), []byte(password))
 	return err == nil
 }
+func (a *authenticationRepository) GetRoleNameByUserID(m *models.TokenRoleName, id uint) error {
+	rs := a.conn.Model(&models.Users{}).Select("role_items.name").Joins("inner join user_roles on users.id = user_roles.user_id").Joins("inner join role_items on role_items.id = user_roles.role_item_id").Where("users.id = ?", id).Find(&m)
+
+	if rs.Error != nil {
+		return rs.Error
+	}
+	return nil
+}
