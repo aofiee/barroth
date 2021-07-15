@@ -96,3 +96,31 @@ func TestCreateTokenFail(t *testing.T) {
 	assert.Error(t, err)
 	assert.Equal(t, "", tokenDetail.Context.Email)
 }
+func TestSaveTokenSuccess(t *testing.T) {
+	repo := new(mocks.AuthenticationRepository)
+	repo.On("SaveToken", mock.Anything, mock.Anything, mock.AnythingOfType("time.Duration")).Return(nil).Twice()
+
+	var token models.TokenDetail
+	u := NewAuthenticationUseCase(repo)
+	err := u.SaveToken(utils.UUIDv4(), &token)
+	assert.NoError(t, err)
+}
+func TestSaveTokenFailOne(t *testing.T) {
+	repo := new(mocks.AuthenticationRepository)
+	repo.On("SaveToken", mock.Anything, mock.Anything, mock.AnythingOfType("time.Duration")).Return(errors.New("error save token"))
+
+	var token models.TokenDetail
+	u := NewAuthenticationUseCase(repo)
+	err := u.SaveToken(utils.UUIDv4(), &token)
+	assert.Error(t, err)
+}
+func TestSaveTokenFailTwo(t *testing.T) {
+	repo := new(mocks.AuthenticationRepository)
+	repo.On("SaveToken", mock.Anything, mock.Anything, mock.AnythingOfType("time.Duration")).Return(nil).Once()
+
+	repo.On("SaveToken", mock.Anything, mock.Anything, mock.AnythingOfType("time.Duration")).Return(errors.New("error save token")).Once()
+	var token models.TokenDetail
+	u := NewAuthenticationUseCase(repo)
+	err := u.SaveToken(utils.UUIDv4(), &token)
+	assert.Error(t, err)
+}

@@ -74,6 +74,10 @@ func (a *authenticationHandler) Login(c *fiber.Ctx) error {
 	if err != nil {
 		return helpers.FailOnError(c, err, constants.ERR_TOKEN_CANNOT_SIGNED_KEY, fiber.StatusBadRequest)
 	}
+	err = a.authenticationUseCase.SaveToken(u.UUID, &token)
+	if err != nil {
+		return helpers.FailOnError(c, err, constants.ERR_CANNOT_SAVE_TOKEN_TO_REDIS, fiber.StatusInternalServerError)
+	}
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"msg":   constants.ERR_LOGIN_SUCCESSFUL,
 		"error": nil,

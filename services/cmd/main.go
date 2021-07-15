@@ -9,21 +9,23 @@ import (
 	"github.com/aofiee/barroth/databases"
 	"github.com/aofiee/barroth/models"
 	"github.com/aofiee/barroth/routes"
+	"github.com/go-redis/redis/v8"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
 
 func main() {
-	dns, err := setupDNSDatabaseConnection("../")
+	dbDNS, queueDNS, err := setupDNSDatabaseConnection("../")
 	if err != nil {
 		log.Println(err)
 	}
-	dial := mysql.Open(dns)
+	dial := mysql.Open(dbDNS)
 	err = createDatabaseConnection(dial)
 	if err != nil {
 		log.Println(err)
 	}
+	createQueueConnection(queueDNS, barroth_config.ENV.RdPassword)
 	/// Install Routing
 	app := routes.InitAllRoutes()
 	///
@@ -32,17 +34,23 @@ func main() {
 		panic(err)
 	}
 }
-
-func setupDNSDatabaseConnection(env string) (string, error) {
+func createQueueConnection(dns, password string) {
+	databases.QueueClient = redis.NewClient(&redis.Options{
+		Addr:     dns,
+		Password: password,
+	})
+}
+func setupDNSDatabaseConnection(env string) (string, string, error) {
 	var err error
 	/// Load Configuration
 	barroth_config.ENV, err = barroth_config.LoadConfig(env)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 	/// Database Connection
-	dns := databases.NewConfig(barroth_config.ENV).DBConnString()
-	return dns, nil
+	databaseDNS := databases.NewConfig(barroth_config.ENV).DBConnString()
+	redisDNS := databases.NewConfig(barroth_config.ENV).RedisConnString()
+	return databaseDNS, redisDNS, nil
 }
 
 func createDatabaseConnection(dial gorm.Dialector) error {

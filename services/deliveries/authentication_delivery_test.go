@@ -52,6 +52,8 @@ func TestNewAuthenticationHandlerSuccess(t *testing.T) {
 
 	mockUseCase.On("GenerateRefreshTokenBy", mock.AnythingOfType(mockAuthType), mock.AnythingOfType(mockAuthTokenDetailType)).Return(nil)
 
+	mockUseCase.On("SaveToken", mock.Anything, mock.AnythingOfType(mockAuthTokenDetailType)).Return(nil)
+
 	app := fiber.New()
 	app.Post("/auth", handler.Login)
 	req, err := http.NewRequest("POST", "/auth", payload)
@@ -178,4 +180,33 @@ func TestGenRefreshTokenFail(t *testing.T) {
 	resp, err := app.Test(req)
 	assert.NoError(t, err)
 	assert.Equal(t, 400, resp.StatusCode, "TestNewAuthenticationHandlerSuccess")
+}
+func TestSaveTokenFail(t *testing.T) {
+	var token models.TokenDetail
+	params := paramsLogin{
+		Email:    authEmail,
+		Password: authPassword,
+	}
+	data, _ := json.Marshal(&params)
+	payload := bytes.NewReader(data)
+	mockUseCase, handler := AuthMockSetup(t)
+
+	mockUseCase.On("Login", mock.AnythingOfType(mockAuthType), mock.Anything, mock.Anything).Return(nil)
+
+	mockUseCase.On("CreateToken", mock.AnythingOfType(mockAuthType)).Return(token, nil)
+
+	mockUseCase.On("GenerateAccessTokenBy", mock.AnythingOfType(mockAuthType), mock.AnythingOfType(mockAuthTokenDetailType)).Return(nil)
+
+	mockUseCase.On("GenerateRefreshTokenBy", mock.AnythingOfType(mockAuthType), mock.AnythingOfType(mockAuthTokenDetailType)).Return(nil)
+
+	mockUseCase.On("SaveToken", mock.Anything, mock.AnythingOfType(mockAuthTokenDetailType)).Return(errors.New("save token error"))
+
+	app := fiber.New()
+	app.Post("/auth", handler.Login)
+	req, err := http.NewRequest("POST", "/auth", payload)
+	req.Header.Set(fiber.HeaderContentType, contentType)
+	assert.NoError(t, err)
+	resp, err := app.Test(req)
+	assert.NoError(t, err)
+	assert.Equal(t, 500, resp.StatusCode, "TestNewAuthenticationHandlerSuccess")
 }

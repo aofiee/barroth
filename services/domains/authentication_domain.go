@@ -1,6 +1,10 @@
 package domains
 
-import "github.com/aofiee/barroth/models"
+import (
+	"time"
+
+	"github.com/aofiee/barroth/models"
+)
 
 type (
 	AuthenticationUseCase interface {
@@ -8,10 +12,12 @@ type (
 		CreateToken(m *models.Users) (token models.TokenDetail, err error)
 		GenerateAccessTokenBy(u *models.Users, t *models.TokenDetail) (err error)
 		GenerateRefreshTokenBy(u *models.Users, t *models.TokenDetail) (err error)
+		SaveToken(uuid string, t *models.TokenDetail) (err error)
 	}
 	AuthenticationRepository interface {
 		Login(m *models.Users, email string) (err error)
 		CheckPasswordHash(m *models.Users, password string) (ok bool)
 		GetRoleNameByUserID(m *models.TokenRoleName, id uint) (err error)
+		SaveToken(uuid string, tokenUUID string, expire time.Duration) (err error)
 	}
 )

@@ -74,3 +74,17 @@ func (_m *AuthenticationUseCase) Login(m *models.Users, email string, password s
 
 	return r0
 }
+
+// SaveToken provides a mock function with given fields: uuid, t
+func (_m *AuthenticationUseCase) SaveToken(uuid string, t *models.TokenDetail) error {
+	ret := _m.Called(uuid, t)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string, *models.TokenDetail) error); ok {
+		r0 = rf(uuid, t)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}

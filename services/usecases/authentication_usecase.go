@@ -92,3 +92,18 @@ func (a *authenticationUseCase) GenerateRefreshTokenBy(u *models.Users, t *model
 	t.Token.RefreshToken = rs
 	return err
 }
+func (a *authenticationUseCase) SaveToken(uuid string, t *models.TokenDetail) error {
+	loc, _ := time.LoadLocation(timeLoc)
+	accessTokenExpire := time.Unix(t.AccessTokenExp, 0).In(loc)
+	refreshTokenExpire := time.Unix(t.RefreshTokenExp, 0).In(loc)
+	now := time.Now().In(loc)
+	err := a.authenticationRepo.SaveToken(uuid, t.AccessUUID, accessTokenExpire.Sub(now))
+	if err != nil {
+		return err
+	}
+	err = a.authenticationRepo.SaveToken(uuid, t.RefreshUUID, refreshTokenExpire.Sub(now))
+	if err != nil {
+		return err
+	}
+	return nil
+}

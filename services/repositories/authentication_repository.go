@@ -1,20 +1,28 @@
 package repositories
 
 import (
+	"context"
+	"time"
+
 	"github.com/aofiee/barroth/domains"
 	"github.com/aofiee/barroth/models"
+	"github.com/go-redis/redis/v8"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
 type (
 	authenticationRepository struct {
-		conn *gorm.DB
+		conn  *gorm.DB
+		queue *redis.Client
 	}
 )
 
-func NewAuthenticationRepository(conn *gorm.DB) domains.AuthenticationRepository {
-	return &authenticationRepository{conn}
+func NewAuthenticationRepository(conn *gorm.DB, queue *redis.Client) domains.AuthenticationRepository {
+	return &authenticationRepository{
+		conn:  conn,
+		queue: queue,
+	}
 }
 func (a *authenticationRepository) Login(m *models.Users, email string) error {
 	u := NewUserRepository(a.conn)
@@ -32,4 +40,9 @@ func (a *authenticationRepository) GetRoleNameByUserID(m *models.TokenRoleName, 
 		return rs.Error
 	}
 	return nil
+}
+func (a *authenticationRepository) SaveToken(uuid string, t string, expire time.Duration) error {
+	ctx := context.Background()
+	err := a.queue.Set(ctx, t, uuid, expire).Err()
+	return err
 }

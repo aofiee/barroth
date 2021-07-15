@@ -21,7 +21,7 @@ func NewAuthenticationRoutes(config barroth_config.Config) *authenticationRoutes
 	}
 }
 func (r *authenticationRoutes) Install(app *fiber.App) {
-	repo := repositories.NewAuthenticationRepository(databases.DB)
+	repo := repositories.NewAuthenticationRepository(databases.DB, databases.QueueClient)
 	u := usecases.NewAuthenticationUseCase(repo)
 	handler := deliveries.NewAuthenHandler(u, "Installation", "Installation Module This is an API group for the system installation environment.", "/auth")
 	e := app.Group("/auth")

@@ -3,10 +3,13 @@ package repositories
 import (
 	"reflect"
 	"testing"
+	"time"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/aofiee/barroth/databases"
 	"github.com/aofiee/barroth/models"
+	"github.com/go-redis/redismock/v8"
+	"github.com/gofiber/fiber/v2/utils"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -22,7 +25,7 @@ const (
 
 func TestLogin(t *testing.T) {
 	SetupMock(t)
-	repo := NewAuthenticationRepository(databases.DB)
+	repo := NewAuthenticationRepository(databases.DB, databases.QueueClient)
 	assert.Equal(t, authenticationRepositoryType, reflect.TypeOf(repo).String(), "TestLogin")
 
 	columns := []string{"id", "created_at", "updated_at", "deleted_at", "email", "password", "name", "telephone", "image", "uuid", "status"}
@@ -37,7 +40,7 @@ func TestLogin(t *testing.T) {
 
 func TestCheckPasswordHash(t *testing.T) {
 	SetupMock(t)
-	repo := NewAuthenticationRepository(databases.DB)
+	repo := NewAuthenticationRepository(databases.DB, databases.QueueClient)
 	assert.Equal(t, authenticationRepositoryType, reflect.TypeOf(repo).String(), "TestCheckPasswordHash")
 
 	repoHash := NewUserRepository(databases.DB)
@@ -52,7 +55,7 @@ func TestCheckPasswordHash(t *testing.T) {
 
 func TestGetRoleNameByUserIDSuccess(t *testing.T) {
 	SetupMock(t)
-	repo := NewAuthenticationRepository(databases.DB)
+	repo := NewAuthenticationRepository(databases.DB, databases.QueueClient)
 	assert.Equal(t, authenticationRepositoryType, reflect.TypeOf(repo).String(), "TestGetRoleNameByUserID")
 
 	column := []string{"role_items.name"}
@@ -64,7 +67,7 @@ func TestGetRoleNameByUserIDSuccess(t *testing.T) {
 }
 func TestGetRoleNameByUserIDFail(t *testing.T) {
 	SetupMock(t)
-	repo := NewAuthenticationRepository(databases.DB)
+	repo := NewAuthenticationRepository(databases.DB, databases.QueueClient)
 	assert.Equal(t, authenticationRepositoryType, reflect.TypeOf(repo).String(), "TestGetRoleNameByUserID")
 
 	column := []string{"role_items.name"}
@@ -72,5 +75,18 @@ func TestGetRoleNameByUserIDFail(t *testing.T) {
 		WillReturnRows(sqlmock.NewRows(column).AddRow(authRoleName))
 	var role models.TokenRoleName
 	err := repo.GetRoleNameByUserID(&role, authID)
+	assert.Error(t, err)
+}
+func TestSaveToken(t *testing.T) {
+	SetupMock(t)
+	rd, _ := redismock.NewClientMock()
+	databases.QueueClient = rd
+
+	repo := NewAuthenticationRepository(databases.DB, databases.QueueClient)
+	assert.Equal(t, authenticationRepositoryType, reflect.TypeOf(repo).String(), "TestSaveToken")
+
+	now := time.Now()
+	expire := time.Unix(120, 0)
+	err := repo.SaveToken(utils.UUIDv4(), utils.UUIDv4(), expire.Sub(now))
 	assert.Error(t, err)
 }
