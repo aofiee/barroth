@@ -1,7 +1,6 @@
 package deliveries
 
 import (
-	"encoding/json"
 	"strconv"
 	"strings"
 
@@ -76,13 +75,13 @@ func (r *roleHandler) NewRole(c *fiber.Ctx) error {
 		"error": nil,
 	})
 }
-func (r *roleHandler) BuildGetAllRolesParam(c *fiber.Ctx) ([]byte, error) {
-	keyword := c.Query("keyword")
-	page := c.Query("page")
-	limit := c.Query("limit")
-	sort := strings.ToLower(c.Query("sort"))
-	field := strings.ToLower(c.Query("field"))
-	focus := strings.ToLower(c.Query("focus"))
+func (r *roleHandler) BuildGetAllRolesParam(k, p, l, s, f, fo string) paramsGetAllRoles {
+	keyword := k
+	page := p
+	limit := l
+	sort := s
+	field := f
+	focus := fo
 	if keyword == "" {
 		keyword = "all"
 	}
@@ -108,19 +107,16 @@ func (r *roleHandler) BuildGetAllRolesParam(c *fiber.Ctx) ([]byte, error) {
 	param.Limit = limit
 	param.Sorting = sort
 	param.Page = page
-	json, err := json.Marshal(&param)
-	if err != nil {
-		return nil, err
-	}
-	return json, nil
+	return param
 }
 func (r *roleHandler) GetAllRoles(c *fiber.Ctx) error {
-	p, err := r.BuildGetAllRolesParam(c)
-	if err != nil {
-		return helpers.FailOnError(c, err, constants.ERR_CANNOT_PARSE_PARAMS, fiber.StatusNotAcceptable)
-	}
-	var param paramsGetAllRoles
-	json.Unmarshal(p, &param)
+	keyword := c.Query("keyword")
+	page := c.Query("page")
+	limit := c.Query("limit")
+	sort := strings.ToLower(c.Query("sort"))
+	field := strings.ToLower(c.Query("field"))
+	focus := strings.ToLower(c.Query("focus"))
+	param := r.BuildGetAllRolesParam(keyword, page, limit, sort, field, focus)
 	errorResponse := helpers.ValidateStruct(&param)
 	if errorResponse != nil {
 		return c.Status(fiber.StatusNotAcceptable).JSON(fiber.Map{
@@ -129,7 +125,7 @@ func (r *roleHandler) GetAllRoles(c *fiber.Ctx) error {
 		})
 	}
 	var roles []models.RoleItems
-	err = r.roleUseCase.GetAllRoles(&roles, param.Keyword, param.Sorting, param.SortField, param.Page, param.Limit, param.Focus)
+	err := r.roleUseCase.GetAllRoles(&roles, param.Keyword, param.Sorting, param.SortField, param.Page, param.Limit, param.Focus)
 	if err != nil {
 		return helpers.FailOnError(c, err, constants.ERR_CANNOT_GET_ALL_ROLES, fiber.StatusBadRequest)
 	}

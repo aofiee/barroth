@@ -19,6 +19,7 @@ import (
 const (
 	mockRoleType      = "*models.RoleItems"
 	mockRoleTypeSlice = "*[]models.RoleItems"
+	mockFiberCtxType  = "*fiber.Ctx"
 )
 
 func RoleMockSetup(t *testing.T) (mockUseCase *mocks.RoleUseCase, handler *roleHandler) {
@@ -91,10 +92,10 @@ func TestNewHandlerFail(t *testing.T) {
 }
 func TestGetAllRolesSuccess(t *testing.T) {
 	mockUseCase, handler := RoleMockSetup(t)
-	mockUseCase.On("GetAllRoles", mock.AnythingOfType(mockRoleTypeSlice), "all", "asc", "id", "0", "10", "inbox").Return(nil)
+	mockUseCase.On("GetAllRoles", mock.AnythingOfType(mockRoleTypeSlice), "all", "asc", "id", "1", "10", "inbox").Return(nil)
 	app := fiber.New()
 	app.Get("/roles", handler.GetAllRoles)
-	req, err := http.NewRequest("GET", "/roles", nil)
+	req, err := http.NewRequest("GET", "/roles?keyword=all&sort=asc&page=1&limit=10&field=id&focus=inbox", nil)
 	assert.NoError(t, err)
 	req.Header.Set(fiber.HeaderContentType, contentType)
 	resp, err := app.Test(req)
