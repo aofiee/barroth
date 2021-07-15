@@ -29,7 +29,6 @@ const (
 	contentType         = "application/json"
 	mockSystemType      = "*models.System"
 	mockSystemTypeSlice = "*[]models.System"
-	headerContentType   = "Content-Type"
 )
 
 func SetupMock(t *testing.T) {
@@ -75,7 +74,7 @@ func TestNewSystemHandelrInstallingCompleted(t *testing.T) {
 	app := fiber.New()
 	app.Get("/install", sysHandler.SystemInstallation)
 	req, err := http.NewRequest("GET", "/install", nil)
-	req.Header.Set(headerContentType, contentType)
+	req.Header.Set(fiber.HeaderContentType, contentType)
 	assert.NoError(t, err)
 	resp, err := app.Test(req)
 	assert.NoError(t, err)
@@ -88,7 +87,7 @@ func TestNewSystemHandelrInstallingFailed(t *testing.T) {
 	app := fiber.New()
 	app.Get("/install", sysHandler.SystemInstallation)
 	req, err := http.NewRequest("GET", "/install", nil)
-	req.Header.Set(headerContentType, contentType)
+	req.Header.Set(fiber.HeaderContentType, contentType)
 	assert.NoError(t, err)
 	resp, err := app.Test(req)
 	assert.NoError(t, err)
@@ -100,7 +99,7 @@ func TestNewSystemHandelrInstalled(t *testing.T) {
 	app := fiber.New()
 	app.Get("/install", sysHandler.SystemInstallation)
 	req, err := http.NewRequest("GET", "/install", nil)
-	req.Header.Set(headerContentType, contentType)
+	req.Header.Set(fiber.HeaderContentType, contentType)
 	assert.NoError(t, err)
 	resp, err := app.Test(req)
 	assert.NoError(t, err)
