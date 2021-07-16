@@ -124,3 +124,11 @@ func TestSaveTokenFailTwo(t *testing.T) {
 	err := u.SaveToken(utils.UUIDv4(), &token)
 	assert.Error(t, err)
 }
+func TestDeleteToken(t *testing.T) {
+	repo := new(mocks.AuthenticationRepository)
+	repo.On("DeleteToken", mock.AnythingOfType("string")).Return(nil)
+
+	u := NewAuthenticationUseCase(repo)
+	err := u.DeleteToken(utils.UUIDv4())
+	assert.NoError(t, err)
+}

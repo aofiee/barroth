@@ -1,6 +1,7 @@
 package deliveries
 
 import (
+	barroth_config "github.com/aofiee/barroth/config"
 	"github.com/aofiee/barroth/constants"
 	"github.com/aofiee/barroth/databases"
 	"github.com/aofiee/barroth/domains"
@@ -9,6 +10,8 @@ import (
 	"github.com/aofiee/barroth/repositories"
 	"github.com/aofiee/barroth/usecases"
 	"github.com/gofiber/fiber/v2"
+	jwtware "github.com/gofiber/jwt/v2"
+	"github.com/golang-jwt/jwt"
 )
 
 type (
@@ -83,4 +86,34 @@ func (a *authenticationHandler) Login(c *fiber.Ctx) error {
 		"error": nil,
 		"data":  token.Token,
 	})
+}
+func (a *authenticationHandler) Logout(c *fiber.Ctx) error {
+	user := c.Locals("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	accessUUID := claims["access_uuid"].(string)
+	err := a.authenticationUseCase.DeleteToken(accessUUID)
+	if err != nil {
+		return helpers.FailOnError(c, err, "StatusUnauthorized", fiber.StatusUnauthorized)
+	}
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"msg":   constants.ERR_LOGOUT_COMPLETED,
+		"error": nil,
+	})
+}
+func (a *authenticationHandler) AuthorizationRequired() fiber.Handler {
+	return jwtware.New(jwtware.Config{
+		SuccessHandler: a.AuthSuccess,
+		ErrorHandler:   a.AuthError,
+		SigningKey:     []byte(barroth_config.ENV.AccessKey),
+		SigningMethod:  "HS256",
+		TokenLookup:    "header:Authorization",
+		AuthScheme:     "Bearer",
+	})
+}
+func (a *authenticationHandler) AuthError(c *fiber.Ctx, e error) error {
+	return helpers.FailOnError(c, e, "Unauthorized", fiber.StatusUnauthorized)
+}
+
+func (a *authenticationHandler) AuthSuccess(c *fiber.Ctx) error {
+	return c.Next()
 }

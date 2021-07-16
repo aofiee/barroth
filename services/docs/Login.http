@@ -2,8 +2,8 @@
 @port = 8181
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@accessToken = 
-@refreshToken = 
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NfdXVpZCI6ImM3MjFjMjk1LTg1YTMtNGE4NC1hMmU1LTZiYzgzZDY5NThlNCIsImNvbnRleHQiOnsiZW1haWwiOiJraG9ta3JpZEB0d2luc3luZXJneS5jby50aCIsImRpc3BsYXlfbmFtZSI6Iktob21rcmlkIExlcmRwcmFzZXJ0Iiwicm9sZSI6IkFkbWluaXN0cmF0b3IifSwiZXhwIjoxNjI2NDIyOTgxLCJpYXQiOjE2MjY0MjIwODEsImlzcyI6IkRpYWJsb3MiLCJzdWIiOiJhNzI3OThhNS04Y2Y0LTRlNTEtOGM5NS05NzllM2ZlYzIxNWUifQ.3uxsxSyaax12U37nE3VBkDkTKCKv7Yjl63SufekC4gA
+@refreshToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MjcwMjY4ODEsImlhdCI6MTYyNjQyMjA4MSwiaXNzIjoiRGlhYmxvcyIsInJlZnJlc2hfdXVpZCI6IjFiMmRjNWY1LWJmYzctNDRjZS1hN2Y0LTFkZDY0M2Y5YThhNiIsInN1YiI6ImE3Mjc5OGE1LThjZjQtNGU1MS04Yzk1LTk3OWUzZmVjMjE1ZSJ9.AHCCEy-5vEBnJz1fMBss-gT6V5OsucAZp9i8H62cloo
 ###
 GET http://{{host}}/
 Content-Type: {{contentType}}
@@ -18,8 +18,8 @@ Content-Type: {{contentType}}
 }
 
 ###
-DELETE  http://{{host}}/logout
-Authorization: Bearer {{refreshToken}}
+DELETE  http://{{host}}/auth/logout
+Authorization: Bearer {{accessToken}}
 
 ###
 POST http://{{host}}/refresh

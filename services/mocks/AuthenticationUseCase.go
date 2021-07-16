@@ -33,6 +33,20 @@ func (_m *AuthenticationUseCase) CreateToken(m *models.Users) (models.TokenDetai
 	return r0, r1
 }
 
+// DeleteToken provides a mock function with given fields: uuid
+func (_m *AuthenticationUseCase) DeleteToken(uuid string) error {
+	ret := _m.Called(uuid)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string) error); ok {
+		r0 = rf(uuid)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // GenerateAccessTokenBy provides a mock function with given fields: u, t
 func (_m *AuthenticationUseCase) GenerateAccessTokenBy(u *models.Users, t *models.TokenDetail) error {
 	ret := _m.Called(u, t)

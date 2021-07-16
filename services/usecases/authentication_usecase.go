@@ -107,3 +107,7 @@ func (a *authenticationUseCase) SaveToken(uuid string, t *models.TokenDetail) er
 	}
 	return nil
 }
+func (a *authenticationUseCase) DeleteToken(uuid string) error {
+	err := a.authenticationRepo.DeleteToken(uuid)
+	return err
+}

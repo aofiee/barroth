@@ -28,6 +28,20 @@ func (_m *AuthenticationRepository) CheckPasswordHash(m *models.Users, password 
 	return r0
 }
 
+// DeleteToken provides a mock function with given fields: uuid
+func (_m *AuthenticationRepository) DeleteToken(uuid string) error {
+	ret := _m.Called(uuid)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string) error); ok {
+		r0 = rf(uuid)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // GetRoleNameByUserID provides a mock function with given fields: m, id
 func (_m *AuthenticationRepository) GetRoleNameByUserID(m *models.TokenRoleName, id uint) error {
 	ret := _m.Called(m, id)

@@ -79,14 +79,28 @@ func TestGetRoleNameByUserIDFail(t *testing.T) {
 }
 func TestSaveToken(t *testing.T) {
 	SetupMock(t)
-	rd, _ := redismock.NewClientMock()
+	rd, mock := redismock.NewClientMock()
 	databases.QueueClient = rd
-
+	uuid := utils.UUIDv4()
 	repo := NewAuthenticationRepository(databases.DB, databases.QueueClient)
 	assert.Equal(t, authenticationRepositoryType, reflect.TypeOf(repo).String(), "TestSaveToken")
 
 	now := time.Now()
 	expire := time.Unix(120, 0)
-	err := repo.SaveToken(utils.UUIDv4(), utils.UUIDv4(), expire.Sub(now))
-	assert.Error(t, err)
+	mock.ExpectSet(uuid, uuid, expire.Sub(now)).SetVal("OK")
+	err := repo.SaveToken(uuid, uuid, expire.Sub(now))
+	assert.NoError(t, err)
+}
+func TestDeleteToken(t *testing.T) {
+	SetupMock(t)
+	rd, mock := redismock.NewClientMock()
+	databases.QueueClient = rd
+
+	uuid := utils.UUIDv4()
+	repo := NewAuthenticationRepository(databases.DB, databases.QueueClient)
+	assert.Equal(t, authenticationRepositoryType, reflect.TypeOf(repo).String(), "TestDeleteToken")
+
+	mock.ExpectDel(uuid).SetVal(0)
+	err := repo.DeleteToken(uuid)
+	assert.NoError(t, err)
 }

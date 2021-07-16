@@ -21,4 +21,5 @@ const (
 	ERR_CANNOT_GET_ROLE_NAME       = "cannot get role name from uuid"
 	ERR_TOKEN_CANNOT_SIGNED_KEY    = "token cannot signed with a key"
 	ERR_CANNOT_SAVE_TOKEN_TO_REDIS = "token cannot save in queue service"
+	ERR_LOGOUT_COMPLETED           = "logout successful"
 )

@@ -46,3 +46,8 @@ func (a *authenticationRepository) SaveToken(uuid string, t string, expire time.
 	err := a.queue.Set(ctx, t, uuid, expire).Err()
 	return err
 }
+func (a *authenticationRepository) DeleteToken(uuid string) error {
+	var ctx = context.Background()
+	err := a.queue.Del(ctx, uuid).Err()
+	return err
+}

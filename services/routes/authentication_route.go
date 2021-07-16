@@ -26,4 +26,5 @@ func (r *authenticationRoutes) Install(app *fiber.App) {
 	handler := deliveries.NewAuthenHandler(u, "Installation", "Installation Module This is an API group for the system installation environment.", "/auth")
 	e := app.Group("/auth")
 	e.Post("/", handler.Login)
+	e.Delete("/logout", handler.AuthorizationRequired(), handler.Logout)
 }
