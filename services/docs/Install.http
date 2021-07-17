@@ -50,8 +50,7 @@ Authorization: Bearer {{accessToken}}
 
 {
    "role_id":[
-      2,
-      4
+      7
    ]
 }
 
@@ -73,6 +72,6 @@ Authorization: Bearer {{accessToken}}
 
 {
    "role_id":[
-      2
+      7
    ]
 }

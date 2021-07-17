@@ -61,13 +61,13 @@ func (_m *UserRepository) GetAllUsers(m *[]models.Users, keyword string, sorting
 	return r0
 }
 
-// GetUser provides a mock function with given fields: m, id
-func (_m *UserRepository) GetUser(m *models.Users, id string) error {
-	ret := _m.Called(m, id)
+// GetUser provides a mock function with given fields: m, uuid
+func (_m *UserRepository) GetUser(m *models.Users, uuid string) error {
+	ret := _m.Called(m, uuid)
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func(*models.Users, string) error); ok {
-		r0 = rf(m, id)
+		r0 = rf(m, uuid)
 	} else {
 		r0 = ret.Error(0)
 	}

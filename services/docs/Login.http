@@ -2,8 +2,8 @@
 @port = 8181
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NfdXVpZCI6ImM3MjFjMjk1LTg1YTMtNGE4NC1hMmU1LTZiYzgzZDY5NThlNCIsImNvbnRleHQiOnsiZW1haWwiOiJraG9ta3JpZEB0d2luc3luZXJneS5jby50aCIsImRpc3BsYXlfbmFtZSI6Iktob21rcmlkIExlcmRwcmFzZXJ0Iiwicm9sZSI6IkFkbWluaXN0cmF0b3IifSwiZXhwIjoxNjI2NDIyOTgxLCJpYXQiOjE2MjY0MjIwODEsImlzcyI6IkRpYWJsb3MiLCJzdWIiOiJhNzI3OThhNS04Y2Y0LTRlNTEtOGM5NS05NzllM2ZlYzIxNWUifQ.3uxsxSyaax12U37nE3VBkDkTKCKv7Yjl63SufekC4gA
-@refreshToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MjcwMjY4ODEsImlhdCI6MTYyNjQyMjA4MSwiaXNzIjoiRGlhYmxvcyIsInJlZnJlc2hfdXVpZCI6IjFiMmRjNWY1LWJmYzctNDRjZS1hN2Y0LTFkZDY0M2Y5YThhNiIsInN1YiI6ImE3Mjc5OGE1LThjZjQtNGU1MS04Yzk1LTk3OWUzZmVjMjE1ZSJ9.AHCCEy-5vEBnJz1fMBss-gT6V5OsucAZp9i8H62cloo
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NfdXVpZCI6IjA2Yzc2MzQ0LTk4N2ItNGJiMS04OTdlLTg1MGYzYWU5MzIyOSIsImNvbnRleHQiOnsiZW1haWwiOiJraG9ta3JpZEB0d2luc3luZXJneS5jby50aCIsImRpc3BsYXlfbmFtZSI6Iktob21rcmlkIExlcmRwcmFzZXJ0Iiwicm9sZSI6IkFkbWluaXN0cmF0b3IifSwiZXhwIjoxNjI2NDU2MTA5LCJpYXQiOjE2MjY0NTUyMDksImlzcyI6IkRpYWJsb3MiLCJzdWIiOiJhNzI3OThhNS04Y2Y0LTRlNTEtOGM5NS05NzllM2ZlYzIxNWUifQ.ZuMR5QqkfzpTBxa7nHTkI0OXQHIcPmkAgNzSWVA7bb4
+@refreshToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MjY0NTUyMzksImlhdCI6MTYyNjQ1NTIwOSwiaXNzIjoiRGlhYmxvcyIsInJlZnJlc2hfdXVpZCI6ImIzZDU3NmQ3LTA5NjktNDM4Ni05MDRkLTFmNTI1ZDcxYjQxZSIsInN1YiI6ImE3Mjc5OGE1LThjZjQtNGU1MS04Yzk1LTk3OWUzZmVjMjE1ZSJ9.u5GkVz0kZyJ4ytWuC-ABXh2O5mYm98Li0N6Z2IFvohw
 ###
 GET http://{{host}}/
 Content-Type: {{contentType}}
@@ -22,13 +22,13 @@ DELETE  http://{{host}}/auth/logout
 Authorization: Bearer {{accessToken}}
 
 ###
-POST http://{{host}}/refresh
+POST http://{{host}}/auth/refresh_token
 Content-Type: application/x-www-form-urlencoded
 
 refresh_token={{refreshToken}}
 
 ###
-POST http://{{host}}/refresh
+POST http://{{host}}/auth/refresh_token
 Content-Type: {{contentType}}
 
 {"refresh_token":"{{refreshToken}}"}

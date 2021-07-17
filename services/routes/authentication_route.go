@@ -27,4 +27,5 @@ func (r *authenticationRoutes) Install(app *fiber.App) {
 	e := app.Group("/auth")
 	e.Post("/", handler.Login)
 	e.Delete("/logout", handler.AuthorizationRequired(), handler.Logout)
+	e.Post("/refresh_token", handler.RefreshToken)
 }

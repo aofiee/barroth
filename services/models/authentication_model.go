@@ -22,4 +22,7 @@ type (
 		ID   string `json:"id" form:"id"`
 		Name string `json:"name" form:"name"`
 	}
+	RefreshToken struct {
+		Token string `json:"refresh_token" form:"refresh_token"`
+	}
 )

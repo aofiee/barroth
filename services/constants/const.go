@@ -18,8 +18,13 @@ const (
 	ERR_LOGIN_SUCCESSFUL            = "login successful"
 	ERR_USERNAME_PASSWORD_INCORRECT = "username and password is incorrect"
 
-	ERR_CANNOT_GET_ROLE_NAME       = "cannot get role name from uuid"
-	ERR_TOKEN_CANNOT_SIGNED_KEY    = "token cannot signed with a key"
-	ERR_CANNOT_SAVE_TOKEN_TO_REDIS = "token cannot save in queue service"
-	ERR_LOGOUT_COMPLETED           = "logout successful"
+	ERR_CANNOT_GET_ROLE_NAME         = "cannot get role name from uuid"
+	ERR_TOKEN_CANNOT_SIGNED_KEY      = "token cannot signed with a key"
+	ERR_CANNOT_SAVE_TOKEN_TO_REDIS   = "token cannot save in queue service"
+	ERR_CANNOT_DELETE_TOKEN_TO_REDIS = "token cannot delete from queue service"
+	ERR_LOGOUT_COMPLETED             = "logout successful"
+	ERR_TOKEN_SIGNED_NOT_MATCH       = "token signing error"
+	ERR_REFRESH_TOKEN_EXPIRE         = "Refresh token expired"
+	ERR_GET_USER_BY_UUID_NOT_FOUND   = "user not found"
+	ERR_REFRESH_TOKEN_SUCCESSFUL     = "refresh token successful"
 )

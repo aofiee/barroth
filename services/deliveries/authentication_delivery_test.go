@@ -13,9 +13,9 @@ import (
 	"github.com/aofiee/barroth/mocks"
 	"github.com/aofiee/barroth/models"
 	"github.com/bxcodec/faker"
-	"github.com/form3tech-oss/jwt-go"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/utils"
+	"github.com/golang-jwt/jwt"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -29,6 +29,8 @@ const (
 	authPassword            = "password"
 	authRoleName            = "Role Name"
 )
+
+var UUID = utils.UUIDv4()
 
 func AuthMockSetup(t *testing.T) (mockUseCase *mocks.AuthenticationUseCase, handler *authenticationHandler) {
 	SetupMock(t)
@@ -65,6 +67,7 @@ func TestNewAuthenticationHandlerSuccess(t *testing.T) {
 	req, err := http.NewRequest("POST", "/auth", payload)
 
 	req.Header.Set(fiber.HeaderContentType, contentType)
+	//fiber.MIMEApplicationJSON
 	assert.NoError(t, err)
 	resp, err := app.Test(req)
 	assert.NoError(t, err)
@@ -216,7 +219,7 @@ func TestSaveTokenFail(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, 500, resp.StatusCode, "TestNewAuthenticationHandlerSuccess")
 }
-func mockToken() (models.TokenDetail, error) {
+func mockAccessToken() (models.TokenDetail, error) {
 	var token models.TokenDetail
 	location, _ := time.LoadLocation(timeLoc)
 	accessToken := time.Now().In(location).Add(time.Minute * 15).Unix()
@@ -224,8 +227,8 @@ func mockToken() (models.TokenDetail, error) {
 
 	token.AccessTokenExp = accessToken
 	token.RefreshTokenExp = refreshToken
-	token.AccessUUID = utils.UUIDv4()
-	token.RefreshUUID = utils.UUIDv4()
+	token.AccessUUID = UUID
+	token.RefreshUUID = UUID
 
 	context := models.TokenContext{
 		Email:       authEmail,
@@ -238,10 +241,9 @@ func mockToken() (models.TokenDetail, error) {
 	tk := jwt.New(jwt.SigningMethodHS256)
 	claims := tk.Claims.(jwt.MapClaims)
 	claims["iss"] = barroth_config.ENV.AppName
-	claims["sub"] = utils.UUIDv4()
+	claims["sub"] = UUID
 	claims["exp"] = token.AccessTokenExp
 	claims["iat"] = time.Now().In(location).Unix()
-	claims["context"] = token.Context
 	claims["access_uuid"] = token.AccessUUID
 	rs, err := tk.SignedString([]byte(barroth_config.ENV.AccessKey))
 	token.Token.AccessToken = rs
@@ -249,7 +251,8 @@ func mockToken() (models.TokenDetail, error) {
 }
 func TestLogoutSuccess(t *testing.T) {
 	mockUseCase, handler := AuthMockSetup(t)
-	token, err := mockToken()
+
+	token, err := mockAccessToken()
 	assert.NoError(t, err)
 	assert.NotEqual(t, nil, token.Token.AccessToken)
 	app := fiber.New()
@@ -258,7 +261,7 @@ func TestLogoutSuccess(t *testing.T) {
 
 	app.Delete("/auth/logout", handler.AuthorizationRequired(), handler.Logout)
 	req, err := http.NewRequest("DELETE", "/auth/logout", nil)
-	req.Header.Set(fiber.HeaderContentType, contentType)
+	req.Header.Set(fiber.HeaderContentType, fiber.MIMEApplicationJSON)
 	req.Header.Set(fiber.HeaderAuthorization, "Bearer "+token.Token.AccessToken)
 
 	assert.NoError(t, err)
@@ -268,7 +271,7 @@ func TestLogoutSuccess(t *testing.T) {
 
 }
 func TestLogoutDeleteFail(t *testing.T) {
-	token, err := mockToken()
+	token, err := mockAccessToken()
 	assert.NoError(t, err)
 	assert.NotEqual(t, nil, token.Token.AccessToken)
 	//
@@ -286,16 +289,14 @@ func TestLogoutDeleteFail(t *testing.T) {
 	assert.NoError(t, err)
 	resp, err := app.Test(req)
 	assert.NoError(t, err)
-	assert.Equal(t, 401, resp.StatusCode, "TestLogoutSuccess")
+	assert.Equal(t, 400, resp.StatusCode, "TestLogoutSuccess")
 
 }
 func TestLogoutMiddlewareFail(t *testing.T) {
-	token, err := mockToken()
+	_, handler := AuthMockSetup(t)
+	token, err := mockAccessToken()
 	assert.NoError(t, err)
 	assert.NotEqual(t, nil, token.Token.AccessToken)
-	//
-
-	_, handler := AuthMockSetup(t)
 	app := fiber.New()
 
 	app.Delete("/auth/logout", handler.AuthorizationRequired(), handler.Logout)
@@ -308,4 +309,361 @@ func TestLogoutMiddlewareFail(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, 401, resp.StatusCode, "TestLogoutSuccess")
 
+}
+func mockRefreshToken(key string) (models.TokenDetail, error) {
+	var token models.TokenDetail
+	location, _ := time.LoadLocation(timeLoc)
+	accessToken := time.Now().In(location).Add(time.Minute * 15).Unix()
+	refreshToken := time.Now().In(location).Add(time.Hour * 24 * 7).Unix()
+
+	token.AccessTokenExp = accessToken
+	token.RefreshTokenExp = refreshToken
+	token.AccessUUID = UUID
+	token.RefreshUUID = UUID
+
+	context := models.TokenContext{
+		Email:       authEmail,
+		DisplayName: mock.Anything,
+	}
+	context.Role = authRoleName
+	token.Context = context
+
+	//
+	tk := jwt.New(jwt.SigningMethodHS256)
+	claims := tk.Claims.(jwt.MapClaims)
+	claims["iss"] = barroth_config.ENV.AppName
+	claims["sub"] = UUID
+
+	claims["exp"] = token.RefreshTokenExp
+	claims["iat"] = time.Now().In(location).Unix()
+	claims["refresh_uuid"] = token.RefreshUUID
+	rs, err := tk.SignedString([]byte(key))
+	token.Token.RefreshToken = rs
+	return token, err
+}
+func TestRefreshTokenFaileParamFake(t *testing.T) {
+	_, handler := AuthMockSetup(t)
+	token, err := mockRefreshToken(barroth_config.ENV.RefreshKey)
+	assert.NoError(t, err)
+	assert.NotEqual(t, nil, token.Token.RefreshToken)
+	app := fiber.New()
+
+	app.Post("/auth/refresh_token", handler.RefreshToken)
+	req, err := http.NewRequest("POST", "/auth/refresh_token", nil)
+	req.Header.Set(fiber.HeaderContentType, fiber.MIMEApplicationJSON)
+
+	assert.NoError(t, err)
+	resp, err := app.Test(req)
+	assert.NoError(t, err)
+	assert.Equal(t, 400, resp.StatusCode, "TestRefreshTokenSuccess")
+}
+func TestRefreshTokenFaileTokenError(t *testing.T) {
+	_, handler := AuthMockSetup(t)
+	token, err := mockRefreshToken(barroth_config.ENV.RefreshKey)
+	assert.NoError(t, err)
+	assert.NotEqual(t, nil, token.Token.RefreshToken)
+	app := fiber.New()
+
+	params := models.RefreshToken{
+		Token: "xxxx",
+	}
+	data, _ := json.Marshal(&params)
+	payload := bytes.NewReader(data)
+	app.Post("/auth/refresh_token", handler.RefreshToken)
+	req, err := http.NewRequest("POST", "/auth/refresh_token", payload)
+	req.Header.Set(fiber.HeaderContentType, fiber.MIMEApplicationJSON)
+
+	assert.NoError(t, err)
+	resp, err := app.Test(req)
+	assert.NoError(t, err)
+	assert.Equal(t, 401, resp.StatusCode, "TestRefreshTokenSuccess")
+}
+func mockRefreshTokenValidSubType(key string) (models.TokenDetail, error) {
+	var token models.TokenDetail
+	location, _ := time.LoadLocation(timeLoc)
+	accessToken := time.Now().In(location).Add(time.Minute * 15).Unix()
+	refreshToken := time.Now().In(location).Add(time.Hour * 24 * 7).Unix()
+
+	token.AccessTokenExp = accessToken
+	token.RefreshTokenExp = refreshToken
+	token.AccessUUID = UUID
+	token.RefreshUUID = UUID
+
+	context := models.TokenContext{
+		Email:       authEmail,
+		DisplayName: mock.Anything,
+	}
+	context.Role = authRoleName
+	token.Context = context
+
+	tk := jwt.New(jwt.SigningMethodHS256)
+	claims := tk.Claims.(jwt.MapClaims)
+	claims["iss"] = barroth_config.ENV.AppName
+	claims["sub"] = int64(0)
+
+	claims["exp"] = token.RefreshTokenExp
+	claims["iat"] = time.Now().In(location).Unix()
+	claims["refresh_uuid"] = token.RefreshUUID
+	rs, err := tk.SignedString([]byte(key))
+	token.Token.RefreshToken = rs
+	return token, err
+}
+func TestRefreshTokenFaileValidSubType(t *testing.T) {
+	_, handler := AuthMockSetup(t)
+	token, err := mockRefreshTokenValidSubType(barroth_config.ENV.RefreshKey)
+	assert.NoError(t, err)
+	assert.NotEqual(t, nil, token.Token.RefreshToken)
+	app := fiber.New()
+
+	params := models.RefreshToken{
+		Token: token.Token.RefreshToken,
+	}
+	data, _ := json.Marshal(&params)
+	payload := bytes.NewReader(data)
+	app.Post("/auth/refresh_token", handler.RefreshToken)
+	req, err := http.NewRequest("POST", "/auth/refresh_token", payload)
+	req.Header.Set(fiber.HeaderContentType, fiber.MIMEApplicationJSON)
+
+	assert.NoError(t, err)
+	resp, err := app.Test(req)
+	assert.NoError(t, err)
+	assert.Equal(t, 200, resp.StatusCode, "TestRefreshTokenSuccess")
+}
+func mockRefreshTokenValidRefreshUUIDType(key string) (models.TokenDetail, error) {
+	var token models.TokenDetail
+	location, _ := time.LoadLocation(timeLoc)
+	accessToken := time.Now().In(location).Add(time.Minute * 15).Unix()
+	refreshToken := time.Now().In(location).Add(time.Hour * 24 * 7).Unix()
+
+	token.AccessTokenExp = accessToken
+	token.RefreshTokenExp = refreshToken
+	token.AccessUUID = UUID
+	token.RefreshUUID = UUID
+
+	context := models.TokenContext{
+		Email:       authEmail,
+		DisplayName: mock.Anything,
+	}
+	context.Role = authRoleName
+	token.Context = context
+
+	//
+	tk := jwt.New(jwt.SigningMethodHS256)
+	claims := tk.Claims.(jwt.MapClaims)
+	claims["iss"] = barroth_config.ENV.AppName
+	claims["sub"] = UUID
+
+	claims["exp"] = token.RefreshTokenExp
+	claims["iat"] = time.Now().In(location).Unix()
+	claims["refresh_uuid"] = int64(0)
+	rs, err := tk.SignedString([]byte(key))
+	token.Token.RefreshToken = rs
+	return token, err
+}
+func TestRefreshTokenFaileValidRefreshType(t *testing.T) {
+	_, handler := AuthMockSetup(t)
+	token, err := mockRefreshTokenValidRefreshUUIDType(barroth_config.ENV.RefreshKey)
+	assert.NoError(t, err)
+	assert.NotEqual(t, nil, token.Token.RefreshToken)
+	app := fiber.New()
+
+	params := models.RefreshToken{
+		Token: token.Token.RefreshToken,
+	}
+	data, _ := json.Marshal(&params)
+	payload := bytes.NewReader(data)
+	app.Post("/auth/refresh_token", handler.RefreshToken)
+	req, err := http.NewRequest("POST", "/auth/refresh_token", payload)
+	req.Header.Set(fiber.HeaderContentType, fiber.MIMEApplicationJSON)
+
+	assert.NoError(t, err)
+	resp, err := app.Test(req)
+	assert.NoError(t, err)
+	assert.Equal(t, 200, resp.StatusCode, "TestRefreshTokenSuccess")
+}
+func TestRefreshTokenFaileOnDeleteError(t *testing.T) {
+	mockUseCase, handler := AuthMockSetup(t)
+	token, err := mockRefreshToken(barroth_config.ENV.RefreshKey)
+	assert.NoError(t, err)
+	assert.NotEqual(t, nil, token.Token.RefreshToken)
+	app := fiber.New()
+
+	mockUseCase.On("DeleteToken", mock.AnythingOfType("string")).Return(errors.New("error"))
+
+	params := models.RefreshToken{
+		Token: token.Token.RefreshToken,
+	}
+	data, _ := json.Marshal(&params)
+	payload := bytes.NewReader(data)
+	app.Post("/auth/refresh_token", handler.RefreshToken)
+	req, err := http.NewRequest("POST", "/auth/refresh_token", payload)
+	req.Header.Set(fiber.HeaderContentType, fiber.MIMEApplicationJSON)
+
+	assert.NoError(t, err)
+	resp, err := app.Test(req)
+	assert.NoError(t, err)
+	assert.Equal(t, 400, resp.StatusCode, "TestRefreshTokenSuccess")
+}
+func TestRefreshTokenFaileGetUser(t *testing.T) {
+	mockUseCase, handler := AuthMockSetup(t)
+	token, err := mockRefreshToken(barroth_config.ENV.RefreshKey)
+	assert.NoError(t, err)
+	assert.NotEqual(t, nil, token.Token.RefreshToken)
+	app := fiber.New()
+
+	mockUseCase.On("DeleteToken", mock.AnythingOfType("string")).Return(nil)
+	mockUseCase.On("GetUser", mock.AnythingOfType(mockAuthType), UUID).Return(errors.New("error"))
+	params := models.RefreshToken{
+		Token: token.Token.RefreshToken,
+	}
+	data, _ := json.Marshal(&params)
+	payload := bytes.NewReader(data)
+	app.Post("/auth/refresh_token", handler.RefreshToken)
+	req, err := http.NewRequest("POST", "/auth/refresh_token", payload)
+	req.Header.Set(fiber.HeaderContentType, fiber.MIMEApplicationJSON)
+
+	assert.NoError(t, err)
+	resp, err := app.Test(req)
+	assert.NoError(t, err)
+	assert.Equal(t, 404, resp.StatusCode, "TestRefreshTokenSuccess")
+}
+func TestRefreshTokenFailCreateToken(t *testing.T) {
+	mockUseCase, handler := AuthMockSetup(t)
+	token, err := mockRefreshToken(barroth_config.ENV.RefreshKey)
+	assert.NoError(t, err)
+	assert.NotEqual(t, nil, token.Token.RefreshToken)
+	app := fiber.New()
+
+	var tk models.TokenDetail
+	mockUseCase.On("DeleteToken", mock.AnythingOfType("string")).Return(nil)
+	mockUseCase.On("GetUser", mock.AnythingOfType(mockAuthType), UUID).Return(nil)
+	mockUseCase.On("CreateToken", mock.AnythingOfType(mockAuthType)).Return(tk, errors.New("error"))
+
+	params := models.RefreshToken{
+		Token: token.Token.RefreshToken,
+	}
+	data, _ := json.Marshal(&params)
+	payload := bytes.NewReader(data)
+	app.Post("/auth/refresh_token", handler.RefreshToken)
+	req, err := http.NewRequest("POST", "/auth/refresh_token", payload)
+	req.Header.Set(fiber.HeaderContentType, fiber.MIMEApplicationJSON)
+
+	assert.NoError(t, err)
+	resp, err := app.Test(req)
+	assert.NoError(t, err)
+	assert.Equal(t, 400, resp.StatusCode, "TestRefreshTokenSuccess")
+}
+func TestRefreshTokenFailGenToken1(t *testing.T) {
+	mockUseCase, handler := AuthMockSetup(t)
+	token, err := mockRefreshToken(barroth_config.ENV.RefreshKey)
+	assert.NoError(t, err)
+	assert.NotEqual(t, nil, token.Token.RefreshToken)
+	app := fiber.New()
+
+	var tk models.TokenDetail
+	mockUseCase.On("DeleteToken", mock.AnythingOfType("string")).Return(nil)
+	mockUseCase.On("GetUser", mock.AnythingOfType(mockAuthType), UUID).Return(nil)
+	mockUseCase.On("CreateToken", mock.AnythingOfType(mockAuthType)).Return(tk, nil)
+	mockUseCase.On("GenerateAccessTokenBy", mock.AnythingOfType(mockAuthType), mock.AnythingOfType(mockAuthTokenDetailType)).Return(errors.New("error"))
+
+	params := models.RefreshToken{
+		Token: token.Token.RefreshToken,
+	}
+	data, _ := json.Marshal(&params)
+	payload := bytes.NewReader(data)
+	app.Post("/auth/refresh_token", handler.RefreshToken)
+	req, err := http.NewRequest("POST", "/auth/refresh_token", payload)
+	req.Header.Set(fiber.HeaderContentType, fiber.MIMEApplicationJSON)
+
+	assert.NoError(t, err)
+	resp, err := app.Test(req)
+	assert.NoError(t, err)
+	assert.Equal(t, 400, resp.StatusCode, "TestRefreshTokenSuccess")
+}
+func TestRefreshTokenFailGenToken2(t *testing.T) {
+	mockUseCase, handler := AuthMockSetup(t)
+	token, err := mockRefreshToken(barroth_config.ENV.RefreshKey)
+	assert.NoError(t, err)
+	assert.NotEqual(t, nil, token.Token.RefreshToken)
+	app := fiber.New()
+
+	var tk models.TokenDetail
+	mockUseCase.On("DeleteToken", mock.AnythingOfType("string")).Return(nil)
+	mockUseCase.On("GetUser", mock.AnythingOfType(mockAuthType), UUID).Return(nil)
+	mockUseCase.On("CreateToken", mock.AnythingOfType(mockAuthType)).Return(tk, nil)
+	mockUseCase.On("GenerateAccessTokenBy", mock.AnythingOfType(mockAuthType), mock.AnythingOfType(mockAuthTokenDetailType)).Return(nil)
+	mockUseCase.On("GenerateRefreshTokenBy", mock.AnythingOfType(mockAuthType), mock.AnythingOfType(mockAuthTokenDetailType)).Return(errors.New("error"))
+
+	params := models.RefreshToken{
+		Token: token.Token.RefreshToken,
+	}
+	data, _ := json.Marshal(&params)
+	payload := bytes.NewReader(data)
+	app.Post("/auth/refresh_token", handler.RefreshToken)
+	req, err := http.NewRequest("POST", "/auth/refresh_token", payload)
+	req.Header.Set(fiber.HeaderContentType, fiber.MIMEApplicationJSON)
+
+	assert.NoError(t, err)
+	resp, err := app.Test(req)
+	assert.NoError(t, err)
+	assert.Equal(t, 400, resp.StatusCode, "TestRefreshTokenSuccess")
+}
+func TestRefreshTokenFailSaveToken(t *testing.T) {
+	mockUseCase, handler := AuthMockSetup(t)
+	token, err := mockRefreshToken(barroth_config.ENV.RefreshKey)
+	assert.NoError(t, err)
+	assert.NotEqual(t, nil, token.Token.RefreshToken)
+	app := fiber.New()
+
+	var tk models.TokenDetail
+	mockUseCase.On("DeleteToken", mock.AnythingOfType("string")).Return(nil)
+	mockUseCase.On("GetUser", mock.AnythingOfType(mockAuthType), UUID).Return(nil)
+	mockUseCase.On("CreateToken", mock.AnythingOfType(mockAuthType)).Return(tk, nil)
+	mockUseCase.On("GenerateAccessTokenBy", mock.AnythingOfType(mockAuthType), mock.AnythingOfType(mockAuthTokenDetailType)).Return(nil)
+	mockUseCase.On("GenerateRefreshTokenBy", mock.AnythingOfType(mockAuthType), mock.AnythingOfType(mockAuthTokenDetailType)).Return(nil)
+
+	mockUseCase.On("SaveToken", mock.Anything, mock.AnythingOfType(mockAuthTokenDetailType)).Return(errors.New("error"))
+
+	params := models.RefreshToken{
+		Token: token.Token.RefreshToken,
+	}
+	data, _ := json.Marshal(&params)
+	payload := bytes.NewReader(data)
+	app.Post("/auth/refresh_token", handler.RefreshToken)
+	req, err := http.NewRequest("POST", "/auth/refresh_token", payload)
+	req.Header.Set(fiber.HeaderContentType, fiber.MIMEApplicationJSON)
+
+	assert.NoError(t, err)
+	resp, err := app.Test(req)
+	assert.NoError(t, err)
+	assert.Equal(t, 500, resp.StatusCode, "TestRefreshTokenSuccess")
+}
+func TestRefreshTokenSuccess(t *testing.T) {
+	mockUseCase, handler := AuthMockSetup(t)
+	token, err := mockRefreshToken(barroth_config.ENV.RefreshKey)
+	assert.NoError(t, err)
+	assert.NotEqual(t, nil, token.Token.RefreshToken)
+	app := fiber.New()
+
+	var tk models.TokenDetail
+	mockUseCase.On("DeleteToken", mock.AnythingOfType("string")).Return(nil)
+	mockUseCase.On("GetUser", mock.AnythingOfType(mockAuthType), UUID).Return(nil)
+	mockUseCase.On("CreateToken", mock.AnythingOfType(mockAuthType)).Return(tk, nil)
+	mockUseCase.On("GenerateAccessTokenBy", mock.AnythingOfType(mockAuthType), mock.AnythingOfType(mockAuthTokenDetailType)).Return(nil)
+	mockUseCase.On("GenerateRefreshTokenBy", mock.AnythingOfType(mockAuthType), mock.AnythingOfType(mockAuthTokenDetailType)).Return(nil)
+	mockUseCase.On("SaveToken", mock.Anything, mock.AnythingOfType(mockAuthTokenDetailType)).Return(nil)
+
+	params := models.RefreshToken{
+		Token: token.Token.RefreshToken,
+	}
+	data, _ := json.Marshal(&params)
+	payload := bytes.NewReader(data)
+	app.Post("/auth/refresh_token", handler.RefreshToken)
+	req, err := http.NewRequest("POST", "/auth/refresh_token", payload)
+	req.Header.Set(fiber.HeaderContentType, fiber.MIMEApplicationJSON)
+
+	assert.NoError(t, err)
+	resp, err := app.Test(req)
+	assert.NoError(t, err)
+	assert.Equal(t, 200, resp.StatusCode, "TestRefreshTokenSuccess")
 }

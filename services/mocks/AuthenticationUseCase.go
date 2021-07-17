@@ -75,6 +75,20 @@ func (_m *AuthenticationUseCase) GenerateRefreshTokenBy(u *models.Users, t *mode
 	return r0
 }
 
+// GetUser provides a mock function with given fields: m, uuid
+func (_m *AuthenticationUseCase) GetUser(m *models.Users, uuid string) error {
+	ret := _m.Called(m, uuid)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(*models.Users, string) error); ok {
+		r0 = rf(m, uuid)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // Login provides a mock function with given fields: m, email, password
 func (_m *AuthenticationUseCase) Login(m *models.Users, email string, password string) error {
 	ret := _m.Called(m, email, password)

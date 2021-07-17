@@ -56,6 +56,20 @@ func (_m *AuthenticationRepository) GetRoleNameByUserID(m *models.TokenRoleName,
 	return r0
 }
 
+// GetUser provides a mock function with given fields: m, uuid
+func (_m *AuthenticationRepository) GetUser(m *models.Users, uuid string) error {
+	ret := _m.Called(m, uuid)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(*models.Users, string) error); ok {
+		r0 = rf(m, uuid)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // Login provides a mock function with given fields: m, email
 func (_m *AuthenticationRepository) Login(m *models.Users, email string) error {
 	ret := _m.Called(m, email)

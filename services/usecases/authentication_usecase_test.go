@@ -132,3 +132,19 @@ func TestDeleteToken(t *testing.T) {
 	err := u.DeleteToken(utils.UUIDv4())
 	assert.NoError(t, err)
 }
+func TestAuthenticationGetUserSuccess(t *testing.T) {
+	repo := new(mocks.AuthenticationRepository)
+	repo.On("GetUser", mock.AnythingOfType(authModelType), mock.Anything).Return(nil).Once()
+	u := NewAuthenticationUseCase(repo)
+	var user models.Users
+	err := u.GetUser(&user, utils.UUIDv4())
+	assert.NoError(t, err)
+}
+func TestAuthenticationGetUserFail(t *testing.T) {
+	repo := new(mocks.AuthenticationRepository)
+	repo.On("GetUser", mock.AnythingOfType(authModelType), mock.Anything).Return(errors.New("error TestAuthenticationGetUserFail")).Once()
+	u := NewAuthenticationUseCase(repo)
+	var user models.Users
+	err := u.GetUser(&user, utils.UUIDv4())
+	assert.Error(t, err)
+}

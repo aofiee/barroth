@@ -111,3 +111,7 @@ func (a *authenticationUseCase) DeleteToken(uuid string) error {
 	err := a.authenticationRepo.DeleteToken(uuid)
 	return err
 }
+func (a *authenticationUseCase) GetUser(u *models.Users, uuid string) error {
+	err := a.authenticationRepo.GetUser(u, uuid)
+	return err
+}

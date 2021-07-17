@@ -51,3 +51,9 @@ func (a *authenticationRepository) DeleteToken(uuid string) error {
 	err := a.queue.Del(ctx, uuid).Err()
 	return err
 }
+func (a *authenticationRepository) GetUser(m *models.Users, uuid string) error {
+	if err := a.conn.Where("uuid = ?", uuid).First(m).Error; err != nil {
+		return err
+	}
+	return nil
+}

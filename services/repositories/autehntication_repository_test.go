@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"errors"
 	"reflect"
 	"testing"
 	"time"
@@ -93,14 +94,43 @@ func TestSaveToken(t *testing.T) {
 }
 func TestDeleteToken(t *testing.T) {
 	SetupMock(t)
-	rd, mock := redismock.NewClientMock()
+	rd, redisMock := redismock.NewClientMock()
 	databases.QueueClient = rd
 
 	uuid := utils.UUIDv4()
 	repo := NewAuthenticationRepository(databases.DB, databases.QueueClient)
 	assert.Equal(t, authenticationRepositoryType, reflect.TypeOf(repo).String(), "TestDeleteToken")
 
-	mock.ExpectDel(uuid).SetVal(0)
+	redisMock.ExpectDel(uuid).SetVal(0)
 	err := repo.DeleteToken(uuid)
 	assert.NoError(t, err)
+}
+func TestAuthenticationGetUserSuccess(t *testing.T) {
+	SetupMock(t)
+	rd, _ := redismock.NewClientMock()
+	databases.QueueClient = rd
+	repo := NewAuthenticationRepository(databases.DB, databases.QueueClient)
+	assert.Equal(t, authenticationRepositoryType, reflect.TypeOf(repo).String(), "TestAuthenticationGetUser")
+	UUID := utils.UUIDv4()
+	columns := []string{"id", "created_at", "updated_at", "deleted_at", "email", "password", "name", "telephone", "image", "uuid", "status"}
+
+	mock.ExpectQuery("^SELECT (.+) FROM `users`*").WithArgs(UUID).
+		WillReturnRows(sqlmock.NewRows(columns).AddRow(1, nil, nil, nil, userEmail, userPassword, userFullName, userTelephone, "image", UUID, 0))
+	var user models.Users
+	err := repo.GetUser(&user, UUID)
+	assert.NoError(t, err)
+}
+func TestAuthenticationGetUserFail(t *testing.T) {
+	SetupMock(t)
+	rd, _ := redismock.NewClientMock()
+	databases.QueueClient = rd
+	repo := NewAuthenticationRepository(databases.DB, databases.QueueClient)
+	assert.Equal(t, authenticationRepositoryType, reflect.TypeOf(repo).String(), "TestAuthenticationGetUser")
+	UUID := utils.UUIDv4()
+
+	mock.ExpectQuery("^SELECT (.+) FROM `users`*").WithArgs(UUID).
+		WillReturnError(errors.New("error"))
+	var user models.Users
+	err := repo.GetUser(&user, UUID)
+	assert.Error(t, err)
 }

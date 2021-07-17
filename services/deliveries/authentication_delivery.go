@@ -1,6 +1,8 @@
 package deliveries
 
 import (
+	"fmt"
+
 	barroth_config "github.com/aofiee/barroth/config"
 	"github.com/aofiee/barroth/constants"
 	"github.com/aofiee/barroth/databases"
@@ -93,7 +95,7 @@ func (a *authenticationHandler) Logout(c *fiber.Ctx) error {
 	accessUUID := claims["access_uuid"].(string)
 	err := a.authenticationUseCase.DeleteToken(accessUUID)
 	if err != nil {
-		return helpers.FailOnError(c, err, "StatusUnauthorized", fiber.StatusUnauthorized)
+		return helpers.FailOnError(c, err, constants.ERR_CANNOT_DELETE_TOKEN_TO_REDIS, fiber.StatusBadRequest)
 	}
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"msg":   constants.ERR_LOGOUT_COMPLETED,
@@ -116,4 +118,64 @@ func (a *authenticationHandler) AuthError(c *fiber.Ctx, e error) error {
 
 func (a *authenticationHandler) AuthSuccess(c *fiber.Ctx) error {
 	return c.Next()
+}
+func (a *authenticationHandler) RefreshToken(c *fiber.Ctx) error {
+	var param models.RefreshToken
+	err := c.BodyParser(&param)
+	if err != nil {
+		return helpers.FailOnError(c, err, constants.ERR_PARSE_JSON_FAIL, fiber.StatusBadRequest)
+	}
+	token, err := jwt.Parse(param.Token, a.VerifyToken)
+	if err != nil {
+		return helpers.FailOnError(c, err, constants.ERR_TOKEN_SIGNED_NOT_MATCH, fiber.StatusUnauthorized)
+	}
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if ok && token.Valid {
+		uuid, ok := claims["sub"].(string)
+		if !ok {
+			return helpers.FailOnError(c, err, constants.ERR_TOKEN_CANNOT_SIGNED_KEY, fiber.StatusNotFound)
+		}
+		refreshAccesss, ok := claims["refresh_uuid"].(string)
+		if !ok {
+			return helpers.FailOnError(c, err, constants.ERR_TOKEN_CANNOT_SIGNED_KEY, fiber.StatusNotFound)
+		}
+		err = a.authenticationUseCase.DeleteToken(refreshAccesss)
+		if err != nil {
+			return helpers.FailOnError(c, err, constants.ERR_CANNOT_DELETE_TOKEN_TO_REDIS, fiber.StatusBadRequest)
+		}
+		var user models.Users
+		err := a.authenticationUseCase.GetUser(&user, uuid)
+		if err != nil {
+			return helpers.FailOnError(c, err, constants.ERR_GET_USER_BY_UUID_NOT_FOUND, fiber.StatusNotFound)
+		}
+		renewToken, err := a.authenticationUseCase.CreateToken(&user)
+		if err != nil {
+			return helpers.FailOnError(c, err, constants.ERR_CANNOT_GET_ROLE_NAME, fiber.StatusBadRequest)
+		}
+		err = a.authenticationUseCase.GenerateAccessTokenBy(&user, &renewToken)
+		if err != nil {
+			return helpers.FailOnError(c, err, constants.ERR_TOKEN_CANNOT_SIGNED_KEY, fiber.StatusBadRequest)
+		}
+		err = a.authenticationUseCase.GenerateRefreshTokenBy(&user, &renewToken)
+		if err != nil {
+			return helpers.FailOnError(c, err, constants.ERR_TOKEN_CANNOT_SIGNED_KEY, fiber.StatusBadRequest)
+		}
+		err = a.authenticationUseCase.SaveToken(user.UUID, &renewToken)
+		if err != nil {
+			return helpers.FailOnError(c, err, constants.ERR_CANNOT_SAVE_TOKEN_TO_REDIS, fiber.StatusInternalServerError)
+		}
+		return c.Status(fiber.StatusOK).JSON(fiber.Map{
+			"msg":   constants.ERR_REFRESH_TOKEN_SUCCESSFUL,
+			"error": nil,
+			"data":  renewToken.Token,
+		})
+	} else {
+		return helpers.FailOnError(c, err, constants.ERR_REFRESH_TOKEN_EXPIRE, fiber.StatusUnauthorized)
+	}
+}
+func (a *authenticationHandler) VerifyToken(token *jwt.Token) (interface{}, error) {
+	if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+		return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+	}
+	return []byte(barroth_config.ENV.RefreshKey), nil
 }
