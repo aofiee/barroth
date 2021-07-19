@@ -2,7 +2,7 @@
 @port = 8181
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@accessToken = 
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NfdXVpZCI6IjQyMGFiYTkzLTJjYjYtNGMwNS1hYTQ4LTA1YmNjODYzMzRjMSIsImNvbnRleHQiOnsiZW1haWwiOiJraG9ta3JpZEB0d2luc3luZXJneS5jby50aCIsImRpc3BsYXlfbmFtZSI6Iktob21rcmlkIExlcmRwcmFzZXJ0Iiwicm9sZSI6IkFkbWluaXN0cmF0b3IifSwiZXhwIjoxNjI2NjY0NDAwLCJpYXQiOjE2MjY2NjM1MDAsImlzcyI6IkRpYWJsb3MiLCJzdWIiOiJhNzI3OThhNS04Y2Y0LTRlNTEtOGM5NS05NzllM2ZlYzIxNWUifQ.3RSAVsfAJDM30vqlTWsBUstlqOcyZg6jBgcSAnf4qJY
 ###
 GET http://{{host}}/install
 Content-Type: {{contentType}}
@@ -61,7 +61,7 @@ Authorization: Bearer {{accessToken}}
 
 {
    "role_id":[
-      4
+      7
    ]
 }
 

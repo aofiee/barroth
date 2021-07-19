@@ -24,7 +24,12 @@ func (r *userRoutes) Install(app *fiber.App) {
 	repo := repositories.NewUserRepository(databases.DB)
 	u := usecases.NewUserUseCase(repo)
 	handler := deliveries.NewUserHandelr(u, "Users", "Installation Module This is an API group for the system installation environment.", "/user")
-	e := app.Group("/user")
+
+	authRepo := repositories.NewAuthenticationRepository(databases.DB, databases.QueueClient)
+	authUseCase := usecases.NewAuthenticationUseCase(authRepo)
+	authHandler := deliveries.GetAuthHandlerUsecase(authUseCase)
+
+	e := app.Group("/user", authHandler.AuthorizationRequired())
 	e.Post("/", handler.NewUser)
 	// e = app.Group("/users")
 }

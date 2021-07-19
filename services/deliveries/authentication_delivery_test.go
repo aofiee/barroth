@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"reflect"
 	"testing"
 	"time"
 
@@ -93,6 +94,12 @@ func TestNewAuthenticationHandlerSuccess(t *testing.T) {
 	resp, err = app.Test(req)
 	assert.NoError(t, err)
 	assert.Equal(t, 406, resp.StatusCode, "TestNewAuthenticationHandlerSuccess Json Error")
+}
+func TestGetAuthHandlerUsecase(t *testing.T) {
+	SetupMock(t)
+	mockUseCase := new(mocks.AuthenticationUseCase)
+	handler := GetAuthHandlerUsecase(mockUseCase)
+	assert.Equal(t, "*deliveries.authenticationHandler", reflect.TypeOf(handler).String())
 }
 func TestNewAuthenticationHandlerFail(t *testing.T) {
 	params := paramsLogin{

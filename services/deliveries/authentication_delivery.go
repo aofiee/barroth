@@ -49,6 +49,12 @@ func NewAuthenHandler(usecase domains.AuthenticationUseCase, m, d, u string) *au
 	}
 }
 
+func GetAuthHandlerUsecase(usecase domains.AuthenticationUseCase) *authenticationHandler {
+	return &authenticationHandler{
+		authenticationUseCase: usecase,
+	}
+}
+
 func (a *authenticationHandler) Login(c *fiber.Ctx) error {
 	var auth paramsLogin
 	err := c.BodyParser(&auth)

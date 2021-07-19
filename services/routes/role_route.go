@@ -24,12 +24,17 @@ func (r *roleRoutes) Install(app *fiber.App) {
 	repo := repositories.NewRoleRepository(databases.DB)
 	u := usecases.NewRoleUseCase(repo)
 	handler := deliveries.NewRoleHandelr(u, "Installation", "Installation Module This is an API group for the system installation environment.", "/role")
-	e := app.Group("/role")
+
+	authRepo := repositories.NewAuthenticationRepository(databases.DB, databases.QueueClient)
+	authUseCase := usecases.NewAuthenticationUseCase(authRepo)
+	authHandler := deliveries.GetAuthHandlerUsecase(authUseCase)
+
+	e := app.Group("/role", authHandler.AuthorizationRequired())
 	e.Post("/", handler.NewRole)
 	e.Get("/:id", handler.GetRole)
 	e.Put("/:id", handler.UpdateRole)
 
-	e = app.Group("/roles")
+	e = app.Group("/roles", authHandler.AuthorizationRequired())
 	e.Get("/", handler.GetAllRoles)
 	e.Delete("/", handler.DeleteRoles)
 	e.Put("/restore", handler.RestoreRoles)
