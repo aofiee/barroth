@@ -8,6 +8,7 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/aofiee/barroth/databases"
 	"github.com/aofiee/barroth/models"
+	"github.com/gofiber/fiber/v2"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -77,5 +78,25 @@ func TestGetModule(t *testing.T) {
 	mock.ExpectQuery("^SELECT (.+) FROM `modules`*").WithArgs("1").
 		WillReturnError(errors.New("error TestGetModule"))
 	err = repo.GetModule(&module, "1")
+	assert.Error(t, err)
+}
+func TestGetModuleBySlug(t *testing.T) {
+	SetupMock(t)
+	repo := NewModuleRepository(databases.DB)
+	assert.Equal(t, modelRepositoryType, reflect.TypeOf(repo).String(), "TestGetModule")
+	module := models.Modules{
+		Name:        modelName,
+		Description: modelName,
+	}
+	columns := []string{"id", "created_at", "updated_at", "deleted_at", "name", "description", "module_slug"}
+
+	mock.ExpectQuery("^SELECT (.+) FROM `modules`*").WithArgs(fiber.MethodGet, "/test").
+		WillReturnRows(sqlmock.NewRows(columns).AddRow(1, nil, nil, nil, modelName, "Desc", "/url"))
+	err := repo.GetModuleBySlug(&module, fiber.MethodGet, "/test")
+	assert.NoError(t, err)
+
+	mock.ExpectQuery("^SELECT (.+) FROM `modules`*").WithArgs("1").
+		WillReturnError(errors.New("error TestGetModule"))
+	err = repo.GetModuleBySlug(&module, fiber.MethodGet, "/test")
 	assert.Error(t, err)
 }

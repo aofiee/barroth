@@ -6,6 +6,7 @@ import (
 
 	"github.com/aofiee/barroth/mocks"
 	"github.com/aofiee/barroth/models"
+	"github.com/gofiber/fiber/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -14,7 +15,6 @@ const (
 	moduleModelType = "*models.Modules"
 	moduleName      = "Test"
 	moduleDesc      = "Test"
-	moduleSlug      = "/test"
 )
 
 func TestCreateModule(t *testing.T) {
@@ -22,7 +22,6 @@ func TestCreateModule(t *testing.T) {
 	module := models.Modules{
 		Name:        moduleName,
 		Description: moduleDesc,
-		ModuleSlug:  moduleSlug,
 	}
 	repo.On("CreateModule", mock.AnythingOfType(moduleModelType)).Return(nil).Once()
 	u := NewModuleUseCase(repo)
@@ -35,7 +34,6 @@ func TestUpdateModuleSuccess(t *testing.T) {
 	module := models.Modules{
 		Name:        moduleName,
 		Description: moduleDesc,
-		ModuleSlug:  moduleSlug,
 	}
 	repo.On("GetModule", mock.AnythingOfType(moduleModelType), mock.Anything).Return(nil).Once()
 	repo.On("UpdateModule", mock.AnythingOfType(moduleModelType), mock.Anything).Return(nil).Once()
@@ -49,7 +47,6 @@ func TestUpdateModuleFail(t *testing.T) {
 	module := models.Modules{
 		Name:        moduleName,
 		Description: moduleDesc,
-		ModuleSlug:  moduleSlug,
 	}
 	repo.On("GetModule", mock.AnythingOfType(moduleModelType), mock.Anything).Return(errors.New("error")).Once()
 	u := NewModuleUseCase(repo)
@@ -62,10 +59,20 @@ func TestGetModule(t *testing.T) {
 	module := models.Modules{
 		Name:        moduleName,
 		Description: moduleDesc,
-		ModuleSlug:  moduleSlug,
 	}
 	repo.On("GetModule", mock.AnythingOfType(moduleModelType), mock.Anything).Return(nil).Once()
 	u := NewModuleUseCase(repo)
 	err := u.GetModule(&module, "/test")
+	assert.NoError(t, err)
+}
+func TestGetModuleBySlug(t *testing.T) {
+	repo := new(mocks.ModuleRepository)
+	module := models.Modules{
+		Name:        moduleName,
+		Description: moduleDesc,
+	}
+	repo.On("GetModuleBySlug", mock.AnythingOfType(moduleModelType), mock.Anything, mock.Anything).Return(nil).Once()
+	u := NewModuleUseCase(repo)
+	err := u.GetModuleBySlug(&module, fiber.MethodPost, "/test")
 	assert.NoError(t, err)
 }

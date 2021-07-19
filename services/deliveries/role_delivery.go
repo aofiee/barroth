@@ -19,7 +19,6 @@ type (
 		roleUseCase domains.RoleUseCase
 		moduleName  string
 		description string
-		slug        string
 	}
 	paramsGetAllRoles struct {
 		Keyword   string `json:"keyword" form:"keyword"`
@@ -34,23 +33,26 @@ type (
 	}
 )
 
-func NewRoleHandelr(usecase domains.RoleUseCase, m, d, u string) *roleHandler {
-	newModule := models.Modules{
-		Name:        m,
-		Description: d,
-		ModuleSlug:  u,
+func NewRoleHandelr(usecase domains.RoleUseCase, m, d string, u *[]models.ModuleMethodSlug) *roleHandler {
+	for _, value := range *u {
+		newModule := models.Modules{
+			Name:        m,
+			Description: d,
+			ModuleSlug:  value.Slug,
+			Method:      value.Method,
+		}
+		moduleRepo := repositories.NewModuleRepository(databases.DB)
+		moduleUseCase := usecases.NewModuleUseCase(moduleRepo)
+		err := moduleUseCase.GetModuleBySlug(&newModule, value.Method, value.Slug)
+		if err != nil {
+			moduleUseCase.CreateModule(&newModule)
+		}
 	}
-	moduleRepo := repositories.NewModuleRepository(databases.DB)
-	moduleUseCase := usecases.NewModuleUseCase(moduleRepo)
-	err := moduleUseCase.GetModule(&newModule, u)
-	if err != nil {
-		moduleUseCase.CreateModule(&newModule)
-	}
+
 	return &roleHandler{
 		roleUseCase: usecase,
 		moduleName:  m,
 		description: d,
-		slug:        u,
 	}
 }
 func (r *roleHandler) NewRole(c *fiber.Ctx) error {

@@ -21,7 +21,6 @@ type (
 		authenticationUseCase domains.AuthenticationUseCase
 		moduleName            string
 		description           string
-		slug                  string
 	}
 	paramsLogin struct {
 		Email    string `json:"email" validate:"required,email,min=6,max=255"`
@@ -29,23 +28,25 @@ type (
 	}
 )
 
-func NewAuthenHandler(usecase domains.AuthenticationUseCase, m, d, u string) *authenticationHandler {
-	newModule := models.Modules{
-		Name:        m,
-		Description: d,
-		ModuleSlug:  u,
-	}
-	moduleRepo := repositories.NewModuleRepository(databases.DB)
-	moduleUseCase := usecases.NewModuleUseCase(moduleRepo)
-	err := moduleUseCase.GetModule(&newModule, u)
-	if err != nil {
-		moduleUseCase.CreateModule(&newModule)
+func NewAuthenHandler(usecase domains.AuthenticationUseCase, m, d string, u *[]models.ModuleMethodSlug) *authenticationHandler {
+	for _, value := range *u {
+		newModule := models.Modules{
+			Name:        m,
+			Description: d,
+			ModuleSlug:  value.Slug,
+			Method:      value.Method,
+		}
+		moduleRepo := repositories.NewModuleRepository(databases.DB)
+		moduleUseCase := usecases.NewModuleUseCase(moduleRepo)
+		err := moduleUseCase.GetModuleBySlug(&newModule, value.Method, value.Slug)
+		if err != nil {
+			moduleUseCase.CreateModule(&newModule)
+		}
 	}
 	return &authenticationHandler{
 		authenticationUseCase: usecase,
 		moduleName:            m,
 		description:           d,
-		slug:                  u,
 	}
 }
 

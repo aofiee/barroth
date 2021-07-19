@@ -15,8 +15,14 @@ type (
 func NewModuleRepository(conn *gorm.DB) domains.ModuleRepository {
 	return &moduleRepository{conn}
 }
-func (m *moduleRepository) GetModule(module *models.Modules, slug string) error {
-	if err := m.conn.Where("module_slug = ?", slug).First(module).Error; err != nil {
+func (m *moduleRepository) GetModuleBySlug(module *models.Modules, method, slug string) error {
+	if err := m.conn.Where("method = ? AND module_slug = ?", method, slug).First(module).Error; err != nil {
+		return err
+	}
+	return nil
+}
+func (m *moduleRepository) GetModule(module *models.Modules, id string) error {
+	if err := m.conn.Where("ID = ?", id).First(module).Error; err != nil {
 		return err
 	}
 	return nil

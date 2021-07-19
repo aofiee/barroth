@@ -16,7 +16,6 @@ type (
 		userUseCase domains.UserUseCase
 		moduleName  string
 		description string
-		slug        string
 	}
 	paramsUser struct {
 		Email     string `json:"email" form:"email" validate:"required,email,min=6,max=255"`
@@ -27,23 +26,25 @@ type (
 	}
 )
 
-func NewUserHandelr(usecase domains.UserUseCase, m, d, u string) *userHandler {
-	newModule := models.Modules{
-		Name:        m,
-		Description: d,
-		ModuleSlug:  u,
-	}
-	moduleRepo := repositories.NewModuleRepository(databases.DB)
-	moduleUseCase := usecases.NewModuleUseCase(moduleRepo)
-	err := moduleUseCase.GetModule(&newModule, u)
-	if err != nil {
-		moduleUseCase.CreateModule(&newModule)
+func NewUserHandelr(usecase domains.UserUseCase, m, d string, u *[]models.ModuleMethodSlug) *userHandler {
+	for _, value := range *u {
+		newModule := models.Modules{
+			Name:        m,
+			Description: d,
+			ModuleSlug:  value.Slug,
+			Method:      value.Method,
+		}
+		moduleRepo := repositories.NewModuleRepository(databases.DB)
+		moduleUseCase := usecases.NewModuleUseCase(moduleRepo)
+		err := moduleUseCase.GetModuleBySlug(&newModule, value.Method, value.Slug)
+		if err != nil {
+			moduleUseCase.CreateModule(&newModule)
+		}
 	}
 	return &userHandler{
 		userUseCase: usecase,
 		moduleName:  m,
 		description: d,
-		slug:        u,
 	}
 }
 func (u *userHandler) NewUser(c *fiber.Ctx) error {

@@ -24,11 +24,16 @@ const (
 
 func RoleMockSetup(t *testing.T) (mockUseCase *mocks.RoleUseCase, handler *roleHandler) {
 	SetupMock(t)
+	var mr []models.ModuleMethodSlug
+	mr = append(mr, models.ModuleMethodSlug{
+		Method: fiber.MethodPost,
+		Slug:   "/test",
+	})
 	var mockRole models.RoleItems
 	err := faker.FakeData(&mockRole)
 	assert.NoError(t, err)
 	mockUseCase = new(mocks.RoleUseCase)
-	handler = NewRoleHandelr(mockUseCase, "expect1", "expect2", "/role")
+	handler = NewRoleHandelr(mockUseCase, "expect1", "expect2", &mr)
 	return
 }
 func TestNewHandlerSuccess(t *testing.T) {

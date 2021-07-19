@@ -35,11 +35,16 @@ var UUID = utils.UUIDv4()
 
 func AuthMockSetup(t *testing.T) (mockUseCase *mocks.AuthenticationUseCase, handler *authenticationHandler) {
 	SetupMock(t)
+	var mr []models.ModuleMethodSlug
+	mr = append(mr, models.ModuleMethodSlug{
+		Method: fiber.MethodPost,
+		Slug:   "/test",
+	})
 	var mockUser models.Users
 	err := faker.FakeData(&mockUser)
 	assert.NoError(t, err)
 	mockUseCase = new(mocks.AuthenticationUseCase)
-	handler = NewAuthenHandler(mockUseCase, "expect1", "expect2", "/role")
+	handler = NewAuthenHandler(mockUseCase, "expect1", "expect2", &mr)
 	return
 }
 

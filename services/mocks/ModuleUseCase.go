@@ -26,13 +26,27 @@ func (_m *ModuleUseCase) CreateModule(m *models.Modules) error {
 	return r0
 }
 
-// GetModule provides a mock function with given fields: m, slug
-func (_m *ModuleUseCase) GetModule(m *models.Modules, slug string) error {
-	ret := _m.Called(m, slug)
+// GetModule provides a mock function with given fields: m, id
+func (_m *ModuleUseCase) GetModule(m *models.Modules, id string) error {
+	ret := _m.Called(m, id)
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func(*models.Modules, string) error); ok {
-		r0 = rf(m, slug)
+		r0 = rf(m, id)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// GetModuleBySlug provides a mock function with given fields: m, method, slug
+func (_m *ModuleUseCase) GetModuleBySlug(m *models.Modules, method string, slug string) error {
+	ret := _m.Called(m, method, slug)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(*models.Modules, string, string) error); ok {
+		r0 = rf(m, method, slug)
 	} else {
 		r0 = ret.Error(0)
 	}

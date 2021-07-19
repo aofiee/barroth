@@ -33,3 +33,7 @@ func (m *moduleUseCase) GetModule(module *models.Modules, slug string) error {
 	err := m.moduleRepo.GetModule(module, slug)
 	return err
 }
+func (m *moduleUseCase) GetModuleBySlug(module *models.Modules, method, slug string) error {
+	err := m.moduleRepo.GetModuleBySlug(module, method, slug)
+	return err
+}

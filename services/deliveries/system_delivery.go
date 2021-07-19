@@ -18,27 +18,28 @@ type (
 		systemUseCase domains.SystemUseCase
 		moduleName    string
 		description   string
-		slug          string
 	}
 )
 
-func NewSystemHandelr(usecase domains.SystemUseCase, m, d, u string) *systemHandler {
-	newModule := models.Modules{
-		Name:        m,
-		Description: d,
-		ModuleSlug:  u,
-	}
-	moduleRepo := repositories.NewModuleRepository(databases.DB)
-	moduleUseCase := usecases.NewModuleUseCase(moduleRepo)
-	err := moduleUseCase.GetModule(&newModule, u)
-	if err != nil {
-		moduleUseCase.CreateModule(&newModule)
+func NewSystemHandelr(usecase domains.SystemUseCase, m, d string, u *[]models.ModuleMethodSlug) *systemHandler {
+	for _, value := range *u {
+		newModule := models.Modules{
+			Name:        m,
+			Description: d,
+			ModuleSlug:  value.Slug,
+			Method:      value.Method,
+		}
+		moduleRepo := repositories.NewModuleRepository(databases.DB)
+		moduleUseCase := usecases.NewModuleUseCase(moduleRepo)
+		err := moduleUseCase.GetModuleBySlug(&newModule, value.Method, value.Slug)
+		if err != nil {
+			moduleUseCase.CreateModule(&newModule)
+		}
 	}
 	return &systemHandler{
 		systemUseCase: usecase,
 		moduleName:    m,
 		description:   d,
-		slug:          u,
 	}
 }
 func (s *systemHandler) SystemInstallation(c *fiber.Ctx) error {
