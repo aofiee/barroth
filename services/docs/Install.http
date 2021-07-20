@@ -16,8 +16,6 @@ Authorization: Bearer {{accessToken}}
     "name": "Artist Manager",
     "description" : "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s"
 }
-###option
-OPTIONS  http://{{host}}/role
 
 ### Get Role
 GET http://{{host}}/role/2

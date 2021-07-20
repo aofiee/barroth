@@ -12,6 +12,7 @@ import (
 	"github.com/aofiee/barroth/repositories"
 	"github.com/aofiee/barroth/usecases"
 	fiber "github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/utils"
 )
 
 type (
@@ -60,16 +61,18 @@ func (s *systemHandler) SystemInstallation(c *fiber.Ctx) error {
 			Email:     barroth_config.ENV.EmailAdministrator,
 			Password:  barroth_config.ENV.PasswordAdministrator,
 			Telephone: barroth_config.ENV.TelephoneAdministrator,
-		}
-		err := s.systemUseCase.CreateUser(&user)
-		if err != nil {
-			return helpers.FailOnError(c, err, constants.ERR_CANNOT_CREATE_ROLE, fiber.StatusBadRequest)
+			UUID:      utils.UUIDv4(),
 		}
 		role := models.RoleItems{
 			Name:        "Administrator",
-			Description: "Initial",
+			Description: "Initial Role",
 		}
 		err = s.systemUseCase.CreateRole(&role)
+		if err != nil {
+			return helpers.FailOnError(c, err, constants.ERR_CANNOT_CREATE_ROLE, fiber.StatusBadRequest)
+		}
+		user.UserRoleID.RoleItemID = role.ID
+		err := s.systemUseCase.CreateUser(&user)
 		if err != nil {
 			return helpers.FailOnError(c, err, constants.ERR_CANNOT_CREATE_ROLE, fiber.StatusBadRequest)
 		}
