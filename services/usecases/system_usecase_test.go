@@ -6,6 +6,7 @@ import (
 
 	"github.com/aofiee/barroth/mocks"
 	"github.com/aofiee/barroth/models"
+	"github.com/bxcodec/faker"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -76,5 +77,23 @@ func TestGetFirstSystemInstallation(t *testing.T) {
 	repo.On("GetFirstSystemInstallation", mock.AnythingOfType(systemModelType)).Return(nil).Once()
 	u := NewSystemUseCase(repo)
 	err := u.GetFirstSystemInstallation(&m)
+	assert.NoError(t, err)
+}
+func TestSystemCreateUser(t *testing.T) {
+	repo := new(mocks.SystemRepository)
+	repo.On("CreateUser", mock.AnythingOfType(userModelType)).Return(nil)
+	u := NewSystemUseCase(repo)
+	var user models.Users
+	faker.FakeData(&user)
+	err := u.CreateUser(&user)
+	assert.NoError(t, err)
+}
+func TestSystemCreateRole(t *testing.T) {
+	repo := new(mocks.SystemRepository)
+	repo.On("CreateRole", mock.AnythingOfType(roleModelType)).Return(nil)
+	u := NewSystemUseCase(repo)
+	var role models.RoleItems
+	faker.FakeData(&role)
+	err := u.CreateRole(&role)
 	assert.NoError(t, err)
 }

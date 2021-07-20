@@ -75,6 +75,8 @@ func TestNewSystemHandelrInstallingCompleted(t *testing.T) {
 	mockUseCase.On("GetFirstSystemInstallation", mock.AnythingOfType(mockSystemType)).Return(errors.New("hello world"))
 
 	mockUseCase.On("CreateSystem", mock.AnythingOfType(mockSystemType)).Return(nil)
+	mockUseCase.On("CreateUser", mock.AnythingOfType(mockUserType)).Return(nil)
+	mockUseCase.On("CreateRole", mock.AnythingOfType(mockRoleType)).Return(nil)
 
 	app := fiber.New()
 	app.Get("/install", sysHandler.SystemInstallation)
@@ -84,6 +86,39 @@ func TestNewSystemHandelrInstallingCompleted(t *testing.T) {
 	resp, err := app.Test(req)
 	assert.NoError(t, err)
 	assert.Equal(t, 200, resp.StatusCode, "completed")
+}
+func TestNewSystemHandelrInstallingCreateUserFail(t *testing.T) {
+	mockUseCase, sysHandler := SystemMockSetup(t)
+	mockUseCase.On("GetFirstSystemInstallation", mock.AnythingOfType(mockSystemType)).Return(errors.New("hello world"))
+
+	mockUseCase.On("CreateSystem", mock.AnythingOfType(mockSystemType)).Return(nil)
+	mockUseCase.On("CreateUser", mock.AnythingOfType(mockUserType)).Return(errors.New("error CreateUser"))
+
+	app := fiber.New()
+	app.Get("/install", sysHandler.SystemInstallation)
+	req, err := http.NewRequest("GET", "/install", nil)
+	req.Header.Set(fiber.HeaderContentType, contentType)
+	assert.NoError(t, err)
+	resp, err := app.Test(req)
+	assert.NoError(t, err)
+	assert.Equal(t, 400, resp.StatusCode, "completed")
+}
+func TestNewSystemHandelrInstallingCreateRoleFail(t *testing.T) {
+	mockUseCase, sysHandler := SystemMockSetup(t)
+	mockUseCase.On("GetFirstSystemInstallation", mock.AnythingOfType(mockSystemType)).Return(errors.New("hello world"))
+
+	mockUseCase.On("CreateSystem", mock.AnythingOfType(mockSystemType)).Return(nil)
+	mockUseCase.On("CreateUser", mock.AnythingOfType(mockUserType)).Return(nil)
+	mockUseCase.On("CreateRole", mock.AnythingOfType(mockRoleType)).Return(errors.New("error CreateRole"))
+
+	app := fiber.New()
+	app.Get("/install", sysHandler.SystemInstallation)
+	req, err := http.NewRequest("GET", "/install", nil)
+	req.Header.Set(fiber.HeaderContentType, contentType)
+	assert.NoError(t, err)
+	resp, err := app.Test(req)
+	assert.NoError(t, err)
+	assert.Equal(t, 400, resp.StatusCode, "completed")
 }
 func TestNewSystemHandelrInstallingFailed(t *testing.T) {
 	mockUseCase, sysHandler := SystemMockSetup(t)

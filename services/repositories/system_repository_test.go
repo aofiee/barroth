@@ -135,3 +135,38 @@ func TestGetFirstSystemInstallation(t *testing.T) {
 	err = repo.GetFirstSystemInstallation(&sys)
 	assert.Error(t, err)
 }
+func TestSystemCreateUser(t *testing.T) {
+	SetupMock(t)
+	repo := NewSystemRepository(databases.DB)
+	assert.Equal(t, systemRepositoryType, reflect.TypeOf(repo).String(), "TestGetFirstSystemInstallation")
+
+	user := getUser(userEmail, userPassword, userFullName, userTelephone)
+	mock.ExpectBegin()
+	mock.ExpectExec("INSERT INTO `users` ").WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectCommit()
+	err := repo.CreateUser(&user)
+	assert.NoError(t, err)
+
+	mock.ExpectBegin()
+	mock.ExpectExec("INSERT INTO `users` ").WillReturnError(errors.New("error TestCreateUser"))
+	mock.ExpectCommit()
+	err = repo.CreateUser(&user)
+	assert.Error(t, err)
+}
+func TestSystemCreateRole(t *testing.T) {
+	SetupMock(t)
+	repo := NewSystemRepository(databases.DB)
+	assert.Equal(t, systemRepositoryType, reflect.TypeOf(repo).String(), "TestGetFirstSystemInstallation")
+	role := getRole(roleName, roleDesc)
+	mock.ExpectBegin()
+	mock.ExpectExec("INSERT INTO `role_items` ").WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectCommit()
+	err := repo.CreateRole(&role)
+	assert.NoError(t, err)
+
+	mock.ExpectBegin()
+	mock.ExpectExec("INSERT INTO `role_items` ").WillReturnError(errors.New("error TestCreateRole"))
+	mock.ExpectCommit()
+	err = repo.CreateRole(&role)
+	assert.Error(t, err)
+}

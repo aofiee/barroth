@@ -37,3 +37,11 @@ func (s *systemUseCase) GetFirstSystemInstallation(system *models.System) error 
 	err := s.systemRepo.GetFirstSystemInstallation(system)
 	return err
 }
+func (s *systemUseCase) CreateUser(m *models.Users) error {
+	err := s.systemRepo.CreateUser(m)
+	return err
+}
+func (s *systemUseCase) CreateRole(m *models.RoleItems) error {
+	err := s.systemRepo.CreateRole(m)
+	return err
+}

@@ -12,6 +12,20 @@ type SystemUseCase struct {
 	mock.Mock
 }
 
+// CreateRole provides a mock function with given fields: m
+func (_m *SystemUseCase) CreateRole(m *models.RoleItems) error {
+	ret := _m.Called(m)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(*models.RoleItems) error); ok {
+		r0 = rf(m)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // CreateSystem provides a mock function with given fields: s
 func (_m *SystemUseCase) CreateSystem(s *models.System) error {
 	ret := _m.Called(s)
@@ -19,6 +33,20 @@ func (_m *SystemUseCase) CreateSystem(s *models.System) error {
 	var r0 error
 	if rf, ok := ret.Get(0).(func(*models.System) error); ok {
 		r0 = rf(s)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// CreateUser provides a mock function with given fields: m
+func (_m *SystemUseCase) CreateUser(m *models.Users) error {
+	ret := _m.Called(m)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(*models.Users) error); ok {
+		r0 = rf(m)
 	} else {
 		r0 = ret.Error(0)
 	}

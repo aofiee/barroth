@@ -4,6 +4,7 @@ import (
 	"time"
 
 	barroth_config "github.com/aofiee/barroth/config"
+	"github.com/aofiee/barroth/constants"
 	"github.com/aofiee/barroth/databases"
 	"github.com/aofiee/barroth/domains"
 	"github.com/aofiee/barroth/helpers"
@@ -53,6 +54,24 @@ func (s *systemHandler) SystemInstallation(c *fiber.Ctx) error {
 		err = s.systemUseCase.CreateSystem(&systems)
 		if err != nil {
 			return helpers.FailOnError(c, err, "can not create new record", fiber.StatusBadRequest)
+		}
+
+		user := models.Users{
+			Email:     barroth_config.ENV.EmailAdministrator,
+			Password:  barroth_config.ENV.PasswordAdministrator,
+			Telephone: barroth_config.ENV.TelephoneAdministrator,
+		}
+		err := s.systemUseCase.CreateUser(&user)
+		if err != nil {
+			return helpers.FailOnError(c, err, constants.ERR_CANNOT_CREATE_ROLE, fiber.StatusBadRequest)
+		}
+		role := models.RoleItems{
+			Name:        "Administrator",
+			Description: "Initial",
+		}
+		err = s.systemUseCase.CreateRole(&role)
+		if err != nil {
+			return helpers.FailOnError(c, err, constants.ERR_CANNOT_CREATE_ROLE, fiber.StatusBadRequest)
 		}
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{
 			"msg":   "complete the installation.",

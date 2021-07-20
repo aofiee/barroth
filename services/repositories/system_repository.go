@@ -39,3 +39,15 @@ func (s *systemRepository) GetFirstSystemInstallation(system *models.System) err
 	}
 	return nil
 }
+func (s *systemRepository) CreateUser(m *models.Users) error {
+	if err := s.conn.Create(m).Error; err != nil {
+		return err
+	}
+	return nil
+}
+func (s *systemRepository) CreateRole(m *models.RoleItems) error {
+	if err := s.conn.Create(m).Error; err != nil {
+		return err
+	}
+	return nil
+}
