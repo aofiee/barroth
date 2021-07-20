@@ -54,6 +54,20 @@ func (_m *SystemRepository) CreateUser(m *models.Users) error {
 	return r0
 }
 
+// GetAllModules provides a mock function with given fields: m
+func (_m *SystemRepository) GetAllModules(m *[]models.Modules) error {
+	ret := _m.Called(m)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(*[]models.Modules) error); ok {
+		r0 = rf(m)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // GetFirstSystemInstallation provides a mock function with given fields: s
 func (_m *SystemRepository) GetFirstSystemInstallation(s *models.System) error {
 	ret := _m.Called(s)
@@ -89,6 +103,20 @@ func (_m *SystemRepository) HashPassword(user *models.Users) error {
 	var r0 error
 	if rf, ok := ret.Get(0).(func(*models.Users) error); ok {
 		r0 = rf(user)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// SetPermissions provides a mock function with given fields: m
+func (_m *SystemRepository) SetPermissions(m *models.Permissions) error {
+	ret := _m.Called(m)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(*models.Permissions) error); ok {
+		r0 = rf(m)
 	} else {
 		r0 = ret.Error(0)
 	}

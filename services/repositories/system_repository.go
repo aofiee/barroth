@@ -57,3 +57,11 @@ func (s *systemRepository) HashPassword(m *models.Users) error {
 	m.Password = string(bytes)
 	return err
 }
+func (s *systemRepository) GetAllModules(m *[]models.Modules) error {
+	rs := s.conn.Find(m)
+	return rs.Error
+}
+func (s *systemRepository) SetPermissions(m *models.Permissions) error {
+	rs := s.conn.Create(m)
+	return rs.Error
+}

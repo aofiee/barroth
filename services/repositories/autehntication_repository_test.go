@@ -134,3 +134,16 @@ func TestAuthenticationGetUserFail(t *testing.T) {
 	err := repo.GetUser(&user, UUID)
 	assert.Error(t, err)
 }
+func TestGetAccessUUIDFromRedis(t *testing.T) {
+	SetupMock(t)
+	rd, mock := redismock.NewClientMock()
+	databases.QueueClient = rd
+	uuid := utils.UUIDv4()
+	repo := NewAuthenticationRepository(databases.DB, databases.QueueClient)
+	assert.Equal(t, authenticationRepositoryType, reflect.TypeOf(repo).String(), "TestGetAccessUUIDFromRedis")
+	uuidResult := utils.UUIDv4()
+	mock.ExpectGet(uuid).SetVal(uuidResult)
+	result, err := repo.GetAccessUUIDFromRedis(uuid)
+	assert.NoError(t, err)
+	assert.Equal(t, uuidResult, result)
+}

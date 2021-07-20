@@ -186,3 +186,13 @@ func (a *authenticationHandler) VerifyToken(token *jwt.Token) (interface{}, erro
 	}
 	return []byte(barroth_config.ENV.RefreshKey), nil
 }
+func (a *authenticationHandler) IsRevokeToken(c *fiber.Ctx) error {
+	user := c.Locals("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	accessUUID := claims["access_uuid"].(string)
+	_, err := a.authenticationUseCase.GetAccessUUIDFromRedis(accessUUID)
+	if err != nil {
+		return helpers.FailOnError(c, err, constants.ERR_REFRESH_TOKEN_EXPIRE, fiber.StatusUnauthorized)
+	}
+	return c.Next()
+}

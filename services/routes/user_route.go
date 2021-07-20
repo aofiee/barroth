@@ -37,6 +37,6 @@ func (r *userRoutes) Install(app *fiber.App) {
 	authUseCase := usecases.NewAuthenticationUseCase(authRepo)
 	authHandler := deliveries.GetAuthHandlerUsecase(authUseCase)
 
-	e := app.Group("/user", authHandler.AuthorizationRequired())
+	e := app.Group("/user", authHandler.AuthorizationRequired(), authHandler.IsRevokeToken)
 	e.Post("/", handler.NewUser)
 }

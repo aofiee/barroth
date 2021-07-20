@@ -82,6 +82,20 @@ func (_m *SystemUseCase) GetSystem(s *models.System, id string) error {
 	return r0
 }
 
+// SetExecToAllModules provides a mock function with given fields: m, roleID, isExec
+func (_m *SystemUseCase) SetExecToAllModules(m *[]models.Modules, roleID uint, isExec int) error {
+	ret := _m.Called(m, roleID, isExec)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(*[]models.Modules, uint, int) error); ok {
+		r0 = rf(m, roleID, isExec)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // UpdateSystem provides a mock function with given fields: s, id
 func (_m *SystemUseCase) UpdateSystem(s *models.System, id string) error {
 	ret := _m.Called(s, id)

@@ -7,15 +7,18 @@ import (
 	"github.com/aofiee/barroth/mocks"
 	"github.com/aofiee/barroth/models"
 	"github.com/bxcodec/faker"
+	"github.com/gofiber/fiber/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
 
 const (
-	systemModelType = "*models.System"
-	appName         = "Test"
-	siteUrl         = "http://"
-	isInstall       = 0
+	systemModelType      = "*models.System"
+	appName              = "Test"
+	siteUrl              = "http://"
+	isInstall            = 0
+	sliceModuleModelType = "*[]models.Modules"
+	permissionsModelType = "*models.Permissions"
 )
 
 func TestCreateSystem(t *testing.T) {
@@ -102,4 +105,76 @@ func TestSystemCreateRole(t *testing.T) {
 	faker.FakeData(&role)
 	err := u.CreateRole(&role)
 	assert.NoError(t, err)
+}
+func TestSetExecToAllModules(t *testing.T) {
+	repo := new(mocks.SystemRepository)
+	repo.On("GetAllModules", mock.AnythingOfType(sliceModuleModelType)).Return(nil)
+
+	repo.On("SetPermissions", mock.AnythingOfType(permissionsModelType)).Return(nil)
+
+	u := NewSystemUseCase(repo)
+	var m []models.Modules
+	m = append(m, models.Modules{
+		Name:        mock.Anything,
+		Description: mock.Anything,
+		Method:      fiber.MethodGet,
+		ModuleSlug:  mock.Anything,
+	},
+		models.Modules{
+			Name:        mock.Anything,
+			Description: mock.Anything,
+			Method:      fiber.MethodGet,
+			ModuleSlug:  mock.Anything,
+		},
+	)
+	err := u.SetExecToAllModules(&m, uint(1), int(1))
+	assert.NoError(t, err)
+}
+func TestSetExecToAllModulesGetAllModulesFail(t *testing.T) {
+	repo := new(mocks.SystemRepository)
+	repo.On("GetAllModules", mock.AnythingOfType(sliceModuleModelType)).Return(errors.New("error TestSetExecToAllModulesFail"))
+
+	repo.On("SetPermissions", mock.AnythingOfType(permissionsModelType)).Return(nil)
+
+	u := NewSystemUseCase(repo)
+	var m []models.Modules
+	m = append(m, models.Modules{
+		Name:        mock.Anything,
+		Description: mock.Anything,
+		Method:      fiber.MethodGet,
+		ModuleSlug:  mock.Anything,
+	},
+		models.Modules{
+			Name:        mock.Anything,
+			Description: mock.Anything,
+			Method:      fiber.MethodGet,
+			ModuleSlug:  mock.Anything,
+		},
+	)
+	err := u.SetExecToAllModules(&m, uint(1), int(1))
+	assert.Error(t, err)
+}
+func TestSetExecToAllModulesSetPermissionsFail(t *testing.T) {
+	repo := new(mocks.SystemRepository)
+	repo.On("GetAllModules", mock.AnythingOfType(sliceModuleModelType)).Return(nil)
+
+	repo.On("SetPermissions", mock.AnythingOfType(permissionsModelType)).Return(errors.New("error SetPermissions"))
+
+	u := NewSystemUseCase(repo)
+	var m []models.Modules
+	m = append(m, models.Modules{
+		Name:        mock.Anything,
+		Description: mock.Anything,
+		Method:      fiber.MethodGet,
+		ModuleSlug:  mock.Anything,
+	},
+		models.Modules{
+			Name:        mock.Anything,
+			Description: mock.Anything,
+			Method:      fiber.MethodGet,
+			ModuleSlug:  mock.Anything,
+		},
+	)
+	err := u.SetExecToAllModules(&m, uint(1), int(1))
+	assert.Error(t, err)
 }

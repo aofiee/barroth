@@ -115,3 +115,7 @@ func (a *authenticationUseCase) GetUser(u *models.Users, uuid string) error {
 	err := a.authenticationRepo.GetUser(u, uuid)
 	return err
 }
+func (a *authenticationUseCase) GetAccessUUIDFromRedis(uuid string) (string, error) {
+	result, err := a.authenticationRepo.GetAccessUUIDFromRedis(uuid)
+	return result, err
+}

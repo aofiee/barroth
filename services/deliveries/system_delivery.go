@@ -48,15 +48,6 @@ func (s *systemHandler) SystemInstallation(c *fiber.Ctx) error {
 	var systems models.System
 	err := s.systemUseCase.GetFirstSystemInstallation(&systems)
 	if err != nil {
-		systems.AppName = barroth_config.ENV.AppName
-		systems.SiteURL = barroth_config.ENV.SiteURL + ":" + barroth_config.ENV.AppPort
-		systems.IsInstall = 0
-		systems.CreatedAt = time.Now()
-		err = s.systemUseCase.CreateSystem(&systems)
-		if err != nil {
-			return helpers.FailOnError(c, err, "can not create new record", fiber.StatusBadRequest)
-		}
-
 		user := models.Users{
 			Email:     barroth_config.ENV.EmailAdministrator,
 			Password:  barroth_config.ENV.PasswordAdministrator,
@@ -71,13 +62,26 @@ func (s *systemHandler) SystemInstallation(c *fiber.Ctx) error {
 		if err != nil {
 			return helpers.FailOnError(c, err, constants.ERR_CANNOT_CREATE_ROLE, fiber.StatusBadRequest)
 		}
-		user.UserRoleID.RoleItemID = role.ID
-		err := s.systemUseCase.CreateUser(&user)
+		var modules []models.Modules
+		err := s.systemUseCase.SetExecToAllModules(&modules, role.ID, 1)
 		if err != nil {
-			return helpers.FailOnError(c, err, constants.ERR_CANNOT_CREATE_ROLE, fiber.StatusBadRequest)
+			return helpers.FailOnError(c, err, constants.ERR_CANNOT_SET_EXEC_ALL_MODULE, fiber.StatusBadRequest)
+		}
+		user.UserRoleID.RoleItemID = role.ID
+		err = s.systemUseCase.CreateUser(&user)
+		if err != nil {
+			return helpers.FailOnError(c, err, constants.ERR_CANNOT_CREATE_USER, fiber.StatusBadRequest)
+		}
+		systems.AppName = barroth_config.ENV.AppName
+		systems.SiteURL = barroth_config.ENV.SiteURL + ":" + barroth_config.ENV.AppPort
+		systems.IsInstall = 1
+		systems.CreatedAt = time.Now()
+		err = s.systemUseCase.CreateSystem(&systems)
+		if err != nil {
+			return helpers.FailOnError(c, err, "can not create new record", fiber.StatusBadRequest)
 		}
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{
-			"msg":   "complete the installation.",
+			"msg":   "complete the installation",
 			"error": nil,
 		})
 	}

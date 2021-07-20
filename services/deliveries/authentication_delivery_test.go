@@ -679,3 +679,45 @@ func TestRefreshTokenSuccess(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, 200, resp.StatusCode, "TestRefreshTokenSuccess")
 }
+func TestIsRevokeTokenSuccess(t *testing.T) {
+	mockUseCase, handler := AuthMockSetup(t)
+
+	token, err := mockAccessToken()
+	assert.NoError(t, err)
+	assert.NotEqual(t, nil, token.Token.AccessToken)
+	app := fiber.New()
+
+	mockUseCase.On("GetAccessUUIDFromRedis", mock.AnythingOfType("string")).Return(UUID, nil)
+	mockUseCase.On("DeleteToken", mock.AnythingOfType("string")).Return(nil)
+
+	app.Delete("/auth/logout", handler.AuthorizationRequired(), handler.IsRevokeToken, handler.Logout)
+	req, err := http.NewRequest("DELETE", "/auth/logout", nil)
+	req.Header.Set(fiber.HeaderContentType, fiber.MIMEApplicationJSON)
+	req.Header.Set(fiber.HeaderAuthorization, "Bearer "+token.Token.AccessToken)
+
+	assert.NoError(t, err)
+	resp, err := app.Test(req)
+	assert.NoError(t, err)
+	assert.Equal(t, 200, resp.StatusCode, "TestLogoutSuccess")
+}
+func TestIsRevokeTokenFail(t *testing.T) {
+	mockUseCase, handler := AuthMockSetup(t)
+
+	token, err := mockAccessToken()
+	assert.NoError(t, err)
+	assert.NotEqual(t, nil, token.Token.AccessToken)
+	app := fiber.New()
+
+	mockUseCase.On("GetAccessUUIDFromRedis", mock.AnythingOfType("string")).Return(UUID, errors.New("error GetAccessUUIDFromRedis"))
+	mockUseCase.On("DeleteToken", mock.AnythingOfType("string")).Return(nil)
+
+	app.Delete("/auth/logout", handler.AuthorizationRequired(), handler.IsRevokeToken, handler.Logout)
+	req, err := http.NewRequest("DELETE", "/auth/logout", nil)
+	req.Header.Set(fiber.HeaderContentType, fiber.MIMEApplicationJSON)
+	req.Header.Set(fiber.HeaderAuthorization, "Bearer "+token.Token.AccessToken)
+
+	assert.NoError(t, err)
+	resp, err := app.Test(req)
+	assert.NoError(t, err)
+	assert.Equal(t, 401, resp.StatusCode, "TestLogoutSuccess")
+}

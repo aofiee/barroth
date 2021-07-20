@@ -57,3 +57,8 @@ func (a *authenticationRepository) GetUser(m *models.Users, uuid string) error {
 	}
 	return nil
 }
+func (a *authenticationRepository) GetAccessUUIDFromRedis(uuid string) (string, error) {
+	ctx := context.Background()
+	result, err := a.queue.Get(ctx, uuid).Result()
+	return result, err
+}

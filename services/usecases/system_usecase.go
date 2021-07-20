@@ -49,3 +49,20 @@ func (s *systemUseCase) CreateRole(m *models.RoleItems) error {
 	err := s.systemRepo.CreateRole(m)
 	return err
 }
+func (s *systemUseCase) SetExecToAllModules(m *[]models.Modules, roleID uint, isExec int) error {
+	err := s.systemRepo.GetAllModules(m)
+	if err != nil {
+		return err
+	}
+	for _, v := range *m {
+		var permissions models.Permissions
+		permissions.ModuleID = v.ID
+		permissions.RoleItemID = roleID
+		permissions.IsExec = isExec
+		err := s.systemRepo.SetPermissions(&permissions)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}

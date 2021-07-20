@@ -26,9 +26,10 @@ var (
 )
 
 const (
-	contentType         = "application/json"
-	mockSystemType      = "*models.System"
-	mockSystemTypeSlice = "*[]models.System"
+	contentType          = "application/json"
+	mockSystemType       = "*models.System"
+	mockSystemTypeSlice  = "*[]models.System"
+	sliceModuleModelType = "*[]models.Modules"
 )
 
 func SetupMock(t *testing.T) {
@@ -73,11 +74,10 @@ func SystemMockSetup(t *testing.T) (mockUseCase *mocks.SystemUseCase, sysHandler
 func TestNewSystemHandelrInstallingCompleted(t *testing.T) {
 	mockUseCase, sysHandler := SystemMockSetup(t)
 	mockUseCase.On("GetFirstSystemInstallation", mock.AnythingOfType(mockSystemType)).Return(errors.New("hello world"))
-
-	mockUseCase.On("CreateSystem", mock.AnythingOfType(mockSystemType)).Return(nil)
-	mockUseCase.On("CreateUser", mock.AnythingOfType(mockUserType)).Return(nil)
 	mockUseCase.On("CreateRole", mock.AnythingOfType(mockRoleType)).Return(nil)
-
+	mockUseCase.On("SetExecToAllModules", mock.AnythingOfType(sliceModuleModelType), mock.AnythingOfType("uint"), mock.AnythingOfType("int")).Return(nil)
+	mockUseCase.On("CreateUser", mock.AnythingOfType(mockUserType)).Return(nil)
+	mockUseCase.On("CreateSystem", mock.AnythingOfType(mockSystemType)).Return(nil)
 	app := fiber.New()
 	app.Get("/install", sysHandler.SystemInstallation)
 	req, err := http.NewRequest("GET", "/install", nil)
@@ -87,28 +87,10 @@ func TestNewSystemHandelrInstallingCompleted(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, 200, resp.StatusCode, "completed")
 }
-func TestNewSystemHandelrInstallingCreateUserFail(t *testing.T) {
-	mockUseCase, sysHandler := SystemMockSetup(t)
-	mockUseCase.On("GetFirstSystemInstallation", mock.AnythingOfType(mockSystemType)).Return(errors.New("hello world"))
 
-	mockUseCase.On("CreateSystem", mock.AnythingOfType(mockSystemType)).Return(nil)
-	mockUseCase.On("CreateUser", mock.AnythingOfType(mockUserType)).Return(errors.New("error CreateUser"))
-
-	app := fiber.New()
-	app.Get("/install", sysHandler.SystemInstallation)
-	req, err := http.NewRequest("GET", "/install", nil)
-	req.Header.Set(fiber.HeaderContentType, contentType)
-	assert.NoError(t, err)
-	resp, err := app.Test(req)
-	assert.NoError(t, err)
-	assert.Equal(t, 400, resp.StatusCode, "completed")
-}
 func TestNewSystemHandelrInstallingCreateRoleFail(t *testing.T) {
 	mockUseCase, sysHandler := SystemMockSetup(t)
 	mockUseCase.On("GetFirstSystemInstallation", mock.AnythingOfType(mockSystemType)).Return(errors.New("hello world"))
-
-	mockUseCase.On("CreateSystem", mock.AnythingOfType(mockSystemType)).Return(nil)
-	mockUseCase.On("CreateUser", mock.AnythingOfType(mockUserType)).Return(nil)
 	mockUseCase.On("CreateRole", mock.AnythingOfType(mockRoleType)).Return(errors.New("error CreateRole"))
 
 	app := fiber.New()
@@ -120,10 +102,47 @@ func TestNewSystemHandelrInstallingCreateRoleFail(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, 400, resp.StatusCode, "completed")
 }
-func TestNewSystemHandelrInstallingFailed(t *testing.T) {
+
+func TestNewSystemHandelrInstallingSetExecToAllModulesFail(t *testing.T) {
 	mockUseCase, sysHandler := SystemMockSetup(t)
-	mockUseCase.On("GetFirstSystemInstallation", mock.AnythingOfType(mockSystemType)).Return(errors.New("error"))
-	mockUseCase.On("CreateSystem", mock.AnythingOfType(mockSystemType)).Return(errors.New("error"))
+	mockUseCase.On("GetFirstSystemInstallation", mock.AnythingOfType(mockSystemType)).Return(errors.New("hello world"))
+	mockUseCase.On("CreateRole", mock.AnythingOfType(mockRoleType)).Return(nil)
+	mockUseCase.On("SetExecToAllModules", mock.AnythingOfType(sliceModuleModelType), mock.AnythingOfType("uint"), mock.AnythingOfType("int")).Return(errors.New("error SetExecToAllModules"))
+
+	app := fiber.New()
+	app.Get("/install", sysHandler.SystemInstallation)
+	req, err := http.NewRequest("GET", "/install", nil)
+	req.Header.Set(fiber.HeaderContentType, contentType)
+	assert.NoError(t, err)
+	resp, err := app.Test(req)
+	assert.NoError(t, err)
+	assert.Equal(t, 400, resp.StatusCode, "completed")
+}
+
+func TestNewSystemHandelrCreateUserFailed(t *testing.T) {
+	mockUseCase, sysHandler := SystemMockSetup(t)
+	mockUseCase.On("GetFirstSystemInstallation", mock.AnythingOfType(mockSystemType)).Return(errors.New("hello world"))
+	mockUseCase.On("CreateRole", mock.AnythingOfType(mockRoleType)).Return(nil)
+	mockUseCase.On("SetExecToAllModules", mock.AnythingOfType(sliceModuleModelType), mock.AnythingOfType("uint"), mock.AnythingOfType("int")).Return(nil)
+	mockUseCase.On("CreateUser", mock.AnythingOfType(mockUserType)).Return(errors.New("error CreateUser"))
+
+	app := fiber.New()
+	app.Get("/install", sysHandler.SystemInstallation)
+	req, err := http.NewRequest("GET", "/install", nil)
+	req.Header.Set(fiber.HeaderContentType, contentType)
+	assert.NoError(t, err)
+	resp, err := app.Test(req)
+	assert.NoError(t, err)
+	assert.Equal(t, 400, resp.StatusCode, "completed")
+}
+func TestNewSystemHandelrCreateSystemFailed(t *testing.T) {
+	mockUseCase, sysHandler := SystemMockSetup(t)
+	mockUseCase.On("GetFirstSystemInstallation", mock.AnythingOfType(mockSystemType)).Return(errors.New("hello world"))
+	mockUseCase.On("CreateRole", mock.AnythingOfType(mockRoleType)).Return(nil)
+	mockUseCase.On("SetExecToAllModules", mock.AnythingOfType(sliceModuleModelType), mock.AnythingOfType("uint"), mock.AnythingOfType("int")).Return(nil)
+	mockUseCase.On("CreateUser", mock.AnythingOfType(mockUserType)).Return(nil)
+	mockUseCase.On("CreateSystem", mock.AnythingOfType(mockSystemType)).Return(errors.New("error CreateSystem"))
+
 	app := fiber.New()
 	app.Get("/install", sysHandler.SystemInstallation)
 	req, err := http.NewRequest("GET", "/install", nil)

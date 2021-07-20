@@ -14,6 +14,8 @@ const (
 	ERR_CANNOT_RESTORE_ROLES     = "cannot restore roles"
 	ERR_CANNOT_GET_ROLE_ID       = "cannot get role id"
 
+	ERR_CANNOT_CREATE_USER          = "cannot create user"
+	ERR_CANNOT_SET_EXEC_ALL_MODULE  = "cannot set exec for all module"
 	ERR_CREATE_USER_SUCCESSFUL      = "create user successful"
 	ERR_LOGIN_SUCCESSFUL            = "login successful"
 	ERR_USERNAME_PASSWORD_INCORRECT = "username and password is incorrect"

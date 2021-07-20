@@ -57,12 +57,12 @@ func (r *roleRoutes) Install(app *fiber.App) {
 	authUseCase := usecases.NewAuthenticationUseCase(authRepo)
 	authHandler := deliveries.GetAuthHandlerUsecase(authUseCase)
 
-	e := app.Group("/role", authHandler.AuthorizationRequired())
+	e := app.Group("/role", authHandler.AuthorizationRequired(), authHandler.IsRevokeToken)
 	e.Post("/", handler.NewRole)
 	e.Get("/:id", handler.GetRole)
 	e.Put("/:id", handler.UpdateRole)
 
-	e = app.Group("/roles", authHandler.AuthorizationRequired())
+	e = app.Group("/roles", authHandler.AuthorizationRequired(), authHandler.IsRevokeToken)
 	e.Get("/", handler.GetAllRoles)
 	e.Delete("/", handler.DeleteRoles)
 	e.Put("/restore", handler.RestoreRoles)

@@ -15,6 +15,7 @@ type (
 		SaveToken(uuid string, t *models.TokenDetail) (err error)
 		DeleteToken(uuid string) (err error)
 		GetUser(m *models.Users, uuid string) (err error)
+		GetAccessUUIDFromRedis(uuid string) (result string, err error)
 	}
 	AuthenticationRepository interface {
 		Login(m *models.Users, email string) (err error)
@@ -23,5 +24,6 @@ type (
 		SaveToken(uuid string, tokenUUID string, expire time.Duration) (err error)
 		DeleteToken(uuid string) (err error)
 		GetUser(m *models.Users, uuid string) (err error)
+		GetAccessUUIDFromRedis(uuid string) (result string, err error)
 	}
 )

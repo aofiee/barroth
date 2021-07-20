@@ -10,6 +10,8 @@ import (
 	barroth_config "github.com/aofiee/barroth/config"
 	"github.com/aofiee/barroth/databases"
 	"github.com/aofiee/barroth/models"
+	"github.com/bxcodec/faker"
+	"github.com/gofiber/fiber/v2"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -178,5 +180,33 @@ func TestSystemCheckPasswordHash(t *testing.T) {
 		Password: authPassword,
 	}
 	err := repo.HashPassword(&user)
+	assert.NoError(t, err)
+}
+func TestGetAllModule(t *testing.T) {
+	SetupMock(t)
+	columns := []string{"id", "created_at", "updated_at", "deleted_at", "name", "description", "method", "module_slug"}
+	repo := NewSystemRepository(databases.DB)
+	assert.Equal(t, systemRepositoryType, reflect.TypeOf(repo).String(), "TestSystemCheckPasswordHash")
+
+	var module models.Modules
+	faker.FakeData(&module)
+
+	mock.ExpectQuery("^SELECT (.+) FROM `modules`*").
+		WillReturnRows(sqlmock.NewRows(columns).AddRow(1, nil, nil, nil, appName, appUrl, fiber.MethodGet, "/test"))
+
+	var m []models.Modules
+	err := repo.GetAllModules(&m)
+	assert.NoError(t, err)
+}
+func TestSetPermissions(t *testing.T) {
+	SetupMock(t)
+	repo := NewSystemRepository(databases.DB)
+	assert.Equal(t, systemRepositoryType, reflect.TypeOf(repo).String(), "TestSetPermissions")
+	mock.ExpectBegin()
+	mock.ExpectExec("INSERT INTO `permissions` ").WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectCommit()
+
+	var p models.Permissions
+	err := repo.SetPermissions(&p)
 	assert.NoError(t, err)
 }
