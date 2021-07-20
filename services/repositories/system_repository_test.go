@@ -170,3 +170,13 @@ func TestSystemCreateRole(t *testing.T) {
 	err = repo.CreateRole(&role)
 	assert.Error(t, err)
 }
+func TestSystemCheckPasswordHash(t *testing.T) {
+	SetupMock(t)
+	repo := NewSystemRepository(databases.DB)
+	assert.Equal(t, systemRepositoryType, reflect.TypeOf(repo).String(), "TestSystemCheckPasswordHash")
+	user := models.Users{
+		Password: authPassword,
+	}
+	err := repo.HashPassword(&user)
+	assert.NoError(t, err)
+}

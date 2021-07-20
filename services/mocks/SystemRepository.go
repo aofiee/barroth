@@ -82,6 +82,20 @@ func (_m *SystemRepository) GetSystem(s *models.System, id string) error {
 	return r0
 }
 
+// HashPassword provides a mock function with given fields: user
+func (_m *SystemRepository) HashPassword(user *models.Users) error {
+	ret := _m.Called(user)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(*models.Users) error); ok {
+		r0 = rf(user)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // UpdateSystem provides a mock function with given fields: s, id
 func (_m *SystemRepository) UpdateSystem(s *models.System, id string) error {
 	ret := _m.Called(s, id)

@@ -20,5 +20,6 @@ type (
 		UpdateSystem(s *models.System, id string) (err error)
 		CreateUser(m *models.Users) (err error)
 		CreateRole(m *models.RoleItems) (err error)
+		HashPassword(user *models.Users) (err error)
 	}
 )

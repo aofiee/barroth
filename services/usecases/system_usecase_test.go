@@ -81,12 +81,18 @@ func TestGetFirstSystemInstallation(t *testing.T) {
 }
 func TestSystemCreateUser(t *testing.T) {
 	repo := new(mocks.SystemRepository)
+	repo.On("HashPassword", mock.AnythingOfType(userModelType)).Return(nil).Once()
 	repo.On("CreateUser", mock.AnythingOfType(userModelType)).Return(nil)
+
 	u := NewSystemUseCase(repo)
 	var user models.Users
 	faker.FakeData(&user)
 	err := u.CreateUser(&user)
 	assert.NoError(t, err)
+
+	repo.On("HashPassword", mock.AnythingOfType(userModelType)).Return(errors.New("error HashPassword")).Once()
+	err = u.CreateUser(&user)
+	assert.Error(t, err)
 }
 func TestSystemCreateRole(t *testing.T) {
 	repo := new(mocks.SystemRepository)

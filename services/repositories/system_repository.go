@@ -3,6 +3,7 @@ package repositories
 import (
 	"github.com/aofiee/barroth/domains"
 	"github.com/aofiee/barroth/models"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -50,4 +51,9 @@ func (s *systemRepository) CreateRole(m *models.RoleItems) error {
 		return err
 	}
 	return nil
+}
+func (s *systemRepository) HashPassword(m *models.Users) error {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(m.Password), 14)
+	m.Password = string(bytes)
+	return err
 }

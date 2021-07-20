@@ -38,7 +38,11 @@ func (s *systemUseCase) GetFirstSystemInstallation(system *models.System) error 
 	return err
 }
 func (s *systemUseCase) CreateUser(m *models.Users) error {
-	err := s.systemRepo.CreateUser(m)
+	err := s.systemRepo.HashPassword(m)
+	if err != nil {
+		return err
+	}
+	err = s.systemRepo.CreateUser(m)
 	return err
 }
 func (s *systemUseCase) CreateRole(m *models.RoleItems) error {
