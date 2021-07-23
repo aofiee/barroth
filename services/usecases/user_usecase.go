@@ -38,6 +38,16 @@ func (u *userUseCase) UpdateUser(user *models.Users, uuid string) error {
 	if err != nil {
 		return err
 	}
+	var find models.Users
+	err = u.userRepo.GetUserByEmail(&find, user.Email)
+
+	if err == nil && find.UUID != uuid {
+		return errors.New("email is duplicated")
+	}
+	err = u.userRepo.HashPassword(user)
+	if err != nil {
+		return err
+	}
 	err = u.userRepo.UpdateUser(user, uuid)
 	return err
 }

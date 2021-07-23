@@ -103,3 +103,6 @@ func TestNewUserHandlerFail(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, 400, resp.StatusCode, "completed")
 }
+func TestUpdateUser(t *testing.T) {
+
+}

@@ -75,3 +75,32 @@ func (u *userHandler) NewUser(c *fiber.Ctx) error {
 		"error": nil,
 	})
 }
+func (u *userHandler) UpdateUser(c *fiber.Ctx) error {
+	var nu paramsUser
+	uuid := c.Params("id")
+	err := c.BodyParser(&nu)
+	if err != nil {
+		return helpers.FailOnError(c, err, constants.ERR_PARSE_JSON_FAIL, fiber.StatusBadRequest)
+	}
+	errorResponse := helpers.ValidateStruct(&nu)
+	if errorResponse != nil {
+		return c.Status(fiber.StatusNotAcceptable).JSON(fiber.Map{
+			"msg":   constants.ERR_INPUT_ERROR,
+			"error": errorResponse,
+		})
+	}
+	user := models.Users{
+		Email:     nu.Email,
+		Password:  nu.Password,
+		Name:      nu.Name,
+		Telephone: nu.Telephone,
+	}
+	err = u.userUseCase.UpdateUser(&user, uuid)
+	if err != nil {
+		return helpers.FailOnError(c, err, constants.ERR_CANNOT_UPDATE_USER, fiber.StatusBadRequest)
+	}
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"msg":   constants.ERR_UPDATED_USER_SUCCESSFUL,
+		"error": nil,
+	})
+}

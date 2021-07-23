@@ -28,6 +28,10 @@ func (r *userRoutes) Install(app *fiber.App) {
 			Method: fiber.MethodPost,
 			Slug:   "/user",
 		},
+		models.ModuleMethodSlug{
+			Method: fiber.MethodPut,
+			Slug:   "/user",
+		},
 	)
 	repo := repositories.NewUserRepository(databases.DB)
 	u := usecases.NewUserUseCase(repo)
@@ -39,4 +43,5 @@ func (r *userRoutes) Install(app *fiber.App) {
 
 	e := app.Group("/user", authHandler.AuthorizationRequired(), authHandler.IsRevokeToken)
 	e.Post("/", handler.NewUser)
+	e.Put("/:id", handler.UpdateUser)
 }

@@ -58,12 +58,35 @@ func TestUpdateUserSuccess(t *testing.T) {
 	repo := new(mocks.UserRepository)
 	user := getUser(userEmail, userPassword, userFullName, userTelephone)
 	repo.On("GetUser", mock.AnythingOfType(userModelType), mock.Anything).Return(nil).Once()
+	repo.On("GetUserByEmail", mock.AnythingOfType(userModelType), mock.Anything).Return(errors.New("record not found")).Once()
+	repo.On("HashPassword", mock.AnythingOfType(userModelType)).Return(nil).Once()
 	repo.On("UpdateUser", mock.AnythingOfType(userModelType), mock.Anything).Return(nil).Once()
+
 	u := NewUserUseCase(repo)
 	err := u.UpdateUser(&user, "xxx")
 	assert.NoError(t, err)
 }
+func TestUpdateUserGetUserByEmailFail(t *testing.T) {
+	repo := new(mocks.UserRepository)
+	user := getUser(userEmail, userPassword, userFullName, userTelephone)
+	repo.On("GetUser", mock.AnythingOfType(userModelType), mock.Anything).Return(nil).Once()
+	repo.On("GetUserByEmail", mock.AnythingOfType(userModelType), mock.Anything).Return(nil).Once()
 
+	u := NewUserUseCase(repo)
+	err := u.UpdateUser(&user, "xxx")
+	assert.Error(t, err)
+}
+func TestUpdateUserHashPasswordFail(t *testing.T) {
+	repo := new(mocks.UserRepository)
+	user := getUser(userEmail, userPassword, userFullName, userTelephone)
+	repo.On("GetUser", mock.AnythingOfType(userModelType), mock.Anything).Return(nil).Once()
+	repo.On("GetUserByEmail", mock.AnythingOfType(userModelType), mock.Anything).Return(errors.New("record not found")).Once()
+	repo.On("HashPassword", mock.AnythingOfType(userModelType)).Return(errors.New("error password")).Once()
+
+	u := NewUserUseCase(repo)
+	err := u.UpdateUser(&user, "xxx")
+	assert.Error(t, err)
+}
 func TestUpdateUserFail(t *testing.T) {
 	repo := new(mocks.UserRepository)
 	user := getUser(userEmail, userPassword, userFullName, userTelephone)

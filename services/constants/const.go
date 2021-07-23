@@ -29,4 +29,6 @@ const (
 	ERR_REFRESH_TOKEN_EXPIRE         = "Refresh token expired"
 	ERR_GET_USER_BY_UUID_NOT_FOUND   = "user not found"
 	ERR_REFRESH_TOKEN_SUCCESSFUL     = "refresh token successful"
+	ERR_CANNOT_UPDATE_USER           = "cannot update user detail"
+	ERR_UPDATED_USER_SUCCESSFUL      = "updated user successful"
 )
