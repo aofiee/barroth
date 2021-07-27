@@ -103,6 +103,59 @@ func TestNewUserHandlerFail(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, 400, resp.StatusCode, "completed")
 }
-func TestUpdateUser(t *testing.T) {
-
+func TestUpdateUserJSONNotSend(t *testing.T) {
+	_, handler := UserMockSetup(t)
+	app := fiber.New()
+	app.Put("/user/:id", handler.UpdateUser)
+	req, err := http.NewRequest("PUT", "/user/"+UUID, nil)
+	req.Header.Set(fiber.HeaderContentType, contentType)
+	assert.NoError(t, err)
+	resp, err := app.Test(req)
+	assert.NoError(t, err)
+	assert.Equal(t, 400, resp.StatusCode, "completed")
+}
+func TestUpdateUserJsonValidateFail(t *testing.T) {
+	_, handler := UserMockSetup(t)
+	app := fiber.New()
+	params := getUser(userEmail, userPassword, userFullName, userTelephone, userRole)
+	params.Email = ""
+	data, _ := json.Marshal(&params)
+	payload := bytes.NewReader(data)
+	app.Put("/user/:id", handler.UpdateUser)
+	req, err := http.NewRequest("PUT", "/user/"+UUID, payload)
+	req.Header.Set(fiber.HeaderContentType, contentType)
+	assert.NoError(t, err)
+	resp, err := app.Test(req)
+	assert.NoError(t, err)
+	assert.Equal(t, 406, resp.StatusCode, "completed")
+}
+func TestUpdateUserFail(t *testing.T) {
+	mockUseCase, handler := UserMockSetup(t)
+	app := fiber.New()
+	params := getUser(userEmail, userPassword, userFullName, userTelephone, userRole)
+	data, _ := json.Marshal(&params)
+	payload := bytes.NewReader(data)
+	mockUseCase.On("UpdateUser", mock.AnythingOfType(mockUserType), mock.Anything).Return(errors.New("error TestNewUserHandlerFail"))
+	app.Put("/user/:id", handler.UpdateUser)
+	req, err := http.NewRequest("PUT", "/user/"+UUID, payload)
+	req.Header.Set(fiber.HeaderContentType, contentType)
+	assert.NoError(t, err)
+	resp, err := app.Test(req)
+	assert.NoError(t, err)
+	assert.Equal(t, 400, resp.StatusCode, "completed")
+}
+func TestUpdateUserSuccess(t *testing.T) {
+	mockUseCase, handler := UserMockSetup(t)
+	app := fiber.New()
+	params := getUser(userEmail, userPassword, userFullName, userTelephone, userRole)
+	data, _ := json.Marshal(&params)
+	payload := bytes.NewReader(data)
+	mockUseCase.On("UpdateUser", mock.AnythingOfType(mockUserType), mock.Anything).Return(nil)
+	app.Put("/user/:id", handler.UpdateUser)
+	req, err := http.NewRequest("PUT", "/user/"+UUID, payload)
+	req.Header.Set(fiber.HeaderContentType, contentType)
+	assert.NoError(t, err)
+	resp, err := app.Test(req)
+	assert.NoError(t, err)
+	assert.Equal(t, 200, resp.StatusCode, "completed")
 }
