@@ -31,4 +31,6 @@ const (
 	ERR_REFRESH_TOKEN_SUCCESSFUL     = "refresh token successful"
 	ERR_CANNOT_UPDATE_USER           = "cannot update user detail"
 	ERR_UPDATED_USER_SUCCESSFUL      = "updated user successful"
+	ERR_GET_USER_SUCCESSFUL          = "get user successful"
+	ERR_GET_USER_FAIL                = "cannot get user"
 )

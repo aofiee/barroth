@@ -9,6 +9,7 @@ import (
 	"github.com/aofiee/barroth/repositories"
 	"github.com/aofiee/barroth/usecases"
 	"github.com/gofiber/fiber/v2"
+	"github.com/golang-jwt/jwt"
 )
 
 type (
@@ -102,5 +103,23 @@ func (u *userHandler) UpdateUser(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"msg":   constants.ERR_UPDATED_USER_SUCCESSFUL,
 		"error": nil,
+	})
+}
+func (u *userHandler) GetUser(c *fiber.Ctx) error {
+	param := c.Params("id")
+	if param == "me" {
+		user := c.Locals("user").(*jwt.Token)
+		claims := user.Claims.(jwt.MapClaims)
+		param = claims["sub"].(string)
+	}
+	var user models.Users
+	err := u.userUseCase.GetUser(&user, param)
+	if err != nil {
+		return helpers.FailOnError(c, err, constants.ERR_GET_USER_FAIL, fiber.StatusBadRequest)
+	}
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"msg":   constants.ERR_GET_USER_SUCCESSFUL,
+		"error": nil,
+		"data":  user,
 	})
 }

@@ -8,7 +8,7 @@ type (
 	Users struct {
 		gorm.Model
 		Email      string    `gorm:"type:VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci"`
-		Password   string    `gorm:"type:VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci"`
+		Password   string    `gorm:"type:VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci" json:"-"`
 		Name       string    `gorm:"type:VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci"`
 		Telephone  string    `gorm:"type:VARCHAR(50) CHARACTER SET utf8 COLLATE utf8_general_ci"`
 		Image      string    `gorm:"type:VARCHAR(50) CHARACTER SET utf8 COLLATE utf8_general_ci"`
