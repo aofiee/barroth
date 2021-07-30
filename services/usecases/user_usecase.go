@@ -59,7 +59,7 @@ func (u *userUseCase) GetAllUsers(user *[]models.Users, keyword, sorting, sortFi
 	err := u.userRepo.GetAllUsers(user, keyword, sorting, sortField, page, limit, focus)
 	return err
 }
-func (u *userUseCase) DeleteUsers(focus string, uuid []int) (int64, error) {
+func (u *userUseCase) DeleteUsers(focus string, uuid []string) (int64, error) {
 	rs, err := u.userRepo.DeleteUsers(focus, uuid)
 	return rs, err
 }

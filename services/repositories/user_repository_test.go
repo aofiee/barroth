@@ -157,15 +157,15 @@ func TestDeleteUserSuccess(t *testing.T) {
 
 	t.Run("TEST_INBOX", func(t *testing.T) {
 		mock.ExpectBegin()
-		mock.ExpectExec("UPDATE `users`").WillReturnResult(sqlmock.NewResult(1, 3))
+		mock.ExpectExec("UPDATE `users`").WillReturnResult(sqlmock.NewResult(1, 2))
 		mock.ExpectCommit()
-		_, err := repo.DeleteUsers("inbox", []int{1, 2, 3})
+		_, err := repo.DeleteUsers("inbox", []string{"xxxx", "yyyyy"})
 		assert.NoError(t, err)
 
 		mock.ExpectBegin()
 		mock.ExpectExec("UPDATE `users`").WillReturnError(errors.New("error TestDeleteUserSuccess"))
 		mock.ExpectCommit()
-		_, err = repo.DeleteUsers("inbox", []int{1, 2, 3})
+		_, err = repo.DeleteUsers("inbox", []string{"xxxx", "yyyyy"})
 		assert.Error(t, err)
 	})
 
@@ -176,15 +176,15 @@ func TestDeleteUserFail(t *testing.T) {
 	assert.Equal(t, userRepositoryType, reflect.TypeOf(repo).String(), "TestDeleteUserFail")
 	t.Run("TEST_TRASH", func(t *testing.T) {
 		mock.ExpectBegin()
-		mock.ExpectExec("DELETE FROM `users`").WithArgs(1, 2, 3).WillReturnResult(sqlmock.NewResult(1, 3))
+		mock.ExpectExec("DELETE FROM `users`").WithArgs("xxxx", "yyyyy").WillReturnResult(sqlmock.NewResult(1, 2))
 		mock.ExpectCommit()
-		_, err := repo.DeleteUsers("trash", []int{1, 2, 3})
+		_, err := repo.DeleteUsers("trash", []string{"xxxx", "yyyyy"})
 		assert.NoError(t, err)
 
 		mock.ExpectBegin()
 		mock.ExpectExec("DELETE FROM `users`").WillReturnError(errors.New("error TestDeleteUserFail"))
 		mock.ExpectCommit()
-		_, err = repo.DeleteUsers("trash", []int{1, 2, 3})
+		_, err = repo.DeleteUsers("trash", []string{"xxxx", "yyyyy"})
 		assert.Error(t, err)
 	})
 }

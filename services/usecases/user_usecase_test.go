@@ -113,9 +113,9 @@ func TestGetAllUsers(t *testing.T) {
 }
 func TestDeleteUsers(t *testing.T) {
 	repo := new(mocks.UserRepository)
-	repo.On("DeleteUsers", mock.Anything, mock.AnythingOfType("[]int")).Return(int64(3), nil).Once()
+	repo.On("DeleteUsers", mock.Anything, mock.AnythingOfType("[]string")).Return(int64(3), nil).Once()
 	u := NewUserUseCase(repo)
-	rs, err := u.DeleteUsers("inbox", []int{1, 2, 3})
+	rs, err := u.DeleteUsers("inbox", []string{"xxx", "xxxx"})
 	assert.NoError(t, err)
 	assert.Equal(t, int64(3), rs)
 }

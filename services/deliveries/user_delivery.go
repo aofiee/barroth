@@ -1,6 +1,8 @@
 package deliveries
 
 import (
+	"strconv"
+
 	"github.com/aofiee/barroth/constants"
 	"github.com/aofiee/barroth/databases"
 	"github.com/aofiee/barroth/domains"
@@ -121,5 +123,17 @@ func (u *userHandler) GetUser(c *fiber.Ctx) error {
 		"msg":   constants.ERR_GET_USER_SUCCESSFUL,
 		"error": nil,
 		"data":  user,
+	})
+}
+func (u *userHandler) DeleteUser(c *fiber.Ctx) error {
+	param := c.Params("id")
+	uuids := []string{param}
+	effectRows, err := u.userUseCase.DeleteUsers("inbox", uuids)
+	if err != nil {
+		return helpers.FailOnError(c, err, constants.ERR_CANNOT_DELETE_USER_SUCCESSFUL, fiber.StatusBadRequest)
+	}
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"msg":   constants.ERR_DELETE_USER_SUCCESSFUL + " effected " + strconv.FormatInt(effectRows, 10) + " items",
+		"error": nil,
 	})
 }

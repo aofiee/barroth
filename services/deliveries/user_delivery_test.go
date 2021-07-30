@@ -200,3 +200,33 @@ func TestGetUserMeWithToken(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, 200, resp.StatusCode, "completed")
 }
+func TestDeleteUserFail(t *testing.T) {
+	mockUseCase, handler := UserMockSetup(t)
+	uuids := []string{
+		UUID,
+	}
+	mockUseCase.On("DeleteUsers", "inbox", uuids).Return(int64(0), errors.New("error TestDeleteUserFail"))
+	app := fiber.New()
+	app.Delete("/user/:id", handler.DeleteUser)
+	req, err := http.NewRequest("DELETE", "/user/"+UUID, nil)
+	req.Header.Set(fiber.HeaderContentType, contentType)
+	assert.NoError(t, err)
+	resp, err := app.Test(req)
+	assert.NoError(t, err)
+	assert.Equal(t, 400, resp.StatusCode, "completed")
+}
+func TestDeleteUserSuccess(t *testing.T) {
+	mockUseCase, handler := UserMockSetup(t)
+	uuids := []string{
+		UUID,
+	}
+	mockUseCase.On("DeleteUsers", "inbox", uuids).Return(int64(1), nil)
+	app := fiber.New()
+	app.Delete("/user/:id", handler.DeleteUser)
+	req, err := http.NewRequest("DELETE", "/user/"+UUID, nil)
+	req.Header.Set(fiber.HeaderContentType, contentType)
+	assert.NoError(t, err)
+	resp, err := app.Test(req)
+	assert.NoError(t, err)
+	assert.Equal(t, 200, resp.StatusCode, "completed")
+}

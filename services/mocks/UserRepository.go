@@ -27,18 +27,18 @@ func (_m *UserRepository) CreateUser(m *models.Users) error {
 }
 
 // DeleteUsers provides a mock function with given fields: focus, id
-func (_m *UserRepository) DeleteUsers(focus string, id []int) (int64, error) {
+func (_m *UserRepository) DeleteUsers(focus string, id []string) (int64, error) {
 	ret := _m.Called(focus, id)
 
 	var r0 int64
-	if rf, ok := ret.Get(0).(func(string, []int) int64); ok {
+	if rf, ok := ret.Get(0).(func(string, []string) int64); ok {
 		r0 = rf(focus, id)
 	} else {
 		r0 = ret.Get(0).(int64)
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(string, []int) error); ok {
+	if rf, ok := ret.Get(1).(func(string, []string) error); ok {
 		r1 = rf(focus, id)
 	} else {
 		r1 = ret.Error(1)
