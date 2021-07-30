@@ -45,24 +45,23 @@ func (u *userRepository) GetAllUsers(m *[]models.Users, keyword, sorting, sortFi
 	if err != nil {
 		return
 	}
-	p = p - 1
-
+	offset := (p * l) - l
 	if focus == "inbox" {
 		if keyword == "all" {
-			if err = u.conn.Model(&models.Users{}).Limit(l).Offset(p).Order(sortField + " " + sorting).Find(&m).Error; err != nil {
+			if err = u.conn.Model(&models.Users{}).Limit(l).Offset(offset).Order(sortField + " " + sorting).Find(&m).Error; err != nil {
 				return
 			}
 			u.conn.Model(&models.Users{}).Count(&rows)
 			return
 		}
-		if err = u.conn.Model(&models.Users{}).Where("users.name like ?", "%"+keyword+"%").Limit(l).Offset(p).Order(sortField + " " + sorting).Find(&m).Error; err != nil {
+		if err = u.conn.Model(&models.Users{}).Where("users.name like ?", "%"+keyword+"%").Limit(l).Offset(offset).Order(sortField + " " + sorting).Find(&m).Error; err != nil {
 			return
 		}
 		u.conn.Model(&models.Users{}).Where("users.name like ?", "%"+keyword+"%").Count(&rows)
 		return
 	}
 	if keyword == "all" {
-		if err = u.conn.Unscoped().Model(&models.Users{}).Where("users.deleted_at IS NOT NULL").Limit(l).Offset(p).Order(sortField + " " + sorting).Find(&m).Error; err != nil {
+		if err = u.conn.Unscoped().Model(&models.Users{}).Where("users.deleted_at IS NOT NULL").Limit(l).Offset(offset).Order(sortField + " " + sorting).Find(&m).Error; err != nil {
 			return
 		}
 		u.conn.Unscoped().Model(&models.Users{}).Where("users.deleted_at IS NOT NULL").Count(&rows)

@@ -2,7 +2,7 @@
 @port = 8181
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NfdXVpZCI6ImM3ZTBiOTAyLTQyYzctNGU1My1iYjYwLTRmNDc2NTY5NGM0YiIsImNvbnRleHQiOnsiZW1haWwiOiJhb2ZpZWU2NjZAZ21haWwuY29tIiwiZGlzcGxheV9uYW1lIjoiS2hvbWtyaWQgTGVyZHByYXNlcnQiLCJyb2xlIjoiQWRtaW5pc3RyYXRvciJ9LCJleHAiOjE2Mjc2NDk0MDksImlhdCI6MTYyNzY0ODUwOSwiaXNzIjoiRGlhYmxvcyIsInN1YiI6ImQ0ZWEyMjFmLTc2MjMtNDAzMC1iYmRlLTQxMDRmMzZjNjBhNCJ9.sjZBKOUNGJZ2zFCNjrMiiIxYKaPCN39yFRldNQWL0po
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NfdXVpZCI6ImY5Y2Q5MWY0LWIyMWUtNGNkNi1hYmUxLWE2NDUwZGFjYzJkMiIsImNvbnRleHQiOnsiZW1haWwiOiJhb2ZpZWU2NjZAZ21haWwuY29tIiwiZGlzcGxheV9uYW1lIjoiS2hvbWtyaWQgTGVyZHByYXNlcnQiLCJyb2xlIjoiQWRtaW5pc3RyYXRvciJ9LCJleHAiOjE2Mjc2NTEyNDIsImlhdCI6MTYyNzY1MDM0MiwiaXNzIjoiRGlhYmxvcyIsInN1YiI6ImQ0ZWEyMjFmLTc2MjMtNDAzMC1iYmRlLTQxMDRmMzZjNjBhNCJ9.HnKEDUspQX4iVcHBFmkyM4PPJISGbQPSPYj4obkvvG8
 
 ###
 GET http://{{host}}/
@@ -14,9 +14,9 @@ Content-Type: {{contentType}}
 Authorization: Bearer {{accessToken}}
 
 {
-    "email":"witchaiwat@twinsynergy.co.th",
+    "email":"weerawith@twinsynergy.co.th",
     "password":"password",
-    "name":"Witchaiwat Sakulthongaram",
+    "name":"Weerawit Phaktawee",
     "telephone":"0925905444",
     "role_id":2
 }
@@ -45,7 +45,7 @@ Content-Type: {{contentType}}
 Authorization: Bearer {{accessToken}}
 
 ###Delete User to Trash
-DELETE http://{{host}}/user/068d74fa-64ad-4984-b881-ba972d86b2ed
+DELETE http://{{host}}/user/9833ccde-805f-4d11-b7a9-0e8cbfdd69a5
 Content-Type: {{contentType}}
 Authorization: Bearer {{accessToken}}
 
@@ -55,12 +55,12 @@ Content-Type: {{contentType}}
 Authorization: Bearer {{accessToken}}
 
 ###Get all users แบบระบุ page และแบ่งหน้า และ sort
-GET http://{{host}}/users?page=0&keyword=all&sort=ASC&field=name&limit=5
+GET http://{{host}}/users?page=0&keyword=all&sort=ASC&field=name&limit=5&page=1
 Content-Type: {{contentType}}
 Authorization: Bearer {{accessToken}}
 
-###Get all users ในถังขยะ
-GET http://{{host}}/users?focus=trash&keyword=all
+###Get all users ในถังขยะ offset = (page*limit)+page
+GET http://{{host}}/users?focus=trash&keyword=all&page=3&limit=2
 Content-Type: {{contentType}}
 Authorization: Bearer {{accessToken}}
 

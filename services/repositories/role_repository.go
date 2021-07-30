@@ -44,21 +44,21 @@ func (r *roleRepository) GetAllRoles(roles *[]models.RoleItems, keyword, sorting
 	if err != nil {
 		return err
 	}
-	p = p - 1
+	offset := (p * l) - l
 	if focus == "inbox" {
 		if keyword == "all" {
-			if err := r.conn.Model(&models.RoleItems{}).Limit(l).Offset(p).Order(sortField + " " + sorting).Find(&roles).Error; err != nil {
+			if err := r.conn.Model(&models.RoleItems{}).Limit(l).Offset(offset).Order(sortField + " " + sorting).Find(&roles).Error; err != nil {
 				return err
 			}
 			return nil
 		}
-		if err := r.conn.Model(&models.RoleItems{}).Where("role_items.name like ?", "%"+keyword+"%").Limit(l).Offset(p).Order(sortField + " " + sorting).Find(&roles).Error; err != nil {
+		if err := r.conn.Model(&models.RoleItems{}).Where("role_items.name like ?", "%"+keyword+"%").Limit(l).Offset(offset).Order(sortField + " " + sorting).Find(&roles).Error; err != nil {
 			return err
 		}
 		return nil
 	}
 	if keyword == "all" {
-		if err := r.conn.Unscoped().Model(&models.RoleItems{}).Where("role_items.deleted_at IS NOT NULL").Limit(l).Offset(p).Order(sortField + " " + sorting).Find(&roles).Error; err != nil {
+		if err := r.conn.Unscoped().Model(&models.RoleItems{}).Where("role_items.deleted_at IS NOT NULL").Limit(l).Offset(offset).Order(sortField + " " + sorting).Find(&roles).Error; err != nil {
 			return err
 		}
 		return nil

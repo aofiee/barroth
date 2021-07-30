@@ -226,9 +226,10 @@ func (u *userHandler) GetAllUsers(c *fiber.Ctx) error {
 		return helpers.FailOnError(c, err, constants.ERR_CANNOT_GET_ALL_ROLES, fiber.StatusBadRequest)
 	}
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"msg":   constants.ERR_GET_USER_SUCCESSFUL,
-		"error": nil,
-		"data":  users,
-		"total": rows,
+		"msg":     constants.ERR_GET_USER_SUCCESSFUL,
+		"error":   nil,
+		"data":    users,
+		"total":   rows,
+		"current": param.Page,
 	})
 }
