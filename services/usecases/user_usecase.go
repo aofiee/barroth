@@ -55,9 +55,9 @@ func (u *userUseCase) GetUser(user *models.Users, uuid string) error {
 	err := u.userRepo.GetUser(user, uuid)
 	return err
 }
-func (u *userUseCase) GetAllUsers(user *[]models.Users, keyword, sorting, sortField, page, limit, focus string) error {
-	err := u.userRepo.GetAllUsers(user, keyword, sorting, sortField, page, limit, focus)
-	return err
+func (u *userUseCase) GetAllUsers(user *[]models.Users, keyword, sorting, sortField, page, limit, focus string) (rows int64, err error) {
+	rows, err = u.userRepo.GetAllUsers(user, keyword, sorting, sortField, page, limit, focus)
+	return
 }
 func (u *userUseCase) DeleteUsers(focus string, uuid []string) (int64, error) {
 	rs, err := u.userRepo.DeleteUsers(focus, uuid)

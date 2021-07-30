@@ -2,6 +2,7 @@ package deliveries
 
 import (
 	"strconv"
+	"strings"
 
 	"github.com/aofiee/barroth/constants"
 	"github.com/aofiee/barroth/databases"
@@ -29,6 +30,14 @@ type (
 	}
 	paramUUID struct {
 		UsersID []string `json:"users_id" validate:"required"`
+	}
+	paramsGetAllUsers struct {
+		Keyword   string `json:"keyword" form:"keyword"`
+		Page      string `json:"page" form:"page"`
+		Limit     string `json:"limit" form:"limit"`
+		Sorting   string `json:"sort" form:"sort" validate:"eq=desc|eq=asc"`
+		SortField string `json:"field" form:"field" validate:"eq=id|eq=name|eq=email|eq=password|eq=telephone|eq=uuid|eq=user_role_id|eq=status"`
+		Focus     string `json:"focus" form:"focus" validate:"eq=inbox|eq=trash"`
 	}
 )
 
@@ -160,5 +169,66 @@ func (u *userHandler) DeleteMultitpleUsers(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"msg":   constants.ERR_DELETE_USER_SUCCESSFUL + " effected " + strconv.FormatInt(effectRows, 10) + " items",
 		"error": nil,
+	})
+}
+func (r *userHandler) BuildGetAllUsersParam(k, p, l, s, f, fo string) paramsGetAllRoles {
+	keyword := k
+	page := p
+	limit := l
+	sort := s
+	field := f
+	focus := fo
+	if keyword == "" {
+		keyword = "all"
+	}
+	if page == "" {
+		page = "0"
+	}
+	if limit == "" {
+		limit = "10"
+	}
+	if sort == "" {
+		sort = "asc"
+	}
+	if field == "" {
+		field = "id"
+	}
+	if focus == "" {
+		focus = "inbox"
+	}
+	var param paramsGetAllRoles
+	param.SortField = field
+	param.Keyword = keyword
+	param.Focus = focus
+	param.Limit = limit
+	param.Sorting = sort
+	param.Page = page
+	return param
+}
+func (u *userHandler) GetAllUsers(c *fiber.Ctx) error {
+	keyword := c.Query("keyword")
+	page := c.Query("page")
+	limit := c.Query("limit")
+	sort := strings.ToLower(c.Query("sort"))
+	field := strings.ToLower(c.Query("field"))
+	focus := strings.ToLower(c.Query("focus"))
+	param := u.BuildGetAllUsersParam(keyword, page, limit, sort, field, focus)
+	errorResponse := helpers.ValidateStruct(&param)
+	if errorResponse != nil {
+		return c.Status(fiber.StatusNotAcceptable).JSON(fiber.Map{
+			"msg":   constants.ERR_INPUT_ERROR,
+			"error": errorResponse,
+		})
+	}
+	var users []models.Users
+	rows, err := u.userUseCase.GetAllUsers(&users, param.Keyword, param.Sorting, param.SortField, param.Page, param.Limit, param.Focus)
+	if err != nil {
+		return helpers.FailOnError(c, err, constants.ERR_CANNOT_GET_ALL_ROLES, fiber.StatusBadRequest)
+	}
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"msg":   constants.ERR_GET_USER_SUCCESSFUL,
+		"error": nil,
+		"data":  users,
+		"total": rows,
 	})
 }

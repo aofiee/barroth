@@ -291,3 +291,39 @@ func TestDeleteMultitpleUsersDeleteSuccess(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, 200, resp.StatusCode, "completed")
 }
+func TestGetAllUsersValidateFail(t *testing.T) {
+	mockUseCase, handler := UserMockSetup(t)
+	mockUseCase.On("GetAllUsers", mock.AnythingOfType(mockUserTypeSlice), "all", "asc", "id", "0", "10", "inbox").Return(int64(0), errors.New("error"))
+	app := fiber.New()
+	app.Get("/users", handler.GetAllUsers)
+	req, err := http.NewRequest("GET", "/users?sort=hello", nil)
+	assert.NoError(t, err)
+	req.Header.Set(fiber.HeaderContentType, contentType)
+	resp, err := app.Test(req)
+	assert.NoError(t, err)
+	assert.Equal(t, 406, resp.StatusCode, "completed")
+}
+func TestGetAllUsersFail(t *testing.T) {
+	mockUseCase, handler := UserMockSetup(t)
+	mockUseCase.On("GetAllUsers", mock.AnythingOfType(mockUserTypeSlice), "all", "asc", "id", "0", "10", "inbox").Return(int64(0), errors.New("error"))
+	app := fiber.New()
+	app.Get("/users", handler.GetAllUsers)
+	req, err := http.NewRequest("GET", "/users", nil)
+	assert.NoError(t, err)
+	req.Header.Set(fiber.HeaderContentType, contentType)
+	resp, err := app.Test(req)
+	assert.NoError(t, err)
+	assert.Equal(t, 400, resp.StatusCode, "completed")
+}
+func TestGetAllUsersSuccess(t *testing.T) {
+	mockUseCase, handler := UserMockSetup(t)
+	mockUseCase.On("GetAllUsers", mock.AnythingOfType(mockUserTypeSlice), "all", "asc", "id", "0", "10", "inbox").Return(int64(1), nil)
+	app := fiber.New()
+	app.Get("/users", handler.GetAllUsers)
+	req, err := http.NewRequest("GET", "/users", nil)
+	assert.NoError(t, err)
+	req.Header.Set(fiber.HeaderContentType, contentType)
+	resp, err := app.Test(req)
+	assert.NoError(t, err)
+	assert.Equal(t, 200, resp.StatusCode, "completed")
+}

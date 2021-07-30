@@ -6,7 +6,7 @@ type (
 	UserUseCase interface {
 		CreateUser(m *models.Users) (err error)
 		GetUser(m *models.Users, uuid string) (err error)
-		GetAllUsers(m *[]models.Users, keyword, sorting, sortField, page, limit, focus string) (err error)
+		GetAllUsers(m *[]models.Users, keyword, sorting, sortField, page, limit, focus string) (rs int64, err error)
 		UpdateUser(m *models.Users, id string) (err error)
 		DeleteUsers(focus string, id []string) (rs int64, err error)
 		RestoreUsers(id []int) (rs int64, err error)
@@ -15,7 +15,7 @@ type (
 		CreateUser(m *models.Users) (err error)
 		GetUser(m *models.Users, uuid string) (err error)
 		GetUserByEmail(m *models.Users, email string) (err error)
-		GetAllUsers(m *[]models.Users, keyword, sorting, sortField, page, limit, focus string) (err error)
+		GetAllUsers(m *[]models.Users, keyword, sorting, sortField, page, limit, focus string) (rs int64, err error)
 		UpdateUser(m *models.Users, id string) (err error)
 		DeleteUsers(focus string, id []string) (rs int64, err error)
 		RestoreUsers(id []int) (rs int64, err error)

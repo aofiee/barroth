@@ -48,17 +48,24 @@ func (_m *UserUseCase) DeleteUsers(focus string, id []string) (int64, error) {
 }
 
 // GetAllUsers provides a mock function with given fields: m, keyword, sorting, sortField, page, limit, focus
-func (_m *UserUseCase) GetAllUsers(m *[]models.Users, keyword string, sorting string, sortField string, page string, limit string, focus string) error {
+func (_m *UserUseCase) GetAllUsers(m *[]models.Users, keyword string, sorting string, sortField string, page string, limit string, focus string) (int64, error) {
 	ret := _m.Called(m, keyword, sorting, sortField, page, limit, focus)
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(*[]models.Users, string, string, string, string, string, string) error); ok {
+	var r0 int64
+	if rf, ok := ret.Get(0).(func(*[]models.Users, string, string, string, string, string, string) int64); ok {
 		r0 = rf(m, keyword, sorting, sortField, page, limit, focus)
 	} else {
-		r0 = ret.Error(0)
+		r0 = ret.Get(0).(int64)
 	}
 
-	return r0
+	var r1 error
+	if rf, ok := ret.Get(1).(func(*[]models.Users, string, string, string, string, string, string) error); ok {
+		r1 = rf(m, keyword, sorting, sortField, page, limit, focus)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // GetUser provides a mock function with given fields: m, uuid

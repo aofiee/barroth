@@ -61,4 +61,5 @@ func (r *userRoutes) Install(app *fiber.App) {
 
 	e = app.Group("/users", authHandler.AuthorizationRequired(), authHandler.IsRevokeToken)
 	e.Delete("/", handler.DeleteMultitpleUsers)
+	e.Get("/", handler.GetAllUsers)
 }

@@ -106,10 +106,11 @@ func TestGetUser(t *testing.T) {
 func TestGetAllUsers(t *testing.T) {
 	var users []models.Users
 	repo := new(mocks.UserRepository)
-	repo.On("GetAllUsers", mock.AnythingOfType("*[]models.Users"), mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil).Once()
+	repo.On("GetAllUsers", mock.AnythingOfType("*[]models.Users"), mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(int64(1), nil).Once()
 	u := NewUserUseCase(repo)
-	err := u.GetAllUsers(&users, "all", "asc", "id", "1", "10", "inbox")
+	rows, err := u.GetAllUsers(&users, "all", "asc", "id", "1", "10", "inbox")
 	assert.NoError(t, err)
+	assert.Equal(t, int64(1), rows)
 }
 func TestDeleteUsers(t *testing.T) {
 	repo := new(mocks.UserRepository)

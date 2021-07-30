@@ -36,38 +36,43 @@ func (u *userRepository) GetUserByEmail(m *models.Users, email string) (err erro
 	}
 	return nil
 }
-func (u *userRepository) GetAllUsers(m *[]models.Users, keyword, sorting, sortField, page, limit, focus string) (err error) {
+func (u *userRepository) GetAllUsers(m *[]models.Users, keyword, sorting, sortField, page, limit, focus string) (rows int64, err error) {
 	l, err := strconv.Atoi(limit)
 	if err != nil {
-		return err
+		return
 	}
 	p, err := strconv.Atoi(page)
 	if err != nil {
-		return err
+		return
 	}
 	p = p - 1
+
 	if focus == "inbox" {
 		if keyword == "all" {
-			if err := u.conn.Model(&models.Users{}).Limit(l).Offset(p).Order(sortField + " " + sorting).Find(&m).Error; err != nil {
-				return err
+			if err = u.conn.Model(&models.Users{}).Limit(l).Offset(p).Order(sortField + " " + sorting).Find(&m).Error; err != nil {
+				return
 			}
-			return nil
+			u.conn.Model(&models.Users{}).Count(&rows)
+			return
 		}
-		if err := u.conn.Model(&models.Users{}).Where("users.name like ?", "%"+keyword+"%").Limit(l).Offset(p).Order(sortField + " " + sorting).Find(&m).Error; err != nil {
-			return err
+		if err = u.conn.Model(&models.Users{}).Where("users.name like ?", "%"+keyword+"%").Limit(l).Offset(p).Order(sortField + " " + sorting).Find(&m).Error; err != nil {
+			return
 		}
-		return nil
+		u.conn.Model(&models.Users{}).Where("users.name like ?", "%"+keyword+"%").Count(&rows)
+		return
 	}
 	if keyword == "all" {
-		if err := u.conn.Unscoped().Model(&models.Users{}).Where("users.deleted_at IS NOT NULL").Limit(l).Offset(p).Order(sortField + " " + sorting).Find(&m).Error; err != nil {
-			return err
+		if err = u.conn.Unscoped().Model(&models.Users{}).Where("users.deleted_at IS NOT NULL").Limit(l).Offset(p).Order(sortField + " " + sorting).Find(&m).Error; err != nil {
+			return
 		}
-		return nil
+		u.conn.Unscoped().Model(&models.Users{}).Where("users.deleted_at IS NOT NULL").Count(&rows)
+		return
 	}
-	if err := u.conn.Unscoped().Model(&models.Users{}).Where("users.deleted_at IS NOT NULL AND users.name like ?", "%"+keyword+"%").Limit(l).Offset(p).Order(sortField + " " + sorting).Find(&m).Error; err != nil {
-		return err
+	if err = u.conn.Unscoped().Model(&models.Users{}).Where("users.deleted_at IS NOT NULL AND users.name like ?", "%"+keyword+"%").Limit(l).Offset(p).Order(sortField + " " + sorting).Find(&m).Error; err != nil {
+		return
 	}
-	return nil
+	u.conn.Unscoped().Model(&models.Users{}).Where("users.deleted_at IS NOT NULL AND users.name like ?", "%"+keyword+"%").Count(&rows)
+	return
 }
 func (u *userRepository) UpdateUser(m *models.Users, uuid string) error {
 	if err := u.conn.Model(m).Omit("id", "uuid").Where("uuid = ?", uuid).Updates(m).Error; err != nil {
