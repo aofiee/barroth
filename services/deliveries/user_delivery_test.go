@@ -230,3 +230,64 @@ func TestDeleteUserSuccess(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, 200, resp.StatusCode, "completed")
 }
+func TestDeleteMultitpleUsersJSONNotSend(t *testing.T) {
+	_, handler := UserMockSetup(t)
+	app := fiber.New()
+	app.Delete("/users", handler.DeleteMultitpleUsers)
+	req, err := http.NewRequest("DELETE", "/users", nil)
+	req.Header.Set(fiber.HeaderContentType, contentType)
+	assert.NoError(t, err)
+	resp, err := app.Test(req)
+	assert.NoError(t, err)
+	assert.Equal(t, 400, resp.StatusCode, "completed")
+}
+func TestDeleteMultitpleUsersValidateError(t *testing.T) {
+	var uuid paramUUID
+	data, _ := json.Marshal(&uuid)
+	payload := bytes.NewReader(data)
+	_, handler := UserMockSetup(t)
+	app := fiber.New()
+	app.Delete("/users", handler.DeleteMultitpleUsers)
+	req, err := http.NewRequest("DELETE", "/users", payload)
+	req.Header.Set(fiber.HeaderContentType, contentType)
+	assert.NoError(t, err)
+	resp, err := app.Test(req)
+	assert.NoError(t, err)
+	assert.Equal(t, 406, resp.StatusCode, "completed")
+}
+func TestDeleteMultitpleUsersDeleteFail(t *testing.T) {
+	var uuid paramUUID
+	uuid.UsersID = []string{
+		UUID,
+	}
+	data, _ := json.Marshal(&uuid)
+	payload := bytes.NewReader(data)
+	mockUseCase, handler := UserMockSetup(t)
+	mockUseCase.On("DeleteUsers", "inbox", uuid.UsersID).Return(int64(0), errors.New("error TestDeleteMultitpleUsersDeleteFail"))
+	app := fiber.New()
+	app.Delete("/users", handler.DeleteMultitpleUsers)
+	req, err := http.NewRequest("DELETE", "/users", payload)
+	req.Header.Set(fiber.HeaderContentType, contentType)
+	assert.NoError(t, err)
+	resp, err := app.Test(req)
+	assert.NoError(t, err)
+	assert.Equal(t, 400, resp.StatusCode, "completed")
+}
+func TestDeleteMultitpleUsersDeleteSuccess(t *testing.T) {
+	var uuid paramUUID
+	uuid.UsersID = []string{
+		UUID,
+	}
+	data, _ := json.Marshal(&uuid)
+	payload := bytes.NewReader(data)
+	mockUseCase, handler := UserMockSetup(t)
+	mockUseCase.On("DeleteUsers", "inbox", uuid.UsersID).Return(int64(1), nil)
+	app := fiber.New()
+	app.Delete("/users", handler.DeleteMultitpleUsers)
+	req, err := http.NewRequest("DELETE", "/users", payload)
+	req.Header.Set(fiber.HeaderContentType, contentType)
+	assert.NoError(t, err)
+	resp, err := app.Test(req)
+	assert.NoError(t, err)
+	assert.Equal(t, 200, resp.StatusCode, "completed")
+}

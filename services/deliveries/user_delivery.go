@@ -27,6 +27,9 @@ type (
 		Name      string `json:"name" form:"name" validate:"required,min=6,max=255"`
 		RoleID    int    `json:"role_id" form:"role_id" validate:"required,number"`
 	}
+	paramUUID struct {
+		UsersID []string `json:"users_id" validate:"required"`
+	}
 )
 
 func NewUserHandelr(usecase domains.UserUseCase, m, d string, u *[]models.ModuleMethodSlug) *userHandler {
@@ -129,6 +132,28 @@ func (u *userHandler) DeleteUser(c *fiber.Ctx) error {
 	param := c.Params("id")
 	uuids := []string{param}
 	effectRows, err := u.userUseCase.DeleteUsers("inbox", uuids)
+	if err != nil {
+		return helpers.FailOnError(c, err, constants.ERR_CANNOT_DELETE_USER_SUCCESSFUL, fiber.StatusBadRequest)
+	}
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"msg":   constants.ERR_DELETE_USER_SUCCESSFUL + " effected " + strconv.FormatInt(effectRows, 10) + " items",
+		"error": nil,
+	})
+}
+func (u *userHandler) DeleteMultitpleUsers(c *fiber.Ctx) error {
+	var param paramUUID
+	err := c.BodyParser(&param)
+	if err != nil {
+		return helpers.FailOnError(c, err, constants.ERR_PARSE_JSON_FAIL, fiber.StatusBadRequest)
+	}
+	errorResponse := helpers.ValidateStruct(&param)
+	if errorResponse != nil {
+		return c.Status(fiber.StatusNotAcceptable).JSON(fiber.Map{
+			"msg":   constants.ERR_INPUT_ERROR,
+			"error": errorResponse,
+		})
+	}
+	effectRows, err := u.userUseCase.DeleteUsers("inbox", param.UsersID)
 	if err != nil {
 		return helpers.FailOnError(c, err, constants.ERR_CANNOT_DELETE_USER_SUCCESSFUL, fiber.StatusBadRequest)
 	}
