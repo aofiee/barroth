@@ -15,6 +15,10 @@ type (
 	}
 )
 
+const (
+	UUIDInSQLStatement = "uuid IN ?"
+)
+
 func NewUserRepository(conn *gorm.DB) domains.UserRepository {
 	return &userRepository{conn}
 }
@@ -81,20 +85,20 @@ func (u *userRepository) UpdateUser(m *models.Users, uuid string) error {
 }
 func (u *userRepository) DeleteUsers(focus string, uuid []string) (int64, error) {
 	if focus == "inbox" {
-		rs := u.conn.Where("uuid IN ?", uuid).Delete(&models.Users{})
+		rs := u.conn.Where(UUIDInSQLStatement, uuid).Delete(&models.Users{})
 		if rs.Error != nil {
 			return 0, rs.Error
 		}
 		return rs.RowsAffected, nil
 	}
-	rs := u.conn.Unscoped().Where("uuid IN ?", uuid).Delete(&models.Users{})
+	rs := u.conn.Unscoped().Where(UUIDInSQLStatement, uuid).Delete(&models.Users{})
 	if rs.Error != nil {
 		return 0, rs.Error
 	}
 	return rs.RowsAffected, nil
 }
 func (u *userRepository) RestoreUsers(id []int) (int64, error) {
-	rs := u.conn.Unscoped().Model(&models.Users{}).Where("uuid IN ?", id).Update("deleted_at", nil)
+	rs := u.conn.Unscoped().Model(&models.Users{}).Where(UUIDInSQLStatement, id).Update("deleted_at", nil)
 	if rs.Error != nil {
 		return 0, rs.Error
 	}
