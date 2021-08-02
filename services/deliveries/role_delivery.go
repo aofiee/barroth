@@ -77,13 +77,7 @@ func (r *roleHandler) NewRole(c *fiber.Ctx) error {
 		"error": nil,
 	})
 }
-func (r *roleHandler) BuildGetAllRolesParam(k, p, l, s, f, fo string) paramsGetAllRoles {
-	keyword := k
-	page := p
-	limit := l
-	sort := s
-	field := f
-	focus := fo
+func (r *roleHandler) BuildGetAllRolesParam(keyword, page, limit, sort, field, focus string) paramsGetAllRoles {
 	if keyword == "" {
 		keyword = "all"
 	}
