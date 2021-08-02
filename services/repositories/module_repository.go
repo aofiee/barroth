@@ -22,10 +22,8 @@ func (m *moduleRepository) GetModuleBySlug(module *models.Modules, method, slug 
 	return nil
 }
 func (m *moduleRepository) GetModule(module *models.Modules, id string) error {
-	if err := m.conn.Where("ID = ?", id).First(module).Error; err != nil {
-		return err
-	}
-	return nil
+	err := m.conn.Where("ID = ?", id).First(module).Error
+	return err
 }
 func (m *moduleRepository) CreateModule(module *models.Modules) error {
 	if err := m.conn.Create(module).Error; err != nil {
