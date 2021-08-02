@@ -171,13 +171,7 @@ func (u *userHandler) DeleteMultitpleUsers(c *fiber.Ctx) error {
 		"error": nil,
 	})
 }
-func (r *userHandler) BuildGetAllUsersParam(k, p, l, s, f, fo string) paramsGetAllRoles {
-	keyword := k
-	page := p
-	limit := l
-	sort := s
-	field := f
-	focus := fo
+func (r *userHandler) BuildGetAllUsersParam(keyword, page, limit, sort, field, focus string) paramsGetAllRoles {
 	if keyword == "" {
 		keyword = "all"
 	}
