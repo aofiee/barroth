@@ -16,6 +16,12 @@ type (
 	}
 )
 
+const (
+	RoleSlug         = "/role"
+	RolesSlug        = "/roles"
+	RestoreRolesSlug = "/roles/restore"
+)
+
 func NewRoleRoutes(config barroth_config.Config) *roleRoutes {
 	return &roleRoutes{
 		config: config,
@@ -26,27 +32,27 @@ func (r *roleRoutes) Install(app *fiber.App) {
 	moduleRoute = append(moduleRoute,
 		models.ModuleMethodSlug{
 			Method: fiber.MethodPost,
-			Slug:   "/role",
+			Slug:   RoleSlug,
 		},
 		models.ModuleMethodSlug{
 			Method: fiber.MethodGet,
-			Slug:   "/role",
+			Slug:   RoleSlug,
 		},
 		models.ModuleMethodSlug{
 			Method: fiber.MethodPut,
-			Slug:   "/role",
+			Slug:   RoleSlug,
 		},
 		models.ModuleMethodSlug{
 			Method: fiber.MethodGet,
-			Slug:   "/roles",
+			Slug:   RolesSlug,
 		},
 		models.ModuleMethodSlug{
 			Method: fiber.MethodDelete,
-			Slug:   "/roles",
+			Slug:   RolesSlug,
 		},
 		models.ModuleMethodSlug{
 			Method: fiber.MethodPut,
-			Slug:   "/roles/restore",
+			Slug:   RestoreRolesSlug,
 		},
 	)
 	repo := repositories.NewRoleRepository(databases.DB)
