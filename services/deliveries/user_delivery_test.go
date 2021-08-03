@@ -327,3 +327,64 @@ func TestGetAllUsersSuccess(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, 200, resp.StatusCode, "completed")
 }
+func TestRestoreUsersJSONFail(t *testing.T) {
+	_, handler := UserMockSetup(t)
+	app := fiber.New()
+	app.Put("/users", handler.RestoreUsers)
+	req, err := http.NewRequest("PUT", "/users", nil)
+	assert.NoError(t, err)
+	req.Header.Set(fiber.HeaderContentType, contentType)
+	resp, err := app.Test(req)
+	assert.NoError(t, err)
+	assert.Equal(t, 400, resp.StatusCode, "completed")
+}
+func TestRestoreUsersValidateFail(t *testing.T) {
+	var uuid paramUUID
+	data, _ := json.Marshal(&uuid)
+	payload := bytes.NewReader(data)
+	_, handler := UserMockSetup(t)
+	app := fiber.New()
+	app.Put("/users", handler.RestoreUsers)
+	req, err := http.NewRequest("PUT", "/users", payload)
+	assert.NoError(t, err)
+	req.Header.Set(fiber.HeaderContentType, contentType)
+	resp, err := app.Test(req)
+	assert.NoError(t, err)
+	assert.Equal(t, 406, resp.StatusCode, "completed")
+}
+func TestRestoreUsersRestoreFail(t *testing.T) {
+	var uuid paramUUID
+	uuid.UsersID = []string{
+		UUID,
+	}
+	data, _ := json.Marshal(&uuid)
+	payload := bytes.NewReader(data)
+	mockUseCase, handler := UserMockSetup(t)
+	mockUseCase.On("RestoreUsers", uuid.UsersID).Return(int64(0), errors.New("error TestRestoreUsersRestoreFail"))
+	app := fiber.New()
+	app.Put("/users", handler.RestoreUsers)
+	req, err := http.NewRequest("PUT", "/users", payload)
+	assert.NoError(t, err)
+	req.Header.Set(fiber.HeaderContentType, contentType)
+	resp, err := app.Test(req)
+	assert.NoError(t, err)
+	assert.Equal(t, 400, resp.StatusCode, "completed")
+}
+func TestRestoreUsersRestoreSuccess(t *testing.T) {
+	var uuid paramUUID
+	uuid.UsersID = []string{
+		UUID,
+	}
+	data, _ := json.Marshal(&uuid)
+	payload := bytes.NewReader(data)
+	mockUseCase, handler := UserMockSetup(t)
+	mockUseCase.On("RestoreUsers", uuid.UsersID).Return(int64(1), nil)
+	app := fiber.New()
+	app.Put("/users", handler.RestoreUsers)
+	req, err := http.NewRequest("PUT", "/users", payload)
+	assert.NoError(t, err)
+	req.Header.Set(fiber.HeaderContentType, contentType)
+	resp, err := app.Test(req)
+	assert.NoError(t, err)
+	assert.Equal(t, 200, resp.StatusCode, "completed")
+}

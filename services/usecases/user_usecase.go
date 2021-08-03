@@ -63,7 +63,7 @@ func (u *userUseCase) DeleteUsers(focus string, uuid []string) (int64, error) {
 	rs, err := u.userRepo.DeleteUsers(focus, uuid)
 	return rs, err
 }
-func (u *userUseCase) RestoreUsers(uuid []int) (int64, error) {
+func (u *userUseCase) RestoreUsers(uuid []string) (int64, error) {
 	rs, err := u.userRepo.RestoreUsers(uuid)
 	return rs, err
 }

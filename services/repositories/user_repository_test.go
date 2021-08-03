@@ -197,13 +197,13 @@ func TestRestoreUserSuccess(t *testing.T) {
 		mock.ExpectBegin()
 		mock.ExpectExec("UPDATE `users`").WillReturnResult(sqlmock.NewResult(1, 3))
 		mock.ExpectCommit()
-		_, err := repo.RestoreUsers([]int{1, 2, 3})
+		_, err := repo.RestoreUsers([]string{"1", "2", "3"})
 		assert.NoError(t, err)
 
 		mock.ExpectBegin()
 		mock.ExpectExec("UPDATE `users`").WillReturnError(errors.New("error TestRestoreUserSuccess"))
 		mock.ExpectCommit()
-		_, err = repo.RestoreUsers([]int{1, 2, 3})
+		_, err = repo.RestoreUsers([]string{"1", "2", "3"})
 		assert.Error(t, err)
 	})
 }

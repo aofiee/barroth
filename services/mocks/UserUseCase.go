@@ -83,18 +83,18 @@ func (_m *UserUseCase) GetUser(m *models.Users, uuid string) error {
 }
 
 // RestoreUsers provides a mock function with given fields: id
-func (_m *UserUseCase) RestoreUsers(id []int) (int64, error) {
+func (_m *UserUseCase) RestoreUsers(id []string) (int64, error) {
 	ret := _m.Called(id)
 
 	var r0 int64
-	if rf, ok := ret.Get(0).(func([]int) int64); ok {
+	if rf, ok := ret.Get(0).(func([]string) int64); ok {
 		r0 = rf(id)
 	} else {
 		r0 = ret.Get(0).(int64)
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func([]int) error); ok {
+	if rf, ok := ret.Get(1).(func([]string) error); ok {
 		r1 = rf(id)
 	} else {
 		r1 = ret.Error(1)

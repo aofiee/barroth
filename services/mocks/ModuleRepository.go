@@ -55,7 +55,7 @@ func (_m *ModuleRepository) GetModuleBySlug(m *models.Modules, method string, sl
 }
 
 // UpdateModule provides a mock function with given fields: m, id
-func (_m *ModuleRepository) UpdateModule(m *models.Modules, id string) error { // Noncompliant; GetModule and UpdateModule have identical implementations
+func (_m *ModuleRepository) UpdateModule(m *models.Modules, id string) error {
 	ret := _m.Called(m, id)
 
 	var r0 error

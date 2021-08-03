@@ -227,3 +227,25 @@ func (u *userHandler) GetAllUsers(c *fiber.Ctx) error {
 		"current": param.Page,
 	})
 }
+func (u *userHandler) RestoreUsers(c *fiber.Ctx) error {
+	var param paramUUID
+	err := c.BodyParser(&param)
+	if err != nil {
+		return helpers.FailOnError(c, err, constants.ERR_PARSE_JSON_FAIL, fiber.StatusBadRequest)
+	}
+	errorResponse := helpers.ValidateStruct(&param)
+	if errorResponse != nil {
+		return c.Status(fiber.StatusNotAcceptable).JSON(fiber.Map{
+			"msg":   constants.ERR_INPUT_ERROR,
+			"error": errorResponse,
+		})
+	}
+	effectRows, err := u.userUseCase.RestoreUsers(param.UsersID)
+	if err != nil {
+		return helpers.FailOnError(c, err, constants.ERR_CANNOT_RESTORE_USER_FROM_TRASH_TO_INBOX_SUCCESSFUL, fiber.StatusBadRequest)
+	}
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"msg":   constants.ERR_RESTORE_USER_FROM_TRASH_TO_INBOX_SUCCESSFUL + " effected " + strconv.FormatInt(effectRows, 10) + " items",
+		"error": nil,
+	})
+}
