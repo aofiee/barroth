@@ -43,6 +43,8 @@ type (
 )
 
 func NewUserHandelr(usecase domains.UserUseCase, m, d string, u *[]models.ModuleMethodSlug) *userHandler {
+	moduleRepo := repositories.NewModuleRepository(databases.DB)
+	moduleUseCase := usecases.NewModuleUseCase(moduleRepo)
 	for _, value := range *u {
 		newModule := models.Modules{
 			Name:        m,
@@ -50,8 +52,6 @@ func NewUserHandelr(usecase domains.UserUseCase, m, d string, u *[]models.Module
 			ModuleSlug:  value.Slug,
 			Method:      value.Method,
 		}
-		moduleRepo := repositories.NewModuleRepository(databases.DB)
-		moduleUseCase := usecases.NewModuleUseCase(moduleRepo)
 		err := moduleUseCase.GetModuleBySlug(&newModule, value.Method, value.Slug)
 		if err != nil {
 			moduleUseCase.CreateModule(&newModule)

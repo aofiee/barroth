@@ -24,6 +24,8 @@ type (
 )
 
 func NewSystemHandelr(usecase domains.SystemUseCase, m, d string, u *[]models.ModuleMethodSlug) *systemHandler {
+	moduleRepo := repositories.NewModuleRepository(databases.DB)
+	moduleUseCase := usecases.NewModuleUseCase(moduleRepo)
 	for _, value := range *u {
 		newModule := models.Modules{
 			Name:        m,
@@ -31,8 +33,6 @@ func NewSystemHandelr(usecase domains.SystemUseCase, m, d string, u *[]models.Mo
 			ModuleSlug:  value.Slug,
 			Method:      value.Method,
 		}
-		moduleRepo := repositories.NewModuleRepository(databases.DB)
-		moduleUseCase := usecases.NewModuleUseCase(moduleRepo)
 		err := moduleUseCase.GetModuleBySlug(&newModule, value.Method, value.Slug)
 		if err != nil {
 			moduleUseCase.CreateModule(&newModule)

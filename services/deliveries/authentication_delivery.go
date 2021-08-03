@@ -29,6 +29,8 @@ type (
 )
 
 func NewAuthenHandler(usecase domains.AuthenticationUseCase, m, d string, u *[]models.ModuleMethodSlug) *authenticationHandler {
+	moduleRepo := repositories.NewModuleRepository(databases.DB)
+	moduleUseCase := usecases.NewModuleUseCase(moduleRepo)
 	for _, value := range *u {
 		newModule := models.Modules{
 			Name:        m,
@@ -36,8 +38,6 @@ func NewAuthenHandler(usecase domains.AuthenticationUseCase, m, d string, u *[]m
 			ModuleSlug:  value.Slug,
 			Method:      value.Method,
 		}
-		moduleRepo := repositories.NewModuleRepository(databases.DB)
-		moduleUseCase := usecases.NewModuleUseCase(moduleRepo)
 		err := moduleUseCase.GetModuleBySlug(&newModule, value.Method, value.Slug)
 		if err != nil {
 			moduleUseCase.CreateModule(&newModule)
