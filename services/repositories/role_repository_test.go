@@ -8,6 +8,7 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/aofiee/barroth/databases"
 	"github.com/aofiee/barroth/models"
+	"github.com/gofiber/fiber/v2"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -190,4 +191,48 @@ func TestRestoreRoleSuccess(t *testing.T) {
 		_, err = repo.RestoreRoles([]int{1, 2, 3})
 		assert.Error(t, err)
 	})
+}
+func TestRoleGetAllModule(t *testing.T) {
+	SetupMock(t)
+	columns := []string{"id", "created_at", "updated_at", "deleted_at", "name", "description", "method", "module_slug"}
+	repo := NewRoleRepository(databases.DB)
+	assert.Equal(t, roleRepositoryType, reflect.TypeOf(repo).String(), "TestRoleGetAllModule")
+
+	var module []models.Modules
+	module = append(module, models.Modules{
+		Name:        appName,
+		Description: appUrl,
+		Method:      fiber.MethodGet,
+		ModuleSlug:  "/test",
+	})
+
+	mock.ExpectQuery("^SELECT (.+) FROM `modules`*").
+		WillReturnRows(sqlmock.NewRows(columns).AddRow(0, nil, nil, nil, appName, appUrl, fiber.MethodGet, "/test"))
+	m, err := repo.GetAllModules()
+	assert.NoError(t, err)
+	assert.Equal(t, module, m)
+}
+func TestSetPermissionFail(t *testing.T) {
+	SetupMock(t)
+	repo := NewRoleRepository(databases.DB)
+	assert.Equal(t, roleRepositoryType, reflect.TypeOf(repo).String(), "TestRoleGetAllModule")
+	mock.ExpectQuery("^SELECT (.+) FROM `permissions`*").WithArgs(uint(1), uint(1)).WillReturnError(errors.New("error TestSetPermission"))
+	mock.ExpectBegin()
+	mock.ExpectExec("INSERT INTO `permissions` ").WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectCommit()
+	err := repo.SetPermission(1, 1, 0)
+	assert.NoError(t, err)
+}
+func TestSetPermissionSuccess(t *testing.T) {
+	SetupMock(t)
+	columns := []string{"id", "created_at", "updated_at", "deleted_at", "module_id", "role_item_id", "is_exec"}
+	repo := NewRoleRepository(databases.DB)
+	assert.Equal(t, roleRepositoryType, reflect.TypeOf(repo).String(), "TestRoleGetAllModule")
+	mock.ExpectQuery("^SELECT (.+) FROM `permissions`*").WithArgs(uint(1), uint(1)).
+		WillReturnRows(sqlmock.NewRows(columns).AddRow(1, nil, nil, nil, 1, 1, 0))
+	mock.ExpectBegin()
+	mock.ExpectExec("UPDATE `permissions`").WillReturnResult(sqlmock.NewResult(1, 3))
+	mock.ExpectCommit()
+	err := repo.SetPermission(uint(1), uint(1), 0)
+	assert.NoError(t, err)
 }

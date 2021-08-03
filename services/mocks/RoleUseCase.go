@@ -47,6 +47,29 @@ func (_m *RoleUseCase) DeleteRoles(focus string, id []int) (int64, error) {
 	return r0, r1
 }
 
+// GetAllModules provides a mock function with given fields:
+func (_m *RoleUseCase) GetAllModules() ([]models.Modules, error) {
+	ret := _m.Called()
+
+	var r0 []models.Modules
+	if rf, ok := ret.Get(0).(func() []models.Modules); ok {
+		r0 = rf()
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]models.Modules)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func() error); ok {
+		r1 = rf()
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetAllRoles provides a mock function with given fields: m, keyword, sorting, sortField, page, limit, focus
 func (_m *RoleUseCase) GetAllRoles(m *[]models.RoleItems, keyword string, sorting string, sortField string, page string, limit string, focus string) error {
 	ret := _m.Called(m, keyword, sorting, sortField, page, limit, focus)
@@ -94,6 +117,20 @@ func (_m *RoleUseCase) RestoreRoles(id []int) (int64, error) {
 	}
 
 	return r0, r1
+}
+
+// SetPermission provides a mock function with given fields: moduleID, roleID, exec
+func (_m *RoleUseCase) SetPermission(moduleID uint, roleID uint, exec int) error {
+	ret := _m.Called(moduleID, roleID, exec)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(uint, uint, int) error); ok {
+		r0 = rf(moduleID, roleID, exec)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
 }
 
 // UpdateRole provides a mock function with given fields: m, id

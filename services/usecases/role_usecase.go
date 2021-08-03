@@ -18,6 +18,16 @@ func NewRoleUseCase(repo domains.RoleRepository) domains.RoleUseCase {
 }
 func (r *roleUseCase) CreateRole(role *models.RoleItems) error {
 	err := r.roleRepo.CreateRole(role)
+	if err != nil {
+		return err
+	}
+	modules, err := r.roleRepo.GetAllModules()
+	if err != nil {
+		return err
+	}
+	for _, v := range modules {
+		r.roleRepo.SetPermission(v.ID, role.ID, 0)
+	}
 	return err
 }
 func (r *roleUseCase) UpdateRole(role *models.RoleItems, id string) error {
@@ -44,4 +54,12 @@ func (r *roleUseCase) DeleteRoles(focus string, id []int) (int64, error) {
 func (r *roleUseCase) RestoreRoles(id []int) (int64, error) {
 	rs, err := r.roleRepo.RestoreRoles(id)
 	return rs, err
+}
+func (r *roleUseCase) GetAllModules() ([]models.Modules, error) {
+	modules, err := r.roleRepo.GetAllModules()
+	return modules, err
+}
+func (r *roleUseCase) SetPermission(moduleID, roleID uint, exec int) error {
+	err := r.roleRepo.SetPermission(moduleID, roleID, exec)
+	return err
 }

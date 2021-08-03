@@ -89,3 +89,22 @@ func (r *roleRepository) RestoreRoles(id []int) (int64, error) {
 	}
 	return rs.RowsAffected, nil
 }
+func (r *roleRepository) GetAllModules() ([]models.Modules, error) {
+	var m []models.Modules
+	rs := r.conn.Find(&m)
+	return m, rs.Error
+}
+func (r *roleRepository) SetPermission(moduleID, roleID uint, exec int) error {
+	permission := models.Permissions{
+		ModuleID:   moduleID,
+		RoleItemID: roleID,
+		IsExec:     exec,
+	}
+	rs := r.conn.Where("module_id = ? AND role_item_id = ?", moduleID, roleID).First(&permission)
+	if rs.Error != nil {
+		rs := r.conn.Create(&permission)
+		return rs.Error
+	}
+	rs = r.conn.Model(permission).Omit("id").Where("id = ?", permission.ID).Updates(permission)
+	return rs.Error
+}

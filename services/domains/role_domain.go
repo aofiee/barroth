@@ -12,6 +12,8 @@ type (
 		UpdateRole(m *models.RoleItems, id string) (err error)
 		DeleteRoles(focus string, id []int) (rs int64, err error)
 		RestoreRoles(id []int) (rs int64, err error)
+		GetAllModules() (m []models.Modules, err error)
+		SetPermission(moduleID, roleID uint, exec int) (err error)
 	}
 	RoleRepository interface {
 		CreateRole(m *models.RoleItems) (err error)
@@ -20,5 +22,7 @@ type (
 		UpdateRole(m *models.RoleItems, id string) (err error)
 		DeleteRoles(focus string, id []int) (rs int64, err error)
 		RestoreRoles(id []int) (rs int64, err error)
+		GetAllModules() (m []models.Modules, err error)
+		SetPermission(moduleID, roleID uint, exec int) (err error)
 	}
 )

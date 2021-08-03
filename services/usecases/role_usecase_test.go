@@ -16,18 +16,49 @@ const (
 	roleDesc      = "Test"
 )
 
-func TestCreateRole(t *testing.T) {
+func TestCreateRoleFail(t *testing.T) {
+	repo := new(mocks.RoleRepository)
+	role := models.RoleItems{
+		Name:        roleName,
+		Description: roleDesc,
+	}
+	repo.On("CreateRole", mock.AnythingOfType(roleModelType)).Return(errors.New("error CreateRole")).Once()
+	u := NewRoleUseCase(repo)
+	err := u.CreateRole(&role)
+	assert.Error(t, err)
+}
+func TestCreateRoleGetAllModulesFail(t *testing.T) {
 	repo := new(mocks.RoleRepository)
 	role := models.RoleItems{
 		Name:        roleName,
 		Description: roleDesc,
 	}
 	repo.On("CreateRole", mock.AnythingOfType(roleModelType)).Return(nil).Once()
+	var m []models.Modules
+	repo.On("GetAllModules").Return(m, errors.New("error GetAllModules")).Once()
+	u := NewRoleUseCase(repo)
+	err := u.CreateRole(&role)
+	assert.Error(t, err)
+}
+func TestCreateRoleSuccess(t *testing.T) {
+	repo := new(mocks.RoleRepository)
+	role := models.RoleItems{
+		Name:        roleName,
+		Description: roleDesc,
+	}
+	repo.On("CreateRole", mock.AnythingOfType(roleModelType)).Return(nil).Once()
+	var m []models.Modules
+	m = append(m, models.Modules{
+		Name:        moduleName,
+		Description: moduleDesc,
+		ModuleSlug:  "/test",
+	})
+	repo.On("GetAllModules").Return(m, nil).Once()
+	repo.On("SetPermission", mock.AnythingOfType("uint"), mock.AnythingOfType("uint"), mock.AnythingOfType("int")).Return(nil).Once()
 	u := NewRoleUseCase(repo)
 	err := u.CreateRole(&role)
 	assert.NoError(t, err)
 }
-
 func TestUpdateRoleSuccess(t *testing.T) {
 	repo := new(mocks.RoleRepository)
 	role := models.RoleItems{
@@ -93,4 +124,26 @@ func TestRestoreRoles(t *testing.T) {
 	rs, err := u.RestoreRoles([]int{1, 2, 3})
 	assert.NoError(t, err)
 	assert.Equal(t, int64(3), rs)
+}
+func TestGetAllModule(t *testing.T) {
+	var m []models.Modules
+	m = append(m, models.Modules{
+		Name:        moduleName,
+		Description: moduleDesc,
+		ModuleSlug:  "/test",
+	})
+	repo := new(mocks.RoleRepository)
+	repo.On("GetAllModules").Return(m, nil).Once()
+	u := NewRoleUseCase(repo)
+
+	a, err := u.GetAllModules()
+	assert.NoError(t, err)
+	assert.Equal(t, a, m)
+}
+func TestSetPermission(t *testing.T) {
+	repo := new(mocks.RoleRepository)
+	repo.On("SetPermission", mock.AnythingOfType("uint"), mock.AnythingOfType("uint"), mock.AnythingOfType("int")).Return(nil).Once()
+	u := NewRoleUseCase(repo)
+	err := u.SetPermission(uint(1), uint(2), 0)
+	assert.NoError(t, err)
 }
