@@ -1,6 +1,7 @@
 package deliveries
 
 import (
+	"log"
 	"strconv"
 	"strings"
 
@@ -151,6 +152,11 @@ func (u *userHandler) DeleteUser(c *fiber.Ctx) error {
 }
 func (u *userHandler) DeleteMultitpleUsers(c *fiber.Ctx) error {
 	var param paramUUID
+	focus := c.Query("focus")
+	if focus != "inbox" && focus != "trash" {
+		focus = "inbox"
+	}
+	log.Println(focus)
 	err := c.BodyParser(&param)
 	if err != nil {
 		return helpers.FailOnError(c, err, constants.ERR_PARSE_JSON_FAIL, fiber.StatusBadRequest)
@@ -162,7 +168,7 @@ func (u *userHandler) DeleteMultitpleUsers(c *fiber.Ctx) error {
 			"error": errorResponse,
 		})
 	}
-	effectRows, err := u.userUseCase.DeleteUsers("inbox", param.UsersID)
+	effectRows, err := u.userUseCase.DeleteUsers(focus, param.UsersID)
 	if err != nil {
 		return helpers.FailOnError(c, err, constants.ERR_CANNOT_DELETE_USER_SUCCESSFUL, fiber.StatusBadRequest)
 	}
