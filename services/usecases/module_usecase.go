@@ -18,6 +18,16 @@ func NewModuleUseCase(repo domains.ModuleRepository) domains.ModuleUseCase {
 }
 func (m *moduleUseCase) CreateModule(module *models.Modules) error {
 	err := m.moduleRepo.CreateModule(module)
+	if err != nil {
+		return err
+	}
+	roles, err := m.moduleRepo.GetAllRoles()
+	if err != nil {
+		return err
+	}
+	for _, v := range roles {
+		m.moduleRepo.SetPermission(module.ID, v.ID, 0)
+	}
 	return err
 }
 func (m *moduleUseCase) UpdateModule(module *models.Modules, id string) error {
@@ -35,5 +45,13 @@ func (m *moduleUseCase) GetModule(module *models.Modules, slug string) error {
 }
 func (m *moduleUseCase) GetModuleBySlug(module *models.Modules, method, slug string) error {
 	err := m.moduleRepo.GetModuleBySlug(module, method, slug)
+	return err
+}
+func (m *moduleUseCase) GetAllRoles() ([]models.RoleItems, error) {
+	roles, err := m.moduleRepo.GetAllRoles()
+	return roles, err
+}
+func (m *moduleUseCase) SetPermission(moduleID, roleID uint, exec int) error {
+	err := m.moduleRepo.SetPermission(moduleID, roleID, exec)
 	return err
 }

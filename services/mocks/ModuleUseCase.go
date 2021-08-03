@@ -26,6 +26,29 @@ func (_m *ModuleUseCase) CreateModule(m *models.Modules) error {
 	return r0
 }
 
+// GetAllRoles provides a mock function with given fields:
+func (_m *ModuleUseCase) GetAllRoles() ([]models.RoleItems, error) {
+	ret := _m.Called()
+
+	var r0 []models.RoleItems
+	if rf, ok := ret.Get(0).(func() []models.RoleItems); ok {
+		r0 = rf()
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]models.RoleItems)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func() error); ok {
+		r1 = rf()
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetModule provides a mock function with given fields: m, id
 func (_m *ModuleUseCase) GetModule(m *models.Modules, id string) error {
 	ret := _m.Called(m, id)
@@ -47,6 +70,20 @@ func (_m *ModuleUseCase) GetModuleBySlug(m *models.Modules, method string, slug 
 	var r0 error
 	if rf, ok := ret.Get(0).(func(*models.Modules, string, string) error); ok {
 		r0 = rf(m, method, slug)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// SetPermission provides a mock function with given fields: moduleID, roleID, exec
+func (_m *ModuleUseCase) SetPermission(moduleID uint, roleID uint, exec int) error {
+	ret := _m.Called(moduleID, roleID, exec)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(uint, uint, int) error); ok {
+		r0 = rf(moduleID, roleID, exec)
 	} else {
 		r0 = ret.Error(0)
 	}

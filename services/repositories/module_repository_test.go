@@ -100,3 +100,45 @@ func TestGetModuleBySlug(t *testing.T) {
 	err = repo.GetModuleBySlug(&module, fiber.MethodGet, "/test")
 	assert.Error(t, err)
 }
+func TestModuleGetAllRolesItems(t *testing.T) {
+	SetupMock(t)
+	columns := []string{"id", "created_at", "updated_at", "deleted_at", "name", "description"}
+	repo := NewModuleRepository(databases.DB)
+	assert.Equal(t, modelRepositoryType, reflect.TypeOf(repo).String(), "TestRoleGetAllModule")
+
+	var roles []models.RoleItems
+	roles = append(roles, models.RoleItems{
+		Name:        roleName,
+		Description: roleDesc,
+	})
+
+	mock.ExpectQuery("^SELECT (.+) FROM `role_items`*").
+		WillReturnRows(sqlmock.NewRows(columns).AddRow(0, nil, nil, nil, roleName, roleDesc))
+	m, err := repo.GetAllRoles()
+	assert.NoError(t, err)
+	assert.Equal(t, roles, m)
+}
+func TestSetModulePermissionFail(t *testing.T) {
+	SetupMock(t)
+	repo := NewModuleRepository(databases.DB)
+	assert.Equal(t, modelRepositoryType, reflect.TypeOf(repo).String(), "TestRoleGetAllModule")
+	mock.ExpectQuery("^SELECT (.+) FROM `permissions`*").WithArgs(uint(1), uint(1)).WillReturnError(errors.New("error TestSetPermission"))
+	mock.ExpectBegin()
+	mock.ExpectExec("INSERT INTO `permissions` ").WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectCommit()
+	err := repo.SetPermission(1, 1, 0)
+	assert.NoError(t, err)
+}
+func TestSetModulePermissionSuccess(t *testing.T) {
+	SetupMock(t)
+	columns := []string{"id", "created_at", "updated_at", "deleted_at", "module_id", "role_item_id", "is_exec"}
+	repo := NewModuleRepository(databases.DB)
+	assert.Equal(t, modelRepositoryType, reflect.TypeOf(repo).String(), "TestRoleGetAllModule")
+	mock.ExpectQuery("^SELECT (.+) FROM `permissions`*").WithArgs(uint(1), uint(1)).
+		WillReturnRows(sqlmock.NewRows(columns).AddRow(1, nil, nil, nil, 1, 1, 0))
+	mock.ExpectBegin()
+	mock.ExpectExec("UPDATE `permissions`").WillReturnResult(sqlmock.NewResult(1, 3))
+	mock.ExpectCommit()
+	err := repo.SetPermission(uint(1), uint(1), 0)
+	assert.NoError(t, err)
+}

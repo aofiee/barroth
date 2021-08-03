@@ -140,7 +140,7 @@ func TestGetAllModule(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, a, m)
 }
-func TestSetPermission(t *testing.T) {
+func TestSetRolePermission(t *testing.T) {
 	repo := new(mocks.RoleRepository)
 	repo.On("SetPermission", mock.AnythingOfType("uint"), mock.AnythingOfType("uint"), mock.AnythingOfType("int")).Return(nil).Once()
 	u := NewRoleUseCase(repo)

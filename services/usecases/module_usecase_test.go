@@ -17,13 +17,48 @@ const (
 	moduleDesc      = "Test"
 )
 
-func TestCreateModule(t *testing.T) {
+func TestCreateModuleFail(t *testing.T) {
 	repo := new(mocks.ModuleRepository)
 	module := models.Modules{
 		Name:        moduleName,
 		Description: moduleDesc,
 	}
+	repo.On("CreateModule", mock.AnythingOfType(moduleModelType)).Return(errors.New("error CreateModule")).Once()
+	u := NewModuleUseCase(repo)
+	err := u.CreateModule(&module)
+	assert.Error(t, err)
+}
+func TestCreateModuleGetAllRolesFail(t *testing.T) {
+	repo := new(mocks.ModuleRepository)
+	module := models.Modules{
+		Name:        moduleName,
+		Description: moduleDesc,
+	}
+	var roles []models.RoleItems
+	roles = append(roles, models.RoleItems{
+		Name:        roleName,
+		Description: roleDesc,
+	})
 	repo.On("CreateModule", mock.AnythingOfType(moduleModelType)).Return(nil).Once()
+	repo.On("GetAllRoles").Return(roles, errors.New("error GetAllRoles")).Once()
+	u := NewModuleUseCase(repo)
+	err := u.CreateModule(&module)
+	assert.Error(t, err)
+}
+func TestCreateModuleSuccess(t *testing.T) {
+	repo := new(mocks.ModuleRepository)
+	module := models.Modules{
+		Name:        moduleName,
+		Description: moduleDesc,
+	}
+	var roles []models.RoleItems
+	roles = append(roles, models.RoleItems{
+		Name:        roleName,
+		Description: roleDesc,
+	})
+	repo.On("CreateModule", mock.AnythingOfType(moduleModelType)).Return(nil).Once()
+	repo.On("GetAllRoles").Return(roles, nil).Once()
+	repo.On("SetPermission", mock.AnythingOfType("uint"), mock.AnythingOfType("uint"), mock.AnythingOfType("int")).Return(nil).Once()
 	u := NewModuleUseCase(repo)
 	err := u.CreateModule(&module)
 	assert.NoError(t, err)
@@ -75,4 +110,25 @@ func TestGetModuleBySlug(t *testing.T) {
 	u := NewModuleUseCase(repo)
 	err := u.GetModuleBySlug(&module, fiber.MethodPost, "/test")
 	assert.NoError(t, err)
+}
+func TestSetModulePermission(t *testing.T) {
+	repo := new(mocks.ModuleRepository)
+	repo.On("SetPermission", mock.AnythingOfType("uint"), mock.AnythingOfType("uint"), mock.AnythingOfType("int")).Return(nil).Once()
+	u := NewModuleUseCase(repo)
+	err := u.SetPermission(uint(1), uint(2), 0)
+	assert.NoError(t, err)
+}
+func TestModuleGetAllRoles(t *testing.T) {
+	var roles []models.RoleItems
+	roles = append(roles, models.RoleItems{
+		Name:        roleName,
+		Description: roleDesc,
+	})
+	repo := new(mocks.ModuleRepository)
+	repo.On("GetAllRoles").Return(roles, nil).Once()
+	u := NewModuleUseCase(repo)
+
+	a, err := u.GetAllRoles()
+	assert.NoError(t, err)
+	assert.Equal(t, a, roles)
 }

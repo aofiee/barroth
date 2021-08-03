@@ -37,3 +37,22 @@ func (m *moduleRepository) UpdateModule(module *models.Modules, id string) error
 	}
 	return nil
 }
+func (m *moduleRepository) GetAllRoles() ([]models.RoleItems, error) {
+	var roles []models.RoleItems
+	rs := m.conn.Find(&roles)
+	return roles, rs.Error
+}
+func (m *moduleRepository) SetPermission(moduleID, roleID uint, exec int) error {
+	permission := models.Permissions{
+		ModuleID:   moduleID,
+		RoleItemID: roleID,
+		IsExec:     exec,
+	}
+	rs := m.conn.Where("module_id = ? AND role_item_id = ?", moduleID, roleID).First(&permission)
+	if rs.Error != nil {
+		rs := m.conn.Create(&permission)
+		return rs.Error
+	}
+	rs = m.conn.Model(permission).Omit("id").Where("id = ?", permission.ID).Updates(permission)
+	return rs.Error
+}

@@ -32,14 +32,19 @@ type (
 	paramUUID struct {
 		UsersID []string `json:"users_id" validate:"required"`
 	}
-	paramsGetAllUsers struct {
-		Keyword   string `json:"keyword" form:"keyword"`
-		Page      string `json:"page" form:"page"`
-		Limit     string `json:"limit" form:"limit"`
-		Sorting   string `json:"sort" form:"sort" validate:"eq=desc|eq=asc"`
-		SortField string `json:"field" form:"field" validate:"eq=id|eq=name|eq=email|eq=password|eq=telephone|eq=uuid|eq=user_role_id|eq=status"`
-		Focus     string `json:"focus" form:"focus" validate:"eq=inbox|eq=trash"`
-	}
+	// paramsGetAllUsers struct {
+	// 	Keyword   string `json:"keyword" form:"keyword"`
+	// 	Page      string `json:"page" form:"page"`
+	// 	Limit     string `json:"limit" form:"limit"`
+	// 	Sorting   string `json:"sort" form:"sort" validate:"eq=desc|eq=asc"`
+	// 	SortField string `json:"field" form:"field" validate:"eq=id|eq=name|eq=email|eq=password|eq=telephone|eq=uuid|eq=user_role_id|eq=status"`
+	// 	Focus     string `json:"focus" form:"focus" validate:"eq=inbox|eq=trash"`
+	// }
+)
+
+const (
+	effectedConst = " effected "
+	itemsConst    = " items"
 )
 
 func NewUserHandelr(usecase domains.UserUseCase, m, d string, u *[]models.ModuleMethodSlug) *userHandler {
@@ -146,7 +151,7 @@ func (u *userHandler) DeleteUser(c *fiber.Ctx) error {
 		return helpers.FailOnError(c, err, constants.ERR_CANNOT_DELETE_USER_SUCCESSFUL, fiber.StatusBadRequest)
 	}
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"msg":   constants.ERR_DELETE_USER_SUCCESSFUL + " effected " + strconv.FormatInt(effectRows, 10) + " items",
+		"msg":   constants.ERR_DELETE_USER_SUCCESSFUL + effectedConst + strconv.FormatInt(effectRows, 10) + itemsConst,
 		"error": nil,
 	})
 }
@@ -173,7 +178,7 @@ func (u *userHandler) DeleteMultitpleUsers(c *fiber.Ctx) error {
 		return helpers.FailOnError(c, err, constants.ERR_CANNOT_DELETE_USER_SUCCESSFUL, fiber.StatusBadRequest)
 	}
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"msg":   constants.ERR_DELETE_USER_SUCCESSFUL + " effected " + strconv.FormatInt(effectRows, 10) + " items",
+		"msg":   constants.ERR_DELETE_USER_SUCCESSFUL + effectedConst + strconv.FormatInt(effectRows, 10) + itemsConst,
 		"error": nil,
 	})
 }
@@ -251,7 +256,7 @@ func (u *userHandler) RestoreUsers(c *fiber.Ctx) error {
 		return helpers.FailOnError(c, err, constants.ERR_CANNOT_RESTORE_USER_FROM_TRASH_TO_INBOX_SUCCESSFUL, fiber.StatusBadRequest)
 	}
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"msg":   constants.ERR_RESTORE_USER_FROM_TRASH_TO_INBOX_SUCCESSFUL + " effected " + strconv.FormatInt(effectRows, 10) + " items",
+		"msg":   constants.ERR_RESTORE_USER_FROM_TRASH_TO_INBOX_SUCCESSFUL + effectedConst + strconv.FormatInt(effectRows, 10) + itemsConst,
 		"error": nil,
 	})
 }
