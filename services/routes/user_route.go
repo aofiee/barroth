@@ -16,6 +16,11 @@ type (
 	}
 )
 
+const (
+	UserSlug  = "/user"
+	UsersSlug = "/users"
+)
+
 func NewUserRoutes(config barroth_config.Config) *userRoutes {
 	return &userRoutes{
 		config: config,
@@ -26,31 +31,31 @@ func (r *userRoutes) Install(app *fiber.App) {
 	moduleRoute = append(moduleRoute,
 		models.ModuleMethodSlug{
 			Method: fiber.MethodPost,
-			Slug:   "/user",
+			Slug:   UserSlug,
 		},
 		models.ModuleMethodSlug{
 			Method: fiber.MethodPut,
-			Slug:   "/user",
+			Slug:   UserSlug,
 		},
 		models.ModuleMethodSlug{
 			Method: fiber.MethodGet,
-			Slug:   "/user",
+			Slug:   UserSlug,
 		},
 		models.ModuleMethodSlug{
 			Method: fiber.MethodDelete,
-			Slug:   "/user",
+			Slug:   UserSlug,
 		},
 		models.ModuleMethodSlug{
 			Method: fiber.MethodDelete,
-			Slug:   "/users",
+			Slug:   UsersSlug,
 		},
 		models.ModuleMethodSlug{
 			Method: fiber.MethodGet,
-			Slug:   "/users",
+			Slug:   UsersSlug,
 		},
 		models.ModuleMethodSlug{
 			Method: fiber.MethodPut,
-			Slug:   "/users",
+			Slug:   UsersSlug,
 		},
 	)
 	repo := repositories.NewUserRepository(databases.DB)
