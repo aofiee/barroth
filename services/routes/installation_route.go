@@ -48,13 +48,15 @@ func (i *installationRoutes) Install(app *fiber.App) {
 	var moduleRoute []models.ModuleMethodSlug
 	moduleRoute = append(moduleRoute,
 		models.ModuleMethodSlug{
-			Method: fiber.MethodGet,
-			Slug:   "/install",
+			Name:        "Install",
+			Description: "Install Administrator",
+			Method:      fiber.MethodGet,
+			Slug:        "/install",
 		},
 	)
 	sysRepo := repositories.NewSystemRepository(databases.DB)
 	sysUseCase := usecases.NewSystemUseCase(sysRepo)
-	installHandler := deliveries.NewSystemHandelr(sysUseCase, "Installation", "Installation Module", &moduleRoute)
+	installHandler := deliveries.NewSystemHandelr(sysUseCase, &moduleRoute)
 	e := app.Group("/install")
 	e.Get("/", installHandler.SystemInstallation)
 }

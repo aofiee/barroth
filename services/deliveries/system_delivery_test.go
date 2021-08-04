@@ -61,14 +61,16 @@ func SystemMockSetup(t *testing.T) (mockUseCase *mocks.SystemUseCase, sysHandler
 	SetupMock(t)
 	var mr []models.ModuleMethodSlug
 	mr = append(mr, models.ModuleMethodSlug{
-		Method: fiber.MethodPost,
-		Slug:   "/test",
+		Name:        "Test",
+		Description: "Desc Test",
+		Method:      fiber.MethodPost,
+		Slug:        "/test",
 	})
 	var mockSystem models.System
 	err := faker.FakeData(&mockSystem)
 	assert.NoError(t, err)
 	mockUseCase = new(mocks.SystemUseCase)
-	sysHandler = NewSystemHandelr(mockUseCase, "expect1", "expect2", &mr)
+	sysHandler = NewSystemHandelr(mockUseCase, &mr)
 	return
 }
 func TestNewSystemHandelrInstallingCompleted(t *testing.T) {

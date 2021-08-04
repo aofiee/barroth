@@ -25,21 +25,27 @@ func (r *authenticationRoutes) Install(app *fiber.App) {
 	var moduleRoute []models.ModuleMethodSlug
 	moduleRoute = append(moduleRoute,
 		models.ModuleMethodSlug{
-			Method: fiber.MethodPost,
-			Slug:   "/auth",
+			Name:        "Login",
+			Description: "เข้าสู่ระบบเพื่อขอ Token",
+			Method:      fiber.MethodPost,
+			Slug:        "/auth",
 		},
 		models.ModuleMethodSlug{
-			Method: fiber.MethodDelete,
-			Slug:   "/auth/logout",
+			Name:        "Logout",
+			Description: "ออกจากระบบ",
+			Method:      fiber.MethodDelete,
+			Slug:        "/auth/logout",
 		},
 		models.ModuleMethodSlug{
-			Method: fiber.MethodPost,
-			Slug:   "/auth/refresh_token",
+			Name:        "Refresh Token",
+			Description: "ขอ Access Token ใหม่ ด้วย Refresh Token",
+			Method:      fiber.MethodPost,
+			Slug:        "/auth/refresh_token",
 		},
 	)
 	repo := repositories.NewAuthenticationRepository(databases.DB, databases.QueueClient)
 	u := usecases.NewAuthenticationUseCase(repo)
-	handler := deliveries.NewAuthenHandler(u, "Authentication", "Authentication Module", &moduleRoute)
+	handler := deliveries.NewAuthenHandler(u, &moduleRoute)
 	e := app.Group("/auth")
 	e.Post("/", handler.Login)
 	e.Delete("/logout", handler.AuthorizationRequired(), handler.IsRevokeToken, handler.Logout)

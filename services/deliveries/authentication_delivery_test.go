@@ -37,14 +37,16 @@ func AuthMockSetup(t *testing.T) (mockUseCase *mocks.AuthenticationUseCase, hand
 	SetupMock(t)
 	var mr []models.ModuleMethodSlug
 	mr = append(mr, models.ModuleMethodSlug{
-		Method: fiber.MethodPost,
-		Slug:   "/test",
+		Name:        "Test",
+		Description: "Desc Test",
+		Method:      fiber.MethodPost,
+		Slug:        "/test",
 	})
 	var mockUser models.Users
 	err := faker.FakeData(&mockUser)
 	assert.NoError(t, err)
 	mockUseCase = new(mocks.AuthenticationUseCase)
-	handler = NewAuthenHandler(mockUseCase, "expect1", "expect2", &mr)
+	handler = NewAuthenHandler(mockUseCase, &mr)
 	return
 }
 

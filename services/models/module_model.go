@@ -14,8 +14,10 @@ type (
 		PermissionsID []Permissions `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE; foreignKey:ModuleID;references:ID"`
 	}
 	ModuleMethodSlug struct {
-		Method string
-		Slug   string
+		Name        string
+		Description string
+		Method      string
+		Slug        string
 	}
 )
 

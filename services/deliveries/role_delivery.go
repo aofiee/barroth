@@ -17,8 +17,6 @@ import (
 type (
 	roleHandler struct {
 		roleUseCase domains.RoleUseCase
-		moduleName  string
-		description string
 	}
 	paramsGetAllRoles struct {
 		Keyword   string `json:"keyword" form:"keyword"`
@@ -33,13 +31,13 @@ type (
 	}
 )
 
-func NewRoleHandelr(usecase domains.RoleUseCase, m, d string, u *[]models.ModuleMethodSlug) *roleHandler {
+func NewRoleHandelr(usecase domains.RoleUseCase, u *[]models.ModuleMethodSlug) *roleHandler {
 	moduleRepo := repositories.NewModuleRepository(databases.DB)
 	moduleUseCase := usecases.NewModuleUseCase(moduleRepo)
 	for _, value := range *u {
 		newModule := models.Modules{
-			Name:        m,
-			Description: d,
+			Name:        value.Name,
+			Description: value.Description,
 			ModuleSlug:  value.Slug,
 			Method:      value.Method,
 		}
@@ -51,8 +49,6 @@ func NewRoleHandelr(usecase domains.RoleUseCase, m, d string, u *[]models.Module
 
 	return &roleHandler{
 		roleUseCase: usecase,
-		moduleName:  m,
-		description: d,
 	}
 }
 func (r *roleHandler) NewRole(c *fiber.Ctx) error {

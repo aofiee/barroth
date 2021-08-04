@@ -18,18 +18,16 @@ import (
 type (
 	systemHandler struct {
 		systemUseCase domains.SystemUseCase
-		moduleName    string
-		description   string
 	}
 )
 
-func NewSystemHandelr(usecase domains.SystemUseCase, m, d string, u *[]models.ModuleMethodSlug) *systemHandler {
+func NewSystemHandelr(usecase domains.SystemUseCase, u *[]models.ModuleMethodSlug) *systemHandler {
 	moduleRepo := repositories.NewModuleRepository(databases.DB)
 	moduleUseCase := usecases.NewModuleUseCase(moduleRepo)
 	for _, value := range *u {
 		newModule := models.Modules{
-			Name:        m,
-			Description: d,
+			Name:        value.Name,
+			Description: value.Description,
 			ModuleSlug:  value.Slug,
 			Method:      value.Method,
 		}
@@ -40,8 +38,6 @@ func NewSystemHandelr(usecase domains.SystemUseCase, m, d string, u *[]models.Mo
 	}
 	return &systemHandler{
 		systemUseCase: usecase,
-		moduleName:    m,
-		description:   d,
 	}
 }
 func (s *systemHandler) SystemInstallation(c *fiber.Ctx) error {

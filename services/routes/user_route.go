@@ -30,37 +30,51 @@ func (r *userRoutes) Install(app *fiber.App) {
 	var moduleRoute []models.ModuleMethodSlug
 	moduleRoute = append(moduleRoute,
 		models.ModuleMethodSlug{
-			Method: fiber.MethodPost,
-			Slug:   UserSlug,
+			Name:        "New User",
+			Description: "สร้าง User ใหม่",
+			Method:      fiber.MethodPost,
+			Slug:        UserSlug,
 		},
 		models.ModuleMethodSlug{
-			Method: fiber.MethodPut,
-			Slug:   UserSlug,
+			Name:        "Update User",
+			Description: "แก้ไข User",
+			Method:      fiber.MethodPut,
+			Slug:        UserSlug,
 		},
 		models.ModuleMethodSlug{
-			Method: fiber.MethodGet,
-			Slug:   UserSlug,
+			Name:        "Get User",
+			Description: "ดึงข้อมูล User",
+			Method:      fiber.MethodGet,
+			Slug:        UserSlug,
 		},
 		models.ModuleMethodSlug{
-			Method: fiber.MethodDelete,
-			Slug:   UserSlug,
+			Name:        "Delete User",
+			Description: "ลบข้อมูล User",
+			Method:      fiber.MethodDelete,
+			Slug:        UserSlug,
 		},
 		models.ModuleMethodSlug{
-			Method: fiber.MethodDelete,
-			Slug:   UsersSlug,
+			Name:        "Delete User",
+			Description: "ลบข้อมูล User แบบ Mutiple",
+			Method:      fiber.MethodDelete,
+			Slug:        UsersSlug,
 		},
 		models.ModuleMethodSlug{
-			Method: fiber.MethodGet,
-			Slug:   UsersSlug,
+			Name:        "Get All User",
+			Description: "ดึงข้อมูล User ทั้งหมด",
+			Method:      fiber.MethodGet,
+			Slug:        UsersSlug,
 		},
 		models.ModuleMethodSlug{
-			Method: fiber.MethodPut,
-			Slug:   UsersSlug,
+			Name:        "Restore User",
+			Description: "Restore User จากถังขยะไป inbox",
+			Method:      fiber.MethodPut,
+			Slug:        UsersSlug,
 		},
 	)
 	repo := repositories.NewUserRepository(databases.DB)
 	u := usecases.NewUserUseCase(repo)
-	handler := deliveries.NewUserHandelr(u, "Users", "User module management", &moduleRoute)
+	handler := deliveries.NewUserHandelr(u, &moduleRoute)
 
 	authRepo := repositories.NewAuthenticationRepository(databases.DB, databases.QueueClient)
 	authUseCase := usecases.NewAuthenticationUseCase(authRepo)

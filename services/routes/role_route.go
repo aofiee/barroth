@@ -31,33 +31,45 @@ func (r *roleRoutes) Install(app *fiber.App) {
 	var moduleRoute []models.ModuleMethodSlug
 	moduleRoute = append(moduleRoute,
 		models.ModuleMethodSlug{
-			Method: fiber.MethodPost,
-			Slug:   RoleSlug,
+			Name:        "Add New Role",
+			Description: "สร้าง Role ใหม่",
+			Method:      fiber.MethodPost,
+			Slug:        RoleSlug,
 		},
 		models.ModuleMethodSlug{
-			Method: fiber.MethodGet,
-			Slug:   RoleSlug,
+			Name:        "Get Role",
+			Description: "ดึงข้อมูล Role มาแสดง",
+			Method:      fiber.MethodGet,
+			Slug:        RoleSlug,
 		},
 		models.ModuleMethodSlug{
-			Method: fiber.MethodPut,
-			Slug:   RoleSlug,
+			Name:        "Update Role",
+			Description: "แก้ไข Role",
+			Method:      fiber.MethodPut,
+			Slug:        RoleSlug,
 		},
 		models.ModuleMethodSlug{
-			Method: fiber.MethodGet,
-			Slug:   RolesSlug,
+			Name:        "Get All Role",
+			Description: "ดึงข้อมูล Role ทั้งหมด",
+			Method:      fiber.MethodGet,
+			Slug:        RolesSlug,
 		},
 		models.ModuleMethodSlug{
-			Method: fiber.MethodDelete,
-			Slug:   RolesSlug,
+			Name:        "Delete Role",
+			Description: "ลบข้อมูล Role แบบ Multiple",
+			Method:      fiber.MethodDelete,
+			Slug:        RolesSlug,
 		},
 		models.ModuleMethodSlug{
-			Method: fiber.MethodPut,
-			Slug:   RestoreRolesSlug,
+			Name:        "Restore Role",
+			Description: "ย้ายข้อมูล Role จาก ถังขยะไป inbox แบบ Multitple",
+			Method:      fiber.MethodPut,
+			Slug:        RestoreRolesSlug,
 		},
 	)
 	repo := repositories.NewRoleRepository(databases.DB)
 	u := usecases.NewRoleUseCase(repo)
-	handler := deliveries.NewRoleHandelr(u, "Role", "Manage Role Module", &moduleRoute)
+	handler := deliveries.NewRoleHandelr(u, &moduleRoute)
 
 	authRepo := repositories.NewAuthenticationRepository(databases.DB, databases.QueueClient)
 	authUseCase := usecases.NewAuthenticationUseCase(authRepo)

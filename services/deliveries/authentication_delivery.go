@@ -20,8 +20,6 @@ import (
 type (
 	authenticationHandler struct {
 		authenticationUseCase domains.AuthenticationUseCase
-		moduleName            string
-		description           string
 	}
 	paramsLogin struct {
 		Email    string `json:"email" validate:"required,email,min=6,max=255"`
@@ -29,13 +27,13 @@ type (
 	}
 )
 
-func NewAuthenHandler(usecase domains.AuthenticationUseCase, m, d string, u *[]models.ModuleMethodSlug) *authenticationHandler {
+func NewAuthenHandler(usecase domains.AuthenticationUseCase, u *[]models.ModuleMethodSlug) *authenticationHandler {
 	moduleRepo := repositories.NewModuleRepository(databases.DB)
 	moduleUseCase := usecases.NewModuleUseCase(moduleRepo)
 	for _, value := range *u {
 		newModule := models.Modules{
-			Name:        m,
-			Description: d,
+			Name:        value.Name,
+			Description: value.Description,
 			ModuleSlug:  value.Slug,
 			Method:      value.Method,
 		}
@@ -46,8 +44,6 @@ func NewAuthenHandler(usecase domains.AuthenticationUseCase, m, d string, u *[]m
 	}
 	return &authenticationHandler{
 		authenticationUseCase: usecase,
-		moduleName:            m,
-		description:           d,
 	}
 }
 

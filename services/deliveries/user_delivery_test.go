@@ -38,14 +38,16 @@ func UserMockSetup(t *testing.T) (mockUseCase *mocks.UserUseCase, handler *userH
 	SetupMock(t)
 	var mr []models.ModuleMethodSlug
 	mr = append(mr, models.ModuleMethodSlug{
-		Method: fiber.MethodPost,
-		Slug:   "/test",
+		Name:        "Test",
+		Description: "Desc Test",
+		Method:      fiber.MethodPost,
+		Slug:        "/test",
 	})
 	var mockUser models.Users
 	err := faker.FakeData(&mockUser)
 	assert.NoError(t, err)
 	mockUseCase = new(mocks.UserUseCase)
-	handler = NewUserHandelr(mockUseCase, "expect1", "expect2", &mr)
+	handler = NewUserHandelr(mockUseCase, &mr)
 	return
 }
 func TestNewUserHandlerSuccess(t *testing.T) {
