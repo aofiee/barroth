@@ -2,6 +2,7 @@ package usecases
 
 import (
 	"errors"
+	"strings"
 	"time"
 
 	barroth_config "github.com/aofiee/barroth/config"
@@ -118,4 +119,18 @@ func (a *authenticationUseCase) GetUser(u *models.Users, uuid string) error {
 func (a *authenticationUseCase) GetAccessUUIDFromRedis(uuid string) (string, error) {
 	result, err := a.authenticationRepo.GetAccessUUIDFromRedis(uuid)
 	return result, err
+}
+func (a *authenticationUseCase) CheckRoutePermission(roleName, method, slug string) bool {
+	folder := strings.Split(slug, "/")
+	checkRouting := ""
+	for _, v := range folder {
+		if v != "" {
+			checkRouting += "/" + v
+			ok := a.authenticationRepo.CheckRoutePermission(roleName, method, checkRouting)
+			if ok {
+				return true
+			}
+		}
+	}
+	return false
 }

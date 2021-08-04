@@ -2,7 +2,7 @@
 @port = 8181
 @host = {{hostname}}:{{port}}
 @contentType = application/json
-@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NfdXVpZCI6IjRhYWNlZjJlLTBmMDUtNDA3Zi04MmYwLWZjMmZhOTJkMWRlZiIsImNvbnRleHQiOnsiZW1haWwiOiJhb2ZpZWU2NjZAZ21haWwuY29tIiwiZGlzcGxheV9uYW1lIjoiS2hvbWtyaWQgTGVyZHByYXNlcnQiLCJyb2xlIjoiQWRtaW5pc3RyYXRvciJ9LCJleHAiOjE2Mjc5ODA2MTMsImlhdCI6MTYyNzk3OTcxMywiaXNzIjoiRGlhYmxvcyIsInN1YiI6ImQ0ZWEyMjFmLTc2MjMtNDAzMC1iYmRlLTQxMDRmMzZjNjBhNCJ9.382WH7y5ycWJLmllEWgr4MDZHZyL_UpA_Q5orr_4yT4
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NfdXVpZCI6IjEyMWMyNDhiLWYwMDMtNGUzNy05M2FkLTAwMWYzYjJmNWEwYSIsImNvbnRleHQiOnsiZW1haWwiOiJhb2ZpZWU2NjZAZ21haWwuY29tIiwiZGlzcGxheV9uYW1lIjoiIiwicm9sZSI6IkFkbWluaXN0cmF0b3IifSwiZXhwIjoxNjI4MDY1ODk0LCJpYXQiOjE2MjgwNjQ5OTQsImlzcyI6IkRpYWJsb3MiLCJzdWIiOiJjODQ4YTRmYS01OTIwLTRmZDktODAxOS1mMTg1OTA4OGJhMTkifQ.l8w-pfZYIWT2JuIbetd4j3ssGUdvUzTYNre1oP1cwxU
 
 ###
 GET http://{{host}}/
@@ -22,7 +22,7 @@ Authorization: Bearer {{accessToken}}
 }
 
 ###Update User
-PUT  http://{{host}}/user/d4ea221f-7623-4030-bbde-4104f36c60a4
+PUT  http://{{host}}/user/c848a4fa-5920-4fd9-8019-f1859088ba19
 Content-Type: {{contentType}}
 Authorization: Bearer {{accessToken}}
 
@@ -40,17 +40,17 @@ Content-Type: {{contentType}}
 Authorization: Bearer {{accessToken}}
 
 ###Get User Profile by id
-GET http://{{host}}/user/64a15228-636c-4dec-ae05-2baff17bed63
+GET http://{{host}}/user/25fd623a-3c69-4d38-9004-0a9666f99483
 Content-Type: {{contentType}}
 Authorization: Bearer {{accessToken}}
 
 ###Delete User to Trash
-DELETE http://{{host}}/user/9833ccde-805f-4d11-b7a9-0e8cbfdd69a5
+DELETE http://{{host}}/user/25fd623a-3c69-4d38-9004-0a9666f99483
 Content-Type: {{contentType}}
 Authorization: Bearer {{accessToken}}
 
 ###Get all users default page = 0 , limit = 10, sort = desc , focus = inbox, keyword = all
-GET http://{{host}}/users?keyword=Khomkrid
+GET http://{{host}}/users
 Content-Type: {{contentType}}
 Authorization: Bearer {{accessToken}}
 

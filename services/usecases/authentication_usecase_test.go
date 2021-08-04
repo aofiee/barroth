@@ -6,6 +6,7 @@ import (
 
 	"github.com/aofiee/barroth/mocks"
 	"github.com/aofiee/barroth/models"
+	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/utils"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -157,4 +158,18 @@ func TestGetAccessUUIDFromRedis(t *testing.T) {
 	result, err := u.GetAccessUUIDFromRedis(uuid)
 	assert.NoError(t, err)
 	assert.Equal(t, expectResult, result)
+}
+func TestCheckRoutePermissionSuccess(t *testing.T) {
+	repo := new(mocks.AuthenticationRepository)
+	repo.On("CheckRoutePermission", roleName, fiber.MethodGet, "/test").Return(true)
+	u := NewAuthenticationUseCase(repo)
+	ok := u.CheckRoutePermission(roleName, fiber.MethodGet, "/test")
+	assert.Equal(t, true, ok)
+}
+func TestCheckRoutePermissionFail(t *testing.T) {
+	repo := new(mocks.AuthenticationRepository)
+	repo.On("CheckRoutePermission", roleName, fiber.MethodGet, "/test").Return(false)
+	u := NewAuthenticationUseCase(repo)
+	ok := u.CheckRoutePermission(roleName, fiber.MethodGet, "/test")
+	assert.Equal(t, false, ok)
 }

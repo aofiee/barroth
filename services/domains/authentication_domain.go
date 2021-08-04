@@ -16,6 +16,7 @@ type (
 		DeleteToken(uuid string) (err error)
 		GetUser(m *models.Users, uuid string) (err error)
 		GetAccessUUIDFromRedis(uuid string) (result string, err error)
+		CheckRoutePermission(roleName, method, slug string) (ok bool)
 	}
 	AuthenticationRepository interface {
 		Login(m *models.Users, email string) (err error)
@@ -25,5 +26,6 @@ type (
 		DeleteToken(uuid string) (err error)
 		GetUser(m *models.Users, uuid string) (err error)
 		GetAccessUUIDFromRedis(uuid string) (result string, err error)
+		CheckRoutePermission(roleName, method, slug string) (ok bool)
 	}
 )

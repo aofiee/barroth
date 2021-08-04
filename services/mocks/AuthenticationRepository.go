@@ -28,6 +28,20 @@ func (_m *AuthenticationRepository) CheckPasswordHash(m *models.Users, password 
 	return r0
 }
 
+// CheckRoutePermission provides a mock function with given fields: roleName, method, slug
+func (_m *AuthenticationRepository) CheckRoutePermission(roleName string, method string, slug string) bool {
+	ret := _m.Called(roleName, method, slug)
+
+	var r0 bool
+	if rf, ok := ret.Get(0).(func(string, string, string) bool); ok {
+		r0 = rf(roleName, method, slug)
+	} else {
+		r0 = ret.Get(0).(bool)
+	}
+
+	return r0
+}
+
 // DeleteToken provides a mock function with given fields: uuid
 func (_m *AuthenticationRepository) DeleteToken(uuid string) error {
 	ret := _m.Called(uuid)

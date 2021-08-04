@@ -44,6 +44,14 @@ func (r *userRoutes) Install(app *fiber.App) {
 			Method: fiber.MethodDelete,
 			Slug:   "/users",
 		},
+		models.ModuleMethodSlug{
+			Method: fiber.MethodGet,
+			Slug:   "/users",
+		},
+		models.ModuleMethodSlug{
+			Method: fiber.MethodPut,
+			Slug:   "/users",
+		},
 	)
 	repo := repositories.NewUserRepository(databases.DB)
 	u := usecases.NewUserUseCase(repo)
@@ -53,13 +61,13 @@ func (r *userRoutes) Install(app *fiber.App) {
 	authUseCase := usecases.NewAuthenticationUseCase(authRepo)
 	authHandler := deliveries.GetAuthHandlerUsecase(authUseCase)
 
-	e := app.Group("/user", authHandler.AuthorizationRequired(), authHandler.IsRevokeToken)
+	e := app.Group("/user", authHandler.AuthorizationRequired(), authHandler.IsRevokeToken, authHandler.CheckRoutingPermission)
 	e.Post("/", handler.NewUser)
 	e.Put("/:id", handler.UpdateUser)
 	e.Get("/:id", handler.GetUser)
 	e.Delete("/:id", handler.DeleteUser)
 
-	e = app.Group("/users", authHandler.AuthorizationRequired(), authHandler.IsRevokeToken)
+	e = app.Group("/users", authHandler.AuthorizationRequired(), authHandler.IsRevokeToken, authHandler.CheckRoutingPermission)
 	e.Delete("/", handler.DeleteMultitpleUsers)
 	e.Get("/", handler.GetAllUsers)
 	e.Put("/", handler.RestoreUsers)

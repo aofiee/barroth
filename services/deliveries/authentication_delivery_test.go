@@ -257,6 +257,7 @@ func mockAccessToken() (models.TokenDetail, error) {
 	claims["exp"] = token.AccessTokenExp
 	claims["iat"] = time.Now().In(location).Unix()
 	claims["access_uuid"] = token.AccessUUID
+	claims["context"] = token.Context
 	rs, err := tk.SignedString([]byte(barroth_config.ENV.AccessKey))
 	token.Token.AccessToken = rs
 	return token, err
@@ -720,4 +721,37 @@ func TestIsRevokeTokenFail(t *testing.T) {
 	resp, err := app.Test(req)
 	assert.NoError(t, err)
 	assert.Equal(t, 401, resp.StatusCode, "TestLogoutSuccess")
+}
+func TestRoutingPermissionFail(t *testing.T) {
+	token, err := mockAccessToken()
+	assert.NoError(t, err)
+	assert.NotEqual(t, nil, token.Token.AccessToken)
+
+	mockUseCase, handler := AuthMockSetup(t)
+	_, handlerUser := UserMockSetup(t)
+	mockUseCase.On("CheckRoutePermission", authRoleName, fiber.MethodGet, "/user/me").Return(false)
+	app := fiber.New()
+	app.Get("/user/:id", handler.AuthorizationRequired(), handler.CheckRoutingPermission, handlerUser.GetUser)
+	req, err := http.NewRequest("GET", "/user/me", nil)
+	req.Header.Set(fiber.HeaderContentType, fiber.MIMEApplicationJSON)
+	req.Header.Set(fiber.HeaderAuthorization, "Bearer "+token.Token.AccessToken)
+	assert.NoError(t, err)
+	resp, err := app.Test(req)
+	assert.NoError(t, err)
+	assert.Equal(t, 401, resp.StatusCode, "TestLogoutSuccess")
+}
+func TestRoutingPermissionSuccess(t *testing.T) {
+	token, err := mockAccessToken()
+	assert.NoError(t, err)
+	assert.NotEqual(t, nil, token.Token.AccessToken)
+	mockUseCase, handler := AuthMockSetup(t)
+	mockUseCase.On("CheckRoutePermission", authRoleName, fiber.MethodGet, "/user/me").Return(true)
+	app := fiber.New()
+	app.Get("/user/:id", handler.AuthorizationRequired(), handler.CheckRoutingPermission)
+	req, err := http.NewRequest("GET", "/user/me", nil)
+	req.Header.Set(fiber.HeaderContentType, fiber.MIMEApplicationJSON)
+	req.Header.Set(fiber.HeaderAuthorization, "Bearer "+token.Token.AccessToken)
+	assert.NoError(t, err)
+	_, err = app.Test(req)
+	assert.NoError(t, err)
 }

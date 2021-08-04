@@ -62,3 +62,8 @@ func (a *authenticationRepository) GetAccessUUIDFromRedis(uuid string) (string, 
 	result, err := a.queue.Get(ctx, uuid).Result()
 	return result, err
 }
+func (a *authenticationRepository) CheckRoutePermission(roleName, method, slug string) bool {
+	var exec string
+	rs := a.conn.Model(&models.RoleItems{}).Select("permissions.is_exec").Joins("inner join permissions on role_items.id = permissions.role_item_id").Joins("inner join modules on permissions.module_id = modules.id").Where("permissions.is_exec = 1 AND role_items.name = ? AND modules.method = ? AND modules.module_slug = ?", roleName, method, slug).First(&exec)
+	return rs.Error == nil
+}

@@ -2,6 +2,7 @@ package constants
 
 const (
 	ERR_DNS_CONNECTION_EMPTY = "dns connection is empty"
+	ERR_ACCESS_DENIED        = "access denied"
 
 	ERR_PARSE_JSON_FAIL          = "cannot parse json"
 	ERR_INPUT_ERROR              = "input error"

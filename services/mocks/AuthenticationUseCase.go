@@ -12,6 +12,20 @@ type AuthenticationUseCase struct {
 	mock.Mock
 }
 
+// CheckRoutePermission provides a mock function with given fields: roleName, method, slug
+func (_m *AuthenticationUseCase) CheckRoutePermission(roleName string, method string, slug string) bool {
+	ret := _m.Called(roleName, method, slug)
+
+	var r0 bool
+	if rf, ok := ret.Get(0).(func(string, string, string) bool); ok {
+		r0 = rf(roleName, method, slug)
+	} else {
+		r0 = ret.Get(0).(bool)
+	}
+
+	return r0
+}
+
 // CreateToken provides a mock function with given fields: m
 func (_m *AuthenticationUseCase) CreateToken(m *models.Users) (models.TokenDetail, error) {
 	ret := _m.Called(m)

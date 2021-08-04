@@ -10,6 +10,7 @@ import (
 	"github.com/aofiee/barroth/databases"
 	"github.com/aofiee/barroth/models"
 	"github.com/go-redis/redismock/v8"
+	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/utils"
 	"github.com/stretchr/testify/assert"
 )
@@ -146,4 +147,14 @@ func TestGetAccessUUIDFromRedis(t *testing.T) {
 	result, err := repo.GetAccessUUIDFromRedis(uuid)
 	assert.NoError(t, err)
 	assert.Equal(t, uuidResult, result)
+}
+func TestCheckRoutePermission(t *testing.T) {
+	SetupMock(t)
+	repo := NewAuthenticationRepository(databases.DB, databases.QueueClient)
+	assert.Equal(t, authenticationRepositoryType, reflect.TypeOf(repo).String(), "TestCheckRoutePermission")
+	column := []string{"permissions.is_exec"}
+	mock.ExpectQuery("^SELECT permissions.is_exec FROM *").WithArgs("RoleName", fiber.MethodGet, "/test").
+		WillReturnRows(sqlmock.NewRows(column).AddRow(1))
+	ok := repo.CheckRoutePermission("RoleName", fiber.MethodGet, "/test")
+	assert.Equal(t, true, ok)
 }

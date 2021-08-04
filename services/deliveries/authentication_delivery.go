@@ -1,6 +1,7 @@
 package deliveries
 
 import (
+	"errors"
 	"fmt"
 
 	barroth_config "github.com/aofiee/barroth/config"
@@ -193,6 +194,18 @@ func (a *authenticationHandler) IsRevokeToken(c *fiber.Ctx) error {
 	_, err := a.authenticationUseCase.GetAccessUUIDFromRedis(accessUUID)
 	if err != nil {
 		return helpers.FailOnError(c, err, constants.ERR_REFRESH_TOKEN_EXPIRE, fiber.StatusUnauthorized)
+	}
+	return c.Next()
+}
+func (a *authenticationHandler) CheckRoutingPermission(c *fiber.Ctx) error {
+	user := c.Locals("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	context := claims["context"]
+	ctx := context.(map[string]interface{})
+	role := ctx["role"].(string)
+	ok := a.authenticationUseCase.CheckRoutePermission(role, c.Method(), c.Path())
+	if !ok {
+		return helpers.FailOnError(c, errors.New("access denied"), constants.ERR_ACCESS_DENIED, fiber.StatusUnauthorized)
 	}
 	return c.Next()
 }
