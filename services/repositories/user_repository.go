@@ -109,3 +109,16 @@ func (u *userRepository) HashPassword(user *models.Users) error {
 	user.Password = string(bytes)
 	return err
 }
+func (u *userRepository) CreateUserRole(m *models.UserRoles) error {
+	rs := u.conn.Create(m)
+	return rs.Error
+}
+func (u *userRepository) UpdateUserRole(m *models.UserRoles, uid uint) error {
+	err := u.conn.Model(m).Omit("id", "user_id").Where("user_id = ?", uid).Updates(m).Error
+	return err
+}
+func (u *userRepository) GetUserRole(uid uint) error {
+	var r models.UserRoles
+	err := u.conn.Where("user_id = ?", uid).First(&r).Error
+	return err
+}

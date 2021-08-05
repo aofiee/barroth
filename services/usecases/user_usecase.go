@@ -67,3 +67,12 @@ func (u *userUseCase) RestoreUsers(uuid []string) (int64, error) {
 	rs, err := u.userRepo.RestoreUsers(uuid)
 	return rs, err
 }
+func (u *userUseCase) SetUserRole(m *models.UserRoles, uid uint) error {
+	err := u.userRepo.GetUserRole(uid)
+	if err != nil {
+		err := u.userRepo.CreateUserRole(m)
+		return err
+	}
+	err = u.userRepo.UpdateUserRole(m, uid)
+	return err
+}

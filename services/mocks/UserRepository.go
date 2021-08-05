@@ -26,6 +26,20 @@ func (_m *UserRepository) CreateUser(m *models.Users) error {
 	return r0
 }
 
+// CreateUserRole provides a mock function with given fields: m
+func (_m *UserRepository) CreateUserRole(m *models.UserRoles) error {
+	ret := _m.Called(m)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(*models.UserRoles) error); ok {
+		r0 = rf(m)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // DeleteUsers provides a mock function with given fields: focus, id
 func (_m *UserRepository) DeleteUsers(focus string, id []string) (int64, error) {
 	ret := _m.Called(focus, id)
@@ -96,6 +110,20 @@ func (_m *UserRepository) GetUserByEmail(m *models.Users, email string) error {
 	return r0
 }
 
+// GetUserRole provides a mock function with given fields: uid
+func (_m *UserRepository) GetUserRole(uid uint) error {
+	ret := _m.Called(uid)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(uint) error); ok {
+		r0 = rf(uid)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // HashPassword provides a mock function with given fields: user
 func (_m *UserRepository) HashPassword(user *models.Users) error {
 	ret := _m.Called(user)
@@ -138,6 +166,20 @@ func (_m *UserRepository) UpdateUser(m *models.Users, id string) error {
 	var r0 error
 	if rf, ok := ret.Get(0).(func(*models.Users, string) error); ok {
 		r0 = rf(m, id)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// UpdateUserRole provides a mock function with given fields: m, uid
+func (_m *UserRepository) UpdateUserRole(m *models.UserRoles, uid uint) error {
+	ret := _m.Called(m, uid)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(*models.UserRoles, uint) error); ok {
+		r0 = rf(m, uid)
 	} else {
 		r0 = ret.Error(0)
 	}

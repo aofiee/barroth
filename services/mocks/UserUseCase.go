@@ -103,6 +103,20 @@ func (_m *UserUseCase) RestoreUsers(id []string) (int64, error) {
 	return r0, r1
 }
 
+// SetUserRole provides a mock function with given fields: m, uid
+func (_m *UserUseCase) SetUserRole(m *models.UserRoles, uid uint) error {
+	ret := _m.Called(m, uid)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(*models.UserRoles, uint) error); ok {
+		r0 = rf(m, uid)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // UpdateUser provides a mock function with given fields: m, id
 func (_m *UserUseCase) UpdateUser(m *models.Users, id string) error {
 	ret := _m.Called(m, id)

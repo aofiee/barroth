@@ -26,7 +26,11 @@ func (m *moduleUseCase) CreateModule(module *models.Modules) error {
 		return err
 	}
 	for _, v := range roles {
-		m.moduleRepo.SetPermission(module.ID, v.ID, 0)
+		exec := 0
+		if v.Name == "Administrator" {
+			exec = 1
+		}
+		m.moduleRepo.SetPermission(module.ID, v.ID, exec)
 	}
 	return err
 }

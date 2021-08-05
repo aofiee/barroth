@@ -17,6 +17,7 @@ import (
 
 const (
 	mockUserType      = "*models.Users"
+	mockUserRolesType = "*models.UserRoles"
 	mockUserTypeSlice = "*[]models.Users"
 	userEmail         = "khomkrid@twinsynergy.co.th"
 	userPassword      = "password"
@@ -50,9 +51,8 @@ func UserMockSetup(t *testing.T) (mockUseCase *mocks.UserUseCase, handler *userH
 	handler = NewUserHandelr(mockUseCase, &mr)
 	return
 }
-func TestNewUserHandlerSuccess(t *testing.T) {
-	mockUseCase, handler := UserMockSetup(t)
-
+func TestNewUserHandlerJsonNotSend(t *testing.T) {
+	_, handler := UserMockSetup(t)
 	app := fiber.New()
 	app.Post("/user", handler.NewUser)
 	req, err := http.NewRequest("POST", "/user", nil)
@@ -61,30 +61,56 @@ func TestNewUserHandlerSuccess(t *testing.T) {
 	resp, err := app.Test(req)
 	assert.NoError(t, err)
 	assert.Equal(t, 400, resp.StatusCode, "completed")
-	//fail validate
+}
+func TestNewUserHandlerJsonValidateFail(t *testing.T) {
+	mockUseCase, handler := UserMockSetup(t)
+	app := fiber.New()
 	params := getUser(userEmail, "", userFullName, userTelephone, userRole)
 	data, _ := json.Marshal(&params)
 	payload := bytes.NewReader(data)
 
 	mockUseCase.On("CreateUser", mock.AnythingOfType(mockUserType)).Return(nil)
 	app.Post("/user", handler.NewUser)
-	req, err = http.NewRequest("POST", "/user", payload)
+	req, err := http.NewRequest("POST", "/user", payload)
 	req.Header.Set(fiber.HeaderContentType, contentType)
 	assert.NoError(t, err)
-	resp, err = app.Test(req)
+	resp, err := app.Test(req)
 	assert.NoError(t, err)
 	assert.Equal(t, 406, resp.StatusCode, "completed")
+}
+func TestNewUserHandlerSetUserRoleFail(t *testing.T) {
+	mockUseCase, handler := UserMockSetup(t)
+	app := fiber.New()
 	//fail validate
-	params = getUser(userEmail, userPassword, userFullName, userTelephone, userRole)
-	data, _ = json.Marshal(&params)
-	payload = bytes.NewReader(data)
+	params := getUser(userEmail, userPassword, userFullName, userTelephone, userRole)
+	data, _ := json.Marshal(&params)
+	payload := bytes.NewReader(data)
 
 	mockUseCase.On("CreateUser", mock.AnythingOfType(mockUserType)).Return(nil)
+	mockUseCase.On("SetUserRole", mock.AnythingOfType(mockUserRolesType), uint(0)).Return(errors.New("error to set user role"))
 	app.Post("/user", handler.NewUser)
-	req, err = http.NewRequest("POST", "/user", payload)
+	req, err := http.NewRequest("POST", "/user", payload)
 	req.Header.Set(fiber.HeaderContentType, contentType)
 	assert.NoError(t, err)
-	resp, err = app.Test(req)
+	resp, err := app.Test(req)
+	assert.NoError(t, err)
+	assert.Equal(t, 400, resp.StatusCode, "completed")
+}
+func TestNewUserHandlerSuccess(t *testing.T) {
+	mockUseCase, handler := UserMockSetup(t)
+	app := fiber.New()
+	//fail validate
+	params := getUser(userEmail, userPassword, userFullName, userTelephone, userRole)
+	data, _ := json.Marshal(&params)
+	payload := bytes.NewReader(data)
+
+	mockUseCase.On("CreateUser", mock.AnythingOfType(mockUserType)).Return(nil)
+	mockUseCase.On("SetUserRole", mock.AnythingOfType(mockUserRolesType), uint(0)).Return(nil)
+	app.Post("/user", handler.NewUser)
+	req, err := http.NewRequest("POST", "/user", payload)
+	req.Header.Set(fiber.HeaderContentType, contentType)
+	assert.NoError(t, err)
+	resp, err := app.Test(req)
 	assert.NoError(t, err)
 	assert.Equal(t, 200, resp.StatusCode, "completed")
 }
@@ -146,6 +172,39 @@ func TestUpdateUserFail(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, 400, resp.StatusCode, "completed")
 }
+func TestUpdateUserGetUserFail(t *testing.T) {
+	mockUseCase, handler := UserMockSetup(t)
+	app := fiber.New()
+	params := getUser(userEmail, userPassword, userFullName, userTelephone, userRole)
+	data, _ := json.Marshal(&params)
+	payload := bytes.NewReader(data)
+	mockUseCase.On("UpdateUser", mock.AnythingOfType(mockUserType), mock.Anything).Return(nil)
+	mockUseCase.On("GetUser", mock.AnythingOfType(mockUserType), UUID).Return(errors.New("error user not found"))
+	app.Put("/user/:id", handler.UpdateUser)
+	req, err := http.NewRequest("PUT", "/user/"+UUID, payload)
+	req.Header.Set(fiber.HeaderContentType, contentType)
+	assert.NoError(t, err)
+	resp, err := app.Test(req)
+	assert.NoError(t, err)
+	assert.Equal(t, 400, resp.StatusCode, "completed")
+}
+func TestUpdateUserSetUserRoleFail(t *testing.T) {
+	mockUseCase, handler := UserMockSetup(t)
+	app := fiber.New()
+	params := getUser(userEmail, userPassword, userFullName, userTelephone, userRole)
+	data, _ := json.Marshal(&params)
+	payload := bytes.NewReader(data)
+	mockUseCase.On("UpdateUser", mock.AnythingOfType(mockUserType), mock.Anything).Return(nil)
+	mockUseCase.On("GetUser", mock.AnythingOfType(mockUserType), UUID).Return(nil)
+	mockUseCase.On("SetUserRole", mock.AnythingOfType(mockUserRolesType), uint(0)).Return(errors.New("error set user role"))
+	app.Put("/user/:id", handler.UpdateUser)
+	req, err := http.NewRequest("PUT", "/user/"+UUID, payload)
+	req.Header.Set(fiber.HeaderContentType, contentType)
+	assert.NoError(t, err)
+	resp, err := app.Test(req)
+	assert.NoError(t, err)
+	assert.Equal(t, 400, resp.StatusCode, "completed")
+}
 func TestUpdateUserSuccess(t *testing.T) {
 	mockUseCase, handler := UserMockSetup(t)
 	app := fiber.New()
@@ -153,6 +212,8 @@ func TestUpdateUserSuccess(t *testing.T) {
 	data, _ := json.Marshal(&params)
 	payload := bytes.NewReader(data)
 	mockUseCase.On("UpdateUser", mock.AnythingOfType(mockUserType), mock.Anything).Return(nil)
+	mockUseCase.On("GetUser", mock.AnythingOfType(mockUserType), UUID).Return(nil)
+	mockUseCase.On("SetUserRole", mock.AnythingOfType(mockUserRolesType), uint(0)).Return(nil)
 	app.Put("/user/:id", handler.UpdateUser)
 	req, err := http.NewRequest("PUT", "/user/"+UUID, payload)
 	req.Header.Set(fiber.HeaderContentType, contentType)

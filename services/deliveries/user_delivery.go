@@ -85,6 +85,14 @@ func (u *userHandler) NewUser(c *fiber.Ctx) error {
 	}
 	err = u.userUseCase.CreateUser(&user)
 	if err != nil {
+		return helpers.FailOnError(c, err, constants.ERR_CANNOT_CREATE_USER, fiber.StatusBadRequest)
+	}
+	role := models.UserRoles{
+		RoleItemID: uint(nu.RoleID),
+		UserID:     user.ID,
+	}
+	err = u.userUseCase.SetUserRole(&role, user.ID)
+	if err != nil {
 		return helpers.FailOnError(c, err, constants.ERR_CANNOT_CREATE_ROLE, fiber.StatusBadRequest)
 	}
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
@@ -115,6 +123,18 @@ func (u *userHandler) UpdateUser(c *fiber.Ctx) error {
 	err = u.userUseCase.UpdateUser(&user, uuid)
 	if err != nil {
 		return helpers.FailOnError(c, err, constants.ERR_CANNOT_UPDATE_USER, fiber.StatusBadRequest)
+	}
+	err = u.userUseCase.GetUser(&user, uuid)
+	if err != nil {
+		return helpers.FailOnError(c, err, constants.ERR_GET_USER_FAIL, fiber.StatusBadRequest)
+	}
+	role := models.UserRoles{
+		RoleItemID: uint(nu.RoleID),
+		UserID:     user.ID,
+	}
+	err = u.userUseCase.SetUserRole(&role, user.ID)
+	if err != nil {
+		return helpers.FailOnError(c, err, constants.ERR_CANNOT_CREATE_ROLE, fiber.StatusBadRequest)
 	}
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"msg":   constants.ERR_UPDATED_USER_SUCCESSFUL,

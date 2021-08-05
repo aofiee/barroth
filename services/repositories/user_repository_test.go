@@ -207,3 +207,43 @@ func TestRestoreUserSuccess(t *testing.T) {
 		assert.Error(t, err)
 	})
 }
+
+func TestGetUserRole(t *testing.T) {
+	SetupMock(t)
+	repo := NewUserRepository(databases.DB)
+	assert.Equal(t, userRepositoryType, reflect.TypeOf(repo).String(), "TestGetUserRole")
+	columns := []string{"id", "created_at", "updated_at", "deleted_at", "role_item_id", "user_id"}
+	mock.ExpectQuery("^SELECT (.+) FROM `user_roles`*").WithArgs(uint(1)).
+		WillReturnRows(sqlmock.NewRows(columns).AddRow(1, nil, nil, nil, uint(1), uint(1)))
+
+	err := repo.GetUserRole(uint(1))
+	assert.NoError(t, err)
+}
+func TestUpdateUserRole(t *testing.T) {
+	SetupMock(t)
+	repo := NewUserRepository(databases.DB)
+	assert.Equal(t, userRepositoryType, reflect.TypeOf(repo).String(), "TestUpdateUserRole")
+	mock.ExpectBegin()
+	mock.ExpectExec("UPDATE `user_roles`").WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectCommit()
+	role := models.UserRoles{
+		RoleItemID: 1,
+		UserID:     1,
+	}
+	err := repo.UpdateUserRole(&role, uint(1))
+	assert.NoError(t, err)
+}
+func TestCreateUserRole(t *testing.T) {
+	SetupMock(t)
+	repo := NewUserRepository(databases.DB)
+	assert.Equal(t, userRepositoryType, reflect.TypeOf(repo).String(), "TestCreateUserRole")
+	mock.ExpectBegin()
+	mock.ExpectExec("INSERT INTO `user_roles` ").WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectCommit()
+	role := models.UserRoles{
+		RoleItemID: 1,
+		UserID:     1,
+	}
+	err := repo.CreateUserRole(&role)
+	assert.NoError(t, err)
+}

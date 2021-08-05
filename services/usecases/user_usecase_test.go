@@ -11,11 +11,12 @@ import (
 )
 
 const (
-	userModelType = "*models.Users"
-	userEmail     = "Test@test.com"
-	userPassword  = "password"
-	userFullName  = "Arashi L."
-	userTelephone = "0925905444"
+	userModelType     = "*models.Users"
+	userEmail         = "Test@test.com"
+	userPassword      = "password"
+	userFullName      = "Arashi L."
+	userTelephone     = "0925905444"
+	userRoleModelType = "*models.UserRoles"
 )
 
 func getUser(email, password, name, telephone string) models.Users {
@@ -128,4 +129,28 @@ func TestRestoreUsers(t *testing.T) {
 	rs, err := u.RestoreUsers([]string{"1", "2", "3"})
 	assert.NoError(t, err)
 	assert.Equal(t, int64(3), rs)
+}
+func TestSetUserRoleUpdateUserRole(t *testing.T) {
+	repo := new(mocks.UserRepository)
+	repo.On("GetUserRole", mock.AnythingOfType("uint")).Return(nil).Once()
+	repo.On("UpdateUserRole", mock.AnythingOfType(userRoleModelType), mock.AnythingOfType("uint")).Return(nil).Once()
+	u := NewUserUseCase(repo)
+	role := models.UserRoles{
+		RoleItemID: 1,
+		UserID:     1,
+	}
+	err := u.SetUserRole(&role, 1)
+	assert.NoError(t, err)
+}
+func TestSetUserRoleCreateUserRole(t *testing.T) {
+	repo := new(mocks.UserRepository)
+	repo.On("GetUserRole", mock.AnythingOfType("uint")).Return(errors.New("error have a record")).Once()
+	repo.On("CreateUserRole", mock.AnythingOfType(userRoleModelType)).Return(nil).Once()
+	u := NewUserUseCase(repo)
+	role := models.UserRoles{
+		RoleItemID: 1,
+		UserID:     1,
+	}
+	err := u.SetUserRole(&role, 1)
+	assert.NoError(t, err)
 }
