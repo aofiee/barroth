@@ -33,7 +33,7 @@ const (
 
 var UUID = utils.UUIDv4()
 
-func AuthMockSetup(t *testing.T) (mockUseCase *mocks.AuthenticationUseCase, handler *authenticationHandler) {
+func AuthMockSetup(t *testing.T) (mockUseCase *mocks.AuthenticationUseCase, handler *AuthenticationHandler) {
 	SetupMock(t)
 	var mr []models.ModuleMethodSlug
 	mr = append(mr, models.ModuleMethodSlug{
@@ -106,7 +106,7 @@ func TestGetAuthHandlerUsecase(t *testing.T) {
 	SetupMock(t)
 	mockUseCase := new(mocks.AuthenticationUseCase)
 	handler := GetAuthHandlerUsecase(mockUseCase)
-	assert.Equal(t, "*deliveries.authenticationHandler", reflect.TypeOf(handler).String())
+	assert.Equal(t, "*deliveries.AuthenticationHandler", reflect.TypeOf(handler).String())
 }
 func TestNewAuthenticationHandlerFail(t *testing.T) {
 	params := paramsLogin{

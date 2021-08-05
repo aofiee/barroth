@@ -71,10 +71,6 @@ func (r *roleRoutes) Install(app *fiber.App) {
 	u := usecases.NewRoleUseCase(repo)
 	handler := deliveries.NewRoleHandelr(u, &moduleRoute)
 
-	authRepo := repositories.NewAuthenticationRepository(databases.DB, databases.QueueClient)
-	authUseCase := usecases.NewAuthenticationUseCase(authRepo)
-	authHandler := deliveries.GetAuthHandlerUsecase(authUseCase)
-
 	e := app.Group("/role", authHandler.AuthorizationRequired(), authHandler.IsRevokeToken, authHandler.CheckRoutingPermission)
 	e.Post("/", handler.NewRole)
 	e.Get("/:id", handler.GetRole)

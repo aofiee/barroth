@@ -76,10 +76,6 @@ func (r *userRoutes) Install(app *fiber.App) {
 	u := usecases.NewUserUseCase(repo)
 	handler := deliveries.NewUserHandelr(u, &moduleRoute)
 
-	authRepo := repositories.NewAuthenticationRepository(databases.DB, databases.QueueClient)
-	authUseCase := usecases.NewAuthenticationUseCase(authRepo)
-	authHandler := deliveries.GetAuthHandlerUsecase(authUseCase)
-
 	e := app.Group("/user", authHandler.AuthorizationRequired(), authHandler.IsRevokeToken, authHandler.CheckRoutingPermission)
 	e.Post("/", handler.NewUser)
 	e.Put("/:id", handler.UpdateUser)

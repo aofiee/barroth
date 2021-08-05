@@ -18,7 +18,7 @@ import (
 )
 
 type (
-	authenticationHandler struct {
+	AuthenticationHandler struct {
 		authenticationUseCase domains.AuthenticationUseCase
 	}
 	paramsLogin struct {
@@ -27,7 +27,7 @@ type (
 	}
 )
 
-func NewAuthenHandler(usecase domains.AuthenticationUseCase, u *[]models.ModuleMethodSlug) *authenticationHandler {
+func NewAuthenHandler(usecase domains.AuthenticationUseCase, u *[]models.ModuleMethodSlug) *AuthenticationHandler {
 	moduleRepo := repositories.NewModuleRepository(databases.DB)
 	moduleUseCase := usecases.NewModuleUseCase(moduleRepo)
 	for _, value := range *u {
@@ -42,18 +42,18 @@ func NewAuthenHandler(usecase domains.AuthenticationUseCase, u *[]models.ModuleM
 			moduleUseCase.CreateModule(&newModule)
 		}
 	}
-	return &authenticationHandler{
+	return &AuthenticationHandler{
 		authenticationUseCase: usecase,
 	}
 }
 
-func GetAuthHandlerUsecase(usecase domains.AuthenticationUseCase) *authenticationHandler {
-	return &authenticationHandler{
+func GetAuthHandlerUsecase(usecase domains.AuthenticationUseCase) *AuthenticationHandler {
+	return &AuthenticationHandler{
 		authenticationUseCase: usecase,
 	}
 }
 
-func (a *authenticationHandler) Login(c *fiber.Ctx) error {
+func (a *AuthenticationHandler) Login(c *fiber.Ctx) error {
 	var auth paramsLogin
 	err := c.BodyParser(&auth)
 	if err != nil {
@@ -93,7 +93,7 @@ func (a *authenticationHandler) Login(c *fiber.Ctx) error {
 		"data":  token.Token,
 	})
 }
-func (a *authenticationHandler) Logout(c *fiber.Ctx) error {
+func (a *AuthenticationHandler) Logout(c *fiber.Ctx) error {
 	user := c.Locals("user").(*jwt.Token)
 	claims := user.Claims.(jwt.MapClaims)
 	accessUUID := claims["access_uuid"].(string)
@@ -106,7 +106,7 @@ func (a *authenticationHandler) Logout(c *fiber.Ctx) error {
 		"error": nil,
 	})
 }
-func (a *authenticationHandler) AuthorizationRequired() fiber.Handler {
+func (a *AuthenticationHandler) AuthorizationRequired() fiber.Handler {
 	return jwtware.New(jwtware.Config{
 		SuccessHandler: a.AuthSuccess,
 		ErrorHandler:   a.AuthError,
@@ -116,14 +116,14 @@ func (a *authenticationHandler) AuthorizationRequired() fiber.Handler {
 		AuthScheme:     "Bearer",
 	})
 }
-func (a *authenticationHandler) AuthError(c *fiber.Ctx, e error) error {
+func (a *AuthenticationHandler) AuthError(c *fiber.Ctx, e error) error {
 	return helpers.FailOnError(c, e, "Unauthorized", fiber.StatusUnauthorized)
 }
 
-func (a *authenticationHandler) AuthSuccess(c *fiber.Ctx) error {
+func (a *AuthenticationHandler) AuthSuccess(c *fiber.Ctx) error {
 	return c.Next()
 }
-func (a *authenticationHandler) RefreshToken(c *fiber.Ctx) error {
+func (a *AuthenticationHandler) RefreshToken(c *fiber.Ctx) error {
 	var param models.RefreshToken
 	err := c.BodyParser(&param)
 	if err != nil {
@@ -177,13 +177,13 @@ func (a *authenticationHandler) RefreshToken(c *fiber.Ctx) error {
 		return helpers.FailOnError(c, err, constants.ERR_REFRESH_TOKEN_EXPIRE, fiber.StatusUnauthorized)
 	}
 }
-func (a *authenticationHandler) VerifyToken(token *jwt.Token) (interface{}, error) {
+func (a *AuthenticationHandler) VerifyToken(token *jwt.Token) (interface{}, error) {
 	if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 		return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 	}
 	return []byte(barroth_config.ENV.RefreshKey), nil
 }
-func (a *authenticationHandler) IsRevokeToken(c *fiber.Ctx) error {
+func (a *AuthenticationHandler) IsRevokeToken(c *fiber.Ctx) error {
 	user := c.Locals("user").(*jwt.Token)
 	claims := user.Claims.(jwt.MapClaims)
 	accessUUID := claims["access_uuid"].(string)
@@ -193,7 +193,7 @@ func (a *authenticationHandler) IsRevokeToken(c *fiber.Ctx) error {
 	}
 	return c.Next()
 }
-func (a *authenticationHandler) CheckRoutingPermission(c *fiber.Ctx) error {
+func (a *AuthenticationHandler) CheckRoutingPermission(c *fiber.Ctx) error {
 	user := c.Locals("user").(*jwt.Token)
 	claims := user.Claims.(jwt.MapClaims)
 	context := claims["context"]

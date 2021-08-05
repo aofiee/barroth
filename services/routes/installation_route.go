@@ -4,6 +4,7 @@ import (
 	barroth_config "github.com/aofiee/barroth/config"
 	"github.com/aofiee/barroth/databases"
 	"github.com/aofiee/barroth/deliveries"
+	"github.com/aofiee/barroth/domains"
 	"github.com/aofiee/barroth/models"
 	"github.com/aofiee/barroth/repositories"
 	"github.com/aofiee/barroth/usecases"
@@ -17,6 +18,12 @@ type (
 	installationRoutes struct {
 		config barroth_config.Config
 	}
+)
+
+var (
+	authRepo    domains.AuthenticationRepository
+	authUseCase domains.AuthenticationUseCase
+	authHandler *deliveries.AuthenticationHandler
 )
 
 func NewInstallationRoutes(config barroth_config.Config) *installationRoutes {
@@ -57,6 +64,11 @@ func (i *installationRoutes) Install(app *fiber.App) {
 	sysRepo := repositories.NewSystemRepository(databases.DB)
 	sysUseCase := usecases.NewSystemUseCase(sysRepo)
 	installHandler := deliveries.NewSystemHandelr(sysUseCase, &moduleRoute)
+
+	authRepo = repositories.NewAuthenticationRepository(databases.DB, databases.QueueClient)
+	authUseCase = usecases.NewAuthenticationUseCase(authRepo)
+	authHandler = deliveries.GetAuthHandlerUsecase(authUseCase)
+
 	e := app.Group("/install")
 	e.Get("/", installHandler.SystemInstallation)
 }
