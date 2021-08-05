@@ -26,6 +26,20 @@ func (_m *ModuleUseCase) CreateModule(m *models.Modules) error {
 	return r0
 }
 
+// GetAllModules provides a mock function with given fields: m, keyword, sorting, sortField, page, limit, focus
+func (_m *ModuleUseCase) GetAllModules(m *[]models.Modules, keyword string, sorting string, sortField string, page string, limit string, focus string) error {
+	ret := _m.Called(m, keyword, sorting, sortField, page, limit, focus)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(*[]models.Modules, string, string, string, string, string, string) error); ok {
+		r0 = rf(m, keyword, sorting, sortField, page, limit, focus)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // GetAllRoles provides a mock function with given fields:
 func (_m *ModuleUseCase) GetAllRoles() ([]models.RoleItems, error) {
 	ret := _m.Called()

@@ -1,6 +1,8 @@
 package repositories
 
 import (
+	"strconv"
+
 	"github.com/aofiee/barroth/domains"
 	"github.com/aofiee/barroth/models"
 	"gorm.io/gorm"
@@ -55,4 +57,37 @@ func (m *moduleRepository) SetPermission(moduleID, roleID uint, exec int) error 
 	}
 	rs = m.conn.Model(permission).Omit("id").Where("id = ?", permission.ID).Updates(permission)
 	return rs.Error
+}
+func (m *moduleRepository) GetAllModules(modules *[]models.Modules, keyword, sorting, sortField, page, limit, focus string) (err error) {
+	l, err := strconv.Atoi(limit)
+	if err != nil {
+		return err
+	}
+	p, err := strconv.Atoi(page)
+	if err != nil {
+		return err
+	}
+	offset := (p * l) - l
+	if focus == "inbox" {
+		if keyword == "all" {
+			if err := m.conn.Model(&models.Modules{}).Limit(l).Offset(offset).Order(sortField + " " + sorting).Find(&modules).Error; err != nil {
+				return err
+			}
+			return nil
+		}
+		if err := m.conn.Model(&models.Modules{}).Where("modules.name like ?", "%"+keyword+"%").Limit(l).Offset(offset).Order(sortField + " " + sorting).Find(&modules).Error; err != nil {
+			return err
+		}
+		return nil
+	}
+	if keyword == "all" {
+		if err := m.conn.Unscoped().Model(&models.Modules{}).Where("modules.deleted_at IS NOT NULL").Limit(l).Offset(offset).Order(sortField + " " + sorting).Find(&modules).Error; err != nil {
+			return err
+		}
+		return nil
+	}
+	if err := m.conn.Unscoped().Model(&models.Modules{}).Where("modules.deleted_at IS NOT NULL AND modules.name like ?", "%"+keyword+"%").Limit(l).Offset(p).Order(sortField + " " + sorting).Find(&modules).Error; err != nil {
+		return err
+	}
+	return nil
 }

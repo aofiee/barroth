@@ -59,3 +59,7 @@ func (m *moduleUseCase) SetPermission(moduleID, roleID uint, exec int) error {
 	err := m.moduleRepo.SetPermission(moduleID, roleID, exec)
 	return err
 }
+func (m *moduleUseCase) GetAllModules(module *[]models.Modules, keyword, sorting, sortField, page, limit, focus string) error {
+	err := m.moduleRepo.GetAllModules(module, keyword, sorting, sortField, page, limit, focus)
+	return err
+}

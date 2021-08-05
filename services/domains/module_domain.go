@@ -12,6 +12,7 @@ type (
 		UpdateModule(m *models.Modules, id string) (err error)
 		GetAllRoles() (m []models.RoleItems, err error)
 		SetPermission(moduleID, roleID uint, exec int) (err error)
+		GetAllModules(m *[]models.Modules, keyword, sorting, sortField, page, limit, focus string) (err error)
 	}
 	ModuleRepository interface {
 		CreateModule(m *models.Modules) (err error)
@@ -20,5 +21,6 @@ type (
 		UpdateModule(m *models.Modules, id string) (err error)
 		GetAllRoles() (m []models.RoleItems, err error)
 		SetPermission(moduleID, roleID uint, exec int) (err error)
+		GetAllModules(m *[]models.Modules, keyword, sorting, sortField, page, limit, focus string) (err error)
 	}
 )
