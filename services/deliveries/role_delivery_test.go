@@ -38,10 +38,10 @@ func RoleMockSetup(t *testing.T) (mockUseCase *mocks.RoleUseCase, handler *roleH
 	handler = NewRoleHandelr(mockUseCase, &mr)
 	return
 }
-func TestNewHandlerSuccess(t *testing.T) {
+func TestNewRoleSuccess(t *testing.T) {
 	params := models.RoleItems{
-		Name:        "TestNewHandlerSuccess",
-		Description: "TestNewHandlerSuccess Description",
+		Name:        "TestNewRoleSuccess",
+		Description: "TestNewRoleSuccess Description",
 	}
 	data, _ := json.Marshal(&params)
 	payload := bytes.NewReader(data)
@@ -77,10 +77,10 @@ func TestNewHandlerSuccess(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, 406, resp.StatusCode, "completed")
 }
-func TestNewHandlerFail(t *testing.T) {
+func TestNewRoleFail(t *testing.T) {
 	params := models.RoleItems{
-		Name:        "TestNewHandlerFail",
-		Description: "TestNewHandlerFail Description",
+		Name:        "TestNewRoleFail",
+		Description: "TestNewRoleFail Description",
 	}
 	data, _ := json.Marshal(&params)
 	payload := bytes.NewReader(data)
@@ -121,7 +121,6 @@ func TestGetAllRolesFail(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, 400, resp.StatusCode, "completed")
 
-	mockUseCase.On("GetAllRoles", mock.AnythingOfType(mockRoleTypeSlice), "all", "asc", "id", "0", "10", "inbox").Return(errors.New("error"))
 	app.Get("/roles", handler.GetAllRoles)
 	req, err = http.NewRequest("GET", "/roles?sort=abab", nil)
 	assert.NoError(t, err)

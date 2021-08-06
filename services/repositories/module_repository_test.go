@@ -142,3 +142,61 @@ func TestSetModulePermissionSuccess(t *testing.T) {
 	err := repo.SetPermission(uint(1), uint(1), 0)
 	assert.NoError(t, err)
 }
+func TestGetAllModules(t *testing.T) {
+	SetupMock(t)
+	repo := NewModuleRepository(databases.DB)
+	assert.Equal(t, modelRepositoryType, reflect.TypeOf(repo).String(), "TestGetAllModules")
+	var modules []models.Modules
+
+	columns := []string{"id", "created_at", "updated_at", "deleted_at", "name", "description", "method", "module_slug"}
+
+	err := repo.GetAllModules(&modules, "all", "asc", "id", "xx", "10", "inbox")
+	assert.Error(t, err)
+
+	err = repo.GetAllModules(&modules, "all", "asc", "id", "1", "xx", "inbox")
+	assert.Error(t, err)
+
+	t.Run("TEST_INBOX", func(t *testing.T) {
+		mock.ExpectQuery("^SELECT (.+) FROM `modules`*").
+			WillReturnRows(sqlmock.NewRows(columns).AddRow(1, nil, nil, nil, modelName, modelDesc, fiber.MethodGet, "/test"))
+		err = repo.GetAllModules(&modules, "all", "asc", "id", "1", "10", "inbox")
+		assert.NoError(t, err)
+
+		mock.ExpectQuery("^SELECT (.+) FROM `modules`*").
+			WillReturnError(errors.New("error GetAllModules Inbox "))
+		err = repo.GetAllModules(&modules, "all", "asc", "id", "1", "10", "inbox")
+		assert.Error(t, err)
+
+		mock.ExpectQuery("^SELECT (.+) FROM `modules`*").
+			WillReturnRows(sqlmock.NewRows(columns).AddRow(1, nil, nil, nil, modelName, modelDesc, fiber.MethodGet, "/test"))
+		err = repo.GetAllModules(&modules, "Admin", "asc", "id", "1", "10", "inbox")
+		assert.NoError(t, err)
+
+		mock.ExpectQuery("^SELECT (.+) FROM `modules`*").
+			WillReturnError(errors.New("error GetAllModules Keyword "))
+		err = repo.GetAllModules(&modules, "Admin", "asc", "id", "1", "10", "inbox")
+		assert.Error(t, err)
+	})
+
+	t.Run("TEST_TRASH", func(t *testing.T) {
+		mock.ExpectQuery("^SELECT (.+) FROM `modules`*").
+			WillReturnRows(sqlmock.NewRows(columns).AddRow(1, nil, nil, nil, modelName, modelDesc, fiber.MethodGet, "/test"))
+		err = repo.GetAllModules(&modules, "all", "asc", "id", "1", "10", "trash")
+		assert.NoError(t, err)
+
+		mock.ExpectQuery("^SELECT (.+) FROM `modules`*").
+			WillReturnError(errors.New("error GetAllModules Inbox "))
+		err = repo.GetAllModules(&modules, "all", "asc", "id", "1", "10", "trash")
+		assert.Error(t, err)
+
+		mock.ExpectQuery("^SELECT (.+) FROM `modules`*").
+			WillReturnRows(sqlmock.NewRows(columns).AddRow(1, nil, nil, nil, modelName, modelDesc, fiber.MethodGet, "/test"))
+		err = repo.GetAllModules(&modules, "Admin", "asc", "id", "1", "10", "trash")
+		assert.NoError(t, err)
+
+		mock.ExpectQuery("^SELECT (.+) FROM `modules`*").
+			WillReturnError(errors.New("error GetAllModules Keyword "))
+		err = repo.GetAllModules(&modules, "Admin", "asc", "id", "1", "10", "trash")
+		assert.Error(t, err)
+	})
+}
