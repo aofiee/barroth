@@ -30,11 +30,19 @@ func (m *moduleRoutes) Install(app *fiber.App) {
 			Method:      fiber.MethodGet,
 			Slug:        "/modules",
 		},
+		models.ModuleMethodSlug{
+			Name:        "Update Modules",
+			Description: "แก้ไขรายละเอียด Modules",
+			Method:      fiber.MethodPut,
+			Slug:        "/module",
+		},
 	)
 	repo := repositories.NewModuleRepository(databases.DB)
 	u := usecases.NewModuleUseCase(repo)
 	handler := deliveries.NewModuleHandler(u, &moduleRoute)
+	e := app.Group("/module", authHandler.AuthorizationRequired(), authHandler.IsRevokeToken, authHandler.CheckRoutingPermission)
+	e.Put("/:id", handler.UpdateModule)
 
-	e := app.Group("/modules", authHandler.AuthorizationRequired(), authHandler.IsRevokeToken, authHandler.CheckRoutingPermission)
+	e = app.Group("/modules", authHandler.AuthorizationRequired(), authHandler.IsRevokeToken, authHandler.CheckRoutingPermission)
 	e.Get("/", handler.GetAllModules)
 }

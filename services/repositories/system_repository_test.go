@@ -127,12 +127,12 @@ func TestGetFirstSystemInstallation(t *testing.T) {
 	}
 	columns := []string{"id", "created_at", "updated_at", "deleted_at", "app_name", "site_url", "is_install"}
 
-	mock.ExpectQuery("^SELECT (.+) FROM `system` WHERE `system`.`deleted_at` IS NULL ORDER BY `system`.`id` LIMIT 1").
+	mock.ExpectQuery("^SELECT (.+) FROM `system`*").
 		WillReturnRows(sqlmock.NewRows(columns).AddRow(1, nil, nil, nil, appName, appUrl, 0))
 	err := repo.GetFirstSystemInstallation(&sys)
 	assert.NoError(t, err)
 
-	mock.ExpectQuery("^SELECT (.+) FROM `system` WHERE `system`.`deleted_at` IS NULL ORDER BY `system`.`id` LIMIT 1").
+	mock.ExpectQuery("^SELECT (.+) FROM `system`*").
 		WillReturnError(errors.New("error TestGetFirstSystemInstallation"))
 	err = repo.GetFirstSystemInstallation(&sys)
 	assert.Error(t, err)

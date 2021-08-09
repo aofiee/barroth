@@ -34,7 +34,7 @@ func (m *moduleUseCase) CreateModule(module *models.Modules) error {
 	}
 	return err
 }
-func (m *moduleUseCase) UpdateModule(module *models.Modules, id string) error {
+func (m *moduleUseCase) UpdateModule(module *models.Modules, id uint) error {
 	var chk models.Modules
 	err := m.moduleRepo.GetModule(&chk, id)
 	if err != nil {
@@ -43,8 +43,8 @@ func (m *moduleUseCase) UpdateModule(module *models.Modules, id string) error {
 	err = m.moduleRepo.UpdateModule(module, id)
 	return err
 }
-func (m *moduleUseCase) GetModule(module *models.Modules, slug string) error {
-	err := m.moduleRepo.GetModule(module, slug)
+func (m *moduleUseCase) GetModule(module *models.Modules, id uint) error {
+	err := m.moduleRepo.GetModule(module, id)
 	return err
 }
 func (m *moduleUseCase) GetModuleBySlug(module *models.Modules, method, slug string) error {

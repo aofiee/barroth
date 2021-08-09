@@ -1,8 +1,10 @@
 package models
 
+import "gorm.io/gorm"
+
 type (
 	Users struct {
-		BarrothModel
+		gorm.Model
 		Email      string    `gorm:"type:VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci" json:"email"`
 		Password   string    `gorm:"type:VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci" json:"-"`
 		Name       string    `gorm:"type:VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci" json:"name"`
@@ -13,7 +15,7 @@ type (
 		Status     int       `gorm:"type:TINYINT(1)" json:"status"`
 	}
 	UserRoles struct {
-		BarrothModel
+		gorm.Model
 		RoleItemID uint
 		UserID     uint
 	}

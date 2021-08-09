@@ -25,6 +25,12 @@ type (
 		SortField string `json:"field" form:"field" validate:"eq=id|eq=name|eq=email|eq=password|eq=telephone|eq=uuid|eq=user_role_id|eq=status"`
 		Focus     string `json:"focus" form:"focus" validate:"eq=inbox|eq=trash"`
 	}
+	paramsModules struct {
+		Name        string `json:"name" validate:"required"`
+		Description string `json:"description" validate:"required"`
+		Method      string `json:"method" validate:"required,eq=GET|eq=POST|eq=PUT|eq=DELETE|eq=OPTIONS"`
+		ModuleSlug  string `json:"module_slug" validate:"required"`
+	}
 )
 
 func NewModuleHandler(usecase domains.ModuleUseCase, u *[]models.ModuleMethodSlug) *moduleHandler {
@@ -98,5 +104,42 @@ func (m *moduleHandler) GetAllModules(c *fiber.Ctx) error {
 		"msg":   constants.ERR_GET_ALL_ROLE_SUCCESSFULE,
 		"error": nil,
 		"data":  modules,
+	})
+}
+func (m *moduleHandler) UpdateModule(c *fiber.Ctx) error {
+	var param paramsModules
+	err := c.BodyParser(&param)
+	if err != nil {
+		return helpers.FailOnError(c, err, constants.ERR_PARSE_JSON_FAIL, fiber.StatusBadRequest)
+	}
+	errorResponse := helpers.ValidateStruct(&param)
+	if errorResponse != nil {
+		return c.Status(fiber.StatusNotAcceptable).JSON(fiber.Map{
+			"msg":   constants.ERR_INPUT_ERROR,
+			"error": errorResponse,
+		})
+	}
+	id, err := c.ParamsInt("id")
+	if err != nil {
+		return c.Status(fiber.StatusNotAcceptable).JSON(fiber.Map{
+			"msg":   constants.ERR_INPUT_ERROR,
+			"error": errorResponse,
+		})
+	}
+	var module models.Modules
+	module.Name = param.Name
+	module.Description = param.Description
+	module.Method = param.Method
+	module.ModuleSlug = param.ModuleSlug
+	err = m.moduleUseCase.UpdateModule(&module, uint(id))
+	if err != nil {
+		return c.Status(fiber.StatusNotAcceptable).JSON(fiber.Map{
+			"msg":   constants.ERR_CANNOT_UPDATE_MODULE,
+			"error": errorResponse,
+		})
+	}
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"msg":   constants.ERR_UPDATE_MODULE_SUCCESSFUL,
+		"error": nil,
 	})
 }

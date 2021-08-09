@@ -23,7 +23,7 @@ func (m *moduleRepository) GetModuleBySlug(module *models.Modules, method, slug 
 	}
 	return nil
 }
-func (m *moduleRepository) GetModule(module *models.Modules, id string) error {
+func (m *moduleRepository) GetModule(module *models.Modules, id uint) error {
 	err := m.conn.Where("ID = ?", id).First(module).Error
 	return err
 }
@@ -33,8 +33,8 @@ func (m *moduleRepository) CreateModule(module *models.Modules) error {
 	}
 	return nil
 }
-func (m *moduleRepository) UpdateModule(module *models.Modules, id string) error {
-	if err := m.conn.Model(module).Omit("id").Where("id = ?").Updates(module).Error; err != nil {
+func (m *moduleRepository) UpdateModule(module *models.Modules, id uint) error {
+	if err := m.conn.Model(module).Omit("id").Where("id = ?", id).Updates(module).Error; err != nil {
 		return err
 	}
 	return nil

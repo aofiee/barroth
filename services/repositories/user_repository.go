@@ -86,10 +86,7 @@ func (u *userRepository) UpdateUser(m *models.Users, uuid string) error {
 func (u *userRepository) DeleteUsers(focus string, uuid []string) (int64, error) {
 	if focus == "inbox" {
 		rs := u.conn.Where(UUIDInSQLStatement, uuid).Delete(&models.Users{})
-		if rs.Error != nil {
-			return 0, rs.Error
-		}
-		return rs.RowsAffected, nil
+		return rs.RowsAffected, rs.Error
 	}
 	rs := u.conn.Unscoped().Where(UUIDInSQLStatement, uuid).Delete(&models.Users{})
 	if rs.Error != nil {

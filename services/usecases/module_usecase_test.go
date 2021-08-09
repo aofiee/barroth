@@ -92,7 +92,7 @@ func TestUpdateModuleSuccess(t *testing.T) {
 	repo.On("GetModule", mock.AnythingOfType(moduleModelType), mock.Anything).Return(nil).Once()
 	repo.On("UpdateModule", mock.AnythingOfType(moduleModelType), mock.Anything).Return(nil).Once()
 	u := NewModuleUseCase(repo)
-	err := u.UpdateModule(&module, "xx")
+	err := u.UpdateModule(&module, 1)
 	assert.NoError(t, err)
 }
 
@@ -104,7 +104,7 @@ func TestUpdateModuleFail(t *testing.T) {
 	}
 	repo.On("GetModule", mock.AnythingOfType(moduleModelType), mock.Anything).Return(errors.New("error")).Once()
 	u := NewModuleUseCase(repo)
-	err := u.UpdateModule(&module, "xx")
+	err := u.UpdateModule(&module, 1)
 	assert.Error(t, err)
 }
 
@@ -116,7 +116,7 @@ func TestGetModule(t *testing.T) {
 	}
 	repo.On("GetModule", mock.AnythingOfType(moduleModelType), mock.Anything).Return(nil).Once()
 	u := NewModuleUseCase(repo)
-	err := u.GetModule(&module, "/test")
+	err := u.GetModule(&module, 1)
 	assert.NoError(t, err)
 }
 func TestGetModuleBySlug(t *testing.T) {

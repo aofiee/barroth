@@ -64,11 +64,11 @@ func (_m *ModuleUseCase) GetAllRoles() ([]models.RoleItems, error) {
 }
 
 // GetModule provides a mock function with given fields: m, id
-func (_m *ModuleUseCase) GetModule(m *models.Modules, id string) error {
+func (_m *ModuleUseCase) GetModule(m *models.Modules, id uint) error {
 	ret := _m.Called(m, id)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(*models.Modules, string) error); ok {
+	if rf, ok := ret.Get(0).(func(*models.Modules, uint) error); ok {
 		r0 = rf(m, id)
 	} else {
 		r0 = ret.Error(0)
@@ -106,11 +106,11 @@ func (_m *ModuleUseCase) SetPermission(moduleID uint, roleID uint, exec int) err
 }
 
 // UpdateModule provides a mock function with given fields: m, id
-func (_m *ModuleUseCase) UpdateModule(m *models.Modules, id string) error {
+func (_m *ModuleUseCase) UpdateModule(m *models.Modules, id uint) error {
 	ret := _m.Called(m, id)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(*models.Modules, string) error); ok {
+	if rf, ok := ret.Get(0).(func(*models.Modules, uint) error); ok {
 		r0 = rf(m, id)
 	} else {
 		r0 = ret.Error(0)
