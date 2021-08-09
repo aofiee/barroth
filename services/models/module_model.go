@@ -1,10 +1,8 @@
 package models
 
-import "gorm.io/gorm"
-
 type (
 	Modules struct {
-		gorm.Model
+		BarrothModel
 		Name          string        `gorm:"type:VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci" json:"name"`
 		Description   string        `gorm:"type:TEXT CHARACTER SET utf8 COLLATE utf8_general_ci" json:"description"`
 		Method        string        `gorm:"type:VARCHAR(6) CHARACTER SET utf8 COLLATE utf8_general_ci" json:"method"`
