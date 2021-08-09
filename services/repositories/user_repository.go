@@ -36,6 +36,7 @@ func (u *userRepository) GetUser(m *models.Users, uuid string) error {
 }
 func (u *userRepository) GetUserByEmail(m *models.Users, email string) (err error) {
 	if err := u.conn.Where("email = ?", email).First(m).Error; err != nil {
+		err = u.conn.Unscoped().Where("email = ? AND users.deleted_at IS NOT NULL", email).First(m).Error
 		return err
 	}
 	return nil
