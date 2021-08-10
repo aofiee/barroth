@@ -1,10 +1,12 @@
 package deliveries
 
 import (
-	"log"
+	"context"
 	"strconv"
 	"strings"
+	"time"
 
+	"github.com/aofiee/barroth/config"
 	"github.com/aofiee/barroth/constants"
 	"github.com/aofiee/barroth/databases"
 	"github.com/aofiee/barroth/domains"
@@ -14,6 +16,7 @@ import (
 	"github.com/aofiee/barroth/usecases"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt"
+	"github.com/mailgun/mailgun-go/v4"
 )
 
 type (
@@ -29,6 +32,9 @@ type (
 	}
 	paramUUID struct {
 		UsersID []string `json:"users_id" validate:"required"`
+	}
+	paramEmail struct {
+		Email string `json:"email" validate:"required,email,min=6,max=255"`
 	}
 	// paramsGetAllUsers struct {
 	// 	Keyword   string `json:"keyword" form:"keyword"`
@@ -177,7 +183,6 @@ func (u *userHandler) DeleteMultitpleUsers(c *fiber.Ctx) error {
 	if focus != "inbox" && focus != "trash" {
 		focus = "inbox"
 	}
-	log.Println(focus)
 	err := c.BodyParser(&param)
 	if err != nil {
 		return helpers.FailOnError(c, err, constants.ERR_PARSE_JSON_FAIL, fiber.StatusBadRequest)
@@ -274,5 +279,30 @@ func (u *userHandler) RestoreUsers(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"msg":   constants.ERR_RESTORE_USER_FROM_TRASH_TO_INBOX_SUCCESSFUL + effectedConst + strconv.FormatInt(effectRows, 10) + itemsConst,
 		"error": nil,
+	})
+}
+func (u *userHandler) ResetPassword(c *fiber.Ctx) error {
+	var param paramEmail
+	err := c.BodyParser(&param)
+	if err != nil {
+		return helpers.FailOnError(c, err, constants.ERR_PARSE_JSON_FAIL, fiber.StatusBadRequest)
+	}
+	mg := mailgun.NewMailgun(config.ENV.MyDomain, config.ENV.MailGunApiKey)
+	sender := config.ENV.EmailAdministrator
+	subject := config.ENV.AppName + "reset password"
+	body := "Hello from Mailgun Go!"
+	recipient := param.Email
+	message := mg.NewMessage(sender, subject, body, recipient)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+	resp, id, err := mg.Send(ctx, message)
+	if err != nil {
+		return helpers.FailOnError(c, err, constants.ERR_MAIL_GUN_FORBIDDEN, fiber.StatusUnauthorized)
+	}
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"msg":   constants.ERR_SEND_LINK_RESET_PASSWORD_TO_EMAIL_SUCCESSFUL,
+		"error": nil,
+		"id":    id,
+		"data":  resp,
 	})
 }

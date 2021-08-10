@@ -31,6 +31,8 @@ type (
 		EmailAdministrator     string `mapstructure:"EMAIL_ADMINISTRATOR"`
 		PasswordAdministrator  string `mapstructure:"PASSWORD_ADMINISTRATOR"`
 		TelephoneAdministrator string `mapstructure:"TELEPHONE_ADMINISTRATOR"`
+		MyDomain               string `mapstructure:"MYDOMAIN"`
+		MailGunApiKey          string `mapstructure:"MAIL_GUN_PRIVATE_API_KEY"`
 	}
 )
 

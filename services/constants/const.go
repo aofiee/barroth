@@ -5,6 +5,7 @@ const (
 	ERR_ACCESS_DENIED        = "access denied"
 
 	ERR_PARSE_JSON_FAIL          = "cannot parse json"
+	ERR_MAIL_GUN_FORBIDDEN       = "mailgun forbidden"
 	ERR_INPUT_ERROR              = "input error"
 	ERR_CREATE_ROLE_SUCCESSFUL   = "create role successful"
 	ERR_CANNOT_CREATE_ROLE       = "cannot create role"
@@ -43,5 +44,6 @@ const (
 	ERR_DELETE_USER_SUCCESSFUL                             = "deleted user successful"
 	ERR_CANNOT_DELETE_USER_SUCCESSFUL                      = "cannot deleted user successful"
 	ERR_RESTORE_USER_FROM_TRASH_TO_INBOX_SUCCESSFUL        = "restore user successful"
+	ERR_SEND_LINK_RESET_PASSWORD_TO_EMAIL_SUCCESSFUL       = "send link reset password to email successful"
 	ERR_CANNOT_RESTORE_USER_FROM_TRASH_TO_INBOX_SUCCESSFUL = "cannot restore user"
 )
