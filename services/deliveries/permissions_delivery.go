@@ -16,10 +16,11 @@ type (
 		permissionsUseCase domains.PermissionsUseCase
 	}
 	paramsSetPermission struct {
-		Permissions []struct {
-			ModuleID int `json:"module_id" validate:"number,required"`
-			IsExec   int `json:"is_exec" validate:"number,required"`
-		} `json:"permissions"`
+		Permissions []permission `json:"permissions" validate:"required"`
+	}
+	permission struct {
+		ModuleID int `json:"module_id" validate:"number,required"`
+		IsExec   int `json:"is_exec" validate:"number,required,max=1"`
 	}
 )
 

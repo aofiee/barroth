@@ -1,8 +1,6 @@
 package repositories
 
 import (
-	"log"
-
 	"github.com/aofiee/barroth/domains"
 	"github.com/aofiee/barroth/models"
 	"gorm.io/gorm"
@@ -18,7 +16,6 @@ func NewPermissionsRepository(conn *gorm.DB) domains.PermissionsRepository {
 	return &PermissionsRepository{conn}
 }
 func (p *PermissionsRepository) SetPermissions(m *models.Permissions) error {
-	log.Println("model", m.IsExec)
 	err := p.conn.Model(models.Permissions{}).Omit("id").Where("module_id = ? AND role_item_id = ?", m.ModuleID, m.RoleItemID).Updates(m).Error
 	return err
 }

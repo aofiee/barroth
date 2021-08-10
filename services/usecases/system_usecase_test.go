@@ -18,7 +18,6 @@ const (
 	siteUrl              = "http://"
 	isInstall            = 0
 	sliceModuleModelType = "*[]models.Modules"
-	permissionsModelType = "*models.Permissions"
 )
 
 func TestCreateSystem(t *testing.T) {

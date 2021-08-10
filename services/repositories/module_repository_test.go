@@ -13,18 +13,18 @@ import (
 )
 
 const (
-	modelRepositoryType = "*repositories.moduleRepository"
-	modelName           = "Test"
-	modelDesc           = "Description"
+	moduleRepositoryType = "*repositories.moduleRepository"
+	moduleName           = "Test"
+	moduleDesc           = "Description"
 )
 
 func TestCreateModule(t *testing.T) {
 	SetupMock(t)
 	repo := NewModuleRepository(databases.DB)
-	assert.Equal(t, modelRepositoryType, reflect.TypeOf(repo).String(), "TestCreateModule")
+	assert.Equal(t, moduleRepositoryType, reflect.TypeOf(repo).String(), "TestCreateModule")
 	module := models.Modules{
-		Name:        modelName,
-		Description: modelName,
+		Name:        moduleName,
+		Description: moduleName,
 	}
 	mock.ExpectBegin()
 	mock.ExpectExec("INSERT INTO `modules` ").WillReturnResult(sqlmock.NewResult(1, 1))
@@ -42,10 +42,10 @@ func TestCreateModule(t *testing.T) {
 func TestUpdateModule(t *testing.T) {
 	SetupMock(t)
 	repo := NewModuleRepository(databases.DB)
-	assert.Equal(t, modelRepositoryType, reflect.TypeOf(repo).String(), "TestUpdateModule")
+	assert.Equal(t, moduleRepositoryType, reflect.TypeOf(repo).String(), "TestUpdateModule")
 	module := models.Modules{
-		Name:        modelName,
-		Description: modelName,
+		Name:        moduleName,
+		Description: moduleName,
 	}
 	mock.ExpectBegin()
 	mock.ExpectExec("UPDATE `modules`").WillReturnResult(sqlmock.NewResult(1, 1))
@@ -63,15 +63,15 @@ func TestUpdateModule(t *testing.T) {
 func TestGetModule(t *testing.T) {
 	SetupMock(t)
 	repo := NewModuleRepository(databases.DB)
-	assert.Equal(t, modelRepositoryType, reflect.TypeOf(repo).String(), "TestGetModule")
+	assert.Equal(t, moduleRepositoryType, reflect.TypeOf(repo).String(), "TestGetModule")
 	module := models.Modules{
-		Name:        modelName,
-		Description: modelName,
+		Name:        moduleName,
+		Description: moduleName,
 	}
 	columns := []string{"id", "created_at", "updated_at", "deleted_at", "name", "description", "module_slug"}
 
 	mock.ExpectQuery("^SELECT (.+) FROM `modules`*").WithArgs(1).
-		WillReturnRows(sqlmock.NewRows(columns).AddRow(1, nil, nil, nil, modelName, "Desc", "/url"))
+		WillReturnRows(sqlmock.NewRows(columns).AddRow(1, nil, nil, nil, moduleName, "Desc", "/url"))
 	err := repo.GetModule(&module, 1)
 	assert.NoError(t, err)
 
@@ -83,15 +83,15 @@ func TestGetModule(t *testing.T) {
 func TestGetModuleBySlug(t *testing.T) {
 	SetupMock(t)
 	repo := NewModuleRepository(databases.DB)
-	assert.Equal(t, modelRepositoryType, reflect.TypeOf(repo).String(), "TestGetModule")
+	assert.Equal(t, moduleRepositoryType, reflect.TypeOf(repo).String(), "TestGetModule")
 	module := models.Modules{
-		Name:        modelName,
-		Description: modelName,
+		Name:        moduleName,
+		Description: moduleName,
 	}
 	columns := []string{"id", "created_at", "updated_at", "deleted_at", "name", "description", "module_slug"}
 
 	mock.ExpectQuery("^SELECT (.+) FROM `modules`*").WithArgs(fiber.MethodGet, "/test").
-		WillReturnRows(sqlmock.NewRows(columns).AddRow(1, nil, nil, nil, modelName, "Desc", "/url"))
+		WillReturnRows(sqlmock.NewRows(columns).AddRow(1, nil, nil, nil, moduleName, "Desc", "/url"))
 	err := repo.GetModuleBySlug(&module, fiber.MethodGet, "/test")
 	assert.NoError(t, err)
 
@@ -104,7 +104,7 @@ func TestModuleGetAllRolesItems(t *testing.T) {
 	SetupMock(t)
 	columns := []string{"id", "created_at", "updated_at", "deleted_at", "name", "description"}
 	repo := NewModuleRepository(databases.DB)
-	assert.Equal(t, modelRepositoryType, reflect.TypeOf(repo).String(), "TestRoleGetAllModule")
+	assert.Equal(t, moduleRepositoryType, reflect.TypeOf(repo).String(), "TestRoleGetAllModule")
 
 	var roles []models.RoleItems
 	roles = append(roles, models.RoleItems{
@@ -121,7 +121,7 @@ func TestModuleGetAllRolesItems(t *testing.T) {
 func TestSetModulePermissionFail(t *testing.T) {
 	SetupMock(t)
 	repo := NewModuleRepository(databases.DB)
-	assert.Equal(t, modelRepositoryType, reflect.TypeOf(repo).String(), "TestRoleGetAllModule")
+	assert.Equal(t, moduleRepositoryType, reflect.TypeOf(repo).String(), "TestRoleGetAllModule")
 	mock.ExpectQuery("^SELECT (.+) FROM `permissions`*").WithArgs(uint(1), uint(1)).WillReturnError(errors.New("error TestSetPermission"))
 	mock.ExpectBegin()
 	mock.ExpectExec("INSERT INTO `permissions` ").WillReturnResult(sqlmock.NewResult(1, 1))
@@ -133,7 +133,7 @@ func TestSetModulePermissionSuccess(t *testing.T) {
 	SetupMock(t)
 	columns := []string{"id", "created_at", "updated_at", "deleted_at", "module_id", "role_item_id", "is_exec"}
 	repo := NewModuleRepository(databases.DB)
-	assert.Equal(t, modelRepositoryType, reflect.TypeOf(repo).String(), "TestRoleGetAllModule")
+	assert.Equal(t, moduleRepositoryType, reflect.TypeOf(repo).String(), "TestRoleGetAllModule")
 	mock.ExpectQuery("^SELECT (.+) FROM `permissions`*").WithArgs(uint(1), uint(1)).
 		WillReturnRows(sqlmock.NewRows(columns).AddRow(1, nil, nil, nil, 1, 1, 0))
 	mock.ExpectBegin()
@@ -145,7 +145,7 @@ func TestSetModulePermissionSuccess(t *testing.T) {
 func TestGetAllModules(t *testing.T) {
 	SetupMock(t)
 	repo := NewModuleRepository(databases.DB)
-	assert.Equal(t, modelRepositoryType, reflect.TypeOf(repo).String(), "TestGetAllModules")
+	assert.Equal(t, moduleRepositoryType, reflect.TypeOf(repo).String(), "TestGetAllModules")
 	var modules []models.Modules
 
 	columns := []string{"id", "created_at", "updated_at", "deleted_at", "name", "description", "method", "module_slug"}
@@ -158,7 +158,7 @@ func TestGetAllModules(t *testing.T) {
 
 	t.Run("TEST_INBOX", func(t *testing.T) {
 		mock.ExpectQuery("^SELECT (.+) FROM `modules`*").
-			WillReturnRows(sqlmock.NewRows(columns).AddRow(1, nil, nil, nil, modelName, modelDesc, fiber.MethodGet, "/test"))
+			WillReturnRows(sqlmock.NewRows(columns).AddRow(1, nil, nil, nil, moduleName, moduleDesc, fiber.MethodGet, "/test"))
 		err = repo.GetAllModules(&modules, "all", "asc", "id", "1", "10", "inbox")
 		assert.NoError(t, err)
 
@@ -168,7 +168,7 @@ func TestGetAllModules(t *testing.T) {
 		assert.Error(t, err)
 
 		mock.ExpectQuery("^SELECT (.+) FROM `modules`*").
-			WillReturnRows(sqlmock.NewRows(columns).AddRow(1, nil, nil, nil, modelName, modelDesc, fiber.MethodGet, "/test"))
+			WillReturnRows(sqlmock.NewRows(columns).AddRow(1, nil, nil, nil, moduleName, moduleDesc, fiber.MethodGet, "/test"))
 		err = repo.GetAllModules(&modules, "Admin", "asc", "id", "1", "10", "inbox")
 		assert.NoError(t, err)
 
@@ -180,7 +180,7 @@ func TestGetAllModules(t *testing.T) {
 
 	t.Run("TEST_TRASH", func(t *testing.T) {
 		mock.ExpectQuery("^SELECT (.+) FROM `modules`*").
-			WillReturnRows(sqlmock.NewRows(columns).AddRow(1, nil, nil, nil, modelName, modelDesc, fiber.MethodGet, "/test"))
+			WillReturnRows(sqlmock.NewRows(columns).AddRow(1, nil, nil, nil, moduleName, moduleDesc, fiber.MethodGet, "/test"))
 		err = repo.GetAllModules(&modules, "all", "asc", "id", "1", "10", "trash")
 		assert.NoError(t, err)
 
@@ -190,7 +190,7 @@ func TestGetAllModules(t *testing.T) {
 		assert.Error(t, err)
 
 		mock.ExpectQuery("^SELECT (.+) FROM `modules`*").
-			WillReturnRows(sqlmock.NewRows(columns).AddRow(1, nil, nil, nil, modelName, modelDesc, fiber.MethodGet, "/test"))
+			WillReturnRows(sqlmock.NewRows(columns).AddRow(1, nil, nil, nil, moduleName, moduleDesc, fiber.MethodGet, "/test"))
 		err = repo.GetAllModules(&modules, "Admin", "asc", "id", "1", "10", "trash")
 		assert.NoError(t, err)
 
