@@ -21,6 +21,7 @@ const (
 	ERR_CANNOT_GET_ALL_MODULE       = "cannot get all module"
 	ERR_CANNOT_GET_MODULE           = "cannot get module"
 	ERR_CANNOT_UPDATE_MODULE        = "cannot update module"
+	ERR_CANNOT_SET_PERMISSIONS      = "cannot set permissions"
 	ERR_UPDATE_MODULE_SUCCESSFUL    = "update module successful"
 	ERR_CREATE_USER_SUCCESSFUL      = "create user successful"
 	ERR_LOGIN_SUCCESSFUL            = "login successful"

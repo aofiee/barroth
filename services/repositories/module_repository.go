@@ -48,7 +48,7 @@ func (m *moduleRepository) SetPermission(moduleID, roleID uint, exec int) error 
 	permission := models.Permissions{
 		ModuleID:   moduleID,
 		RoleItemID: roleID,
-		IsExec:     exec,
+		IsExec:     &exec,
 	}
 	rs := m.conn.Where("module_id = ? AND role_item_id = ?", moduleID, roleID).First(&permission)
 	if rs.Error != nil {

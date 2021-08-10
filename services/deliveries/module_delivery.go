@@ -107,12 +107,12 @@ func (m *moduleHandler) GetAllModules(c *fiber.Ctx) error {
 	})
 }
 func (m *moduleHandler) UpdateModule(c *fiber.Ctx) error {
-	var param paramsModules
-	err := c.BodyParser(&param)
+	var params paramsModules
+	err := c.BodyParser(&params)
 	if err != nil {
 		return helpers.FailOnError(c, err, constants.ERR_PARSE_JSON_FAIL, fiber.StatusBadRequest)
 	}
-	errorResponse := helpers.ValidateStruct(&param)
+	errorResponse := helpers.ValidateStruct(&params)
 	if errorResponse != nil {
 		return c.Status(fiber.StatusNotAcceptable).JSON(fiber.Map{
 			"msg":   constants.ERR_INPUT_ERROR,
@@ -123,14 +123,14 @@ func (m *moduleHandler) UpdateModule(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(fiber.StatusNotAcceptable).JSON(fiber.Map{
 			"msg":   constants.ERR_INPUT_ERROR,
-			"error": errorResponse,
+			"error": err,
 		})
 	}
 	var module models.Modules
-	module.Name = param.Name
-	module.Description = param.Description
-	module.Method = param.Method
-	module.ModuleSlug = param.ModuleSlug
+	module.Name = params.Name
+	module.Description = params.Description
+	module.Method = params.Method
+	module.ModuleSlug = params.ModuleSlug
 	err = m.moduleUseCase.UpdateModule(&module, uint(id))
 	if err != nil {
 		return c.Status(fiber.StatusNotAcceptable).JSON(fiber.Map{

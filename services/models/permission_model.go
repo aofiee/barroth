@@ -5,7 +5,7 @@ type (
 		BarrothModel
 		ModuleID   uint
 		RoleItemID uint
-		IsExec     int `gorm:"type:TINYINT(1);default:0"`
+		IsExec     *int `gorm:"type:TINYINT(1);default:0"`
 	}
 )
 

@@ -21,5 +21,8 @@ func InitAllRoutes() *fiber.App {
 
 	module := NewModuleRoutes(barroth_config.ENV)
 	module.Install(app)
+
+	permissions := NewPermissionRoutes(barroth_config.ENV)
+	permissions.Install(app)
 	return app
 }

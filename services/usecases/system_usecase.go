@@ -58,7 +58,7 @@ func (s *systemUseCase) SetExecToAllModules(m *[]models.Modules, roleID uint, is
 		var permissions models.Permissions
 		permissions.ModuleID = v.ID
 		permissions.RoleItemID = roleID
-		permissions.IsExec = isExec
+		permissions.IsExec = &isExec
 		err := s.systemRepo.SetPermissions(&permissions)
 		if err != nil {
 			return err
