@@ -69,7 +69,7 @@ func TestSetupDatabase(t *testing.T) {
 		if err != nil {
 			assert.NotEqual(t, nil, err, err.Error())
 		}
-		createQueueConnection(queueDNS, barroth_config.ENV.RdPassword)
+		createQueueConnection(queueDNS, barroth_config.ENV.TokenRdPassword)
 
 	})
 }

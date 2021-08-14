@@ -16,7 +16,7 @@ import (
 )
 
 func main() {
-	dbDNS, queueDNS, err := setupDNSDatabaseConnection("../")
+	dbDNS, tokenQueueDNS, resetQueueDNS, err := setupDNSDatabaseConnection("../")
 	if err != nil {
 		log.Println(err)
 	}
@@ -25,7 +25,9 @@ func main() {
 	if err != nil {
 		log.Println(err)
 	}
-	createQueueConnection(queueDNS, barroth_config.ENV.RdPassword)
+	createTokenQueueConnection(tokenQueueDNS, barroth_config.ENV.TokenRdPassword)
+	createResetPasswordQueueConnection(resetQueueDNS, barroth_config.ENV.ResetpasswordRdPassword)
+	log.Println("tokenQueueDNS, resetQueueDNS", tokenQueueDNS, resetQueueDNS)
 	/// Install Routing
 	app := routes.InitAllRoutes()
 	///
@@ -34,23 +36,30 @@ func main() {
 		panic(err)
 	}
 }
-func createQueueConnection(dns, password string) {
-	databases.QueueClient = redis.NewClient(&redis.Options{
+func createTokenQueueConnection(dns, password string) {
+	databases.TokenQueueClient = redis.NewClient(&redis.Options{
 		Addr:     dns,
 		Password: password,
 	})
 }
-func setupDNSDatabaseConnection(env string) (string, string, error) {
+func createResetPasswordQueueConnection(dns, password string) {
+	databases.ResetPasswordQueueClient = redis.NewClient(&redis.Options{
+		Addr:     dns,
+		Password: password,
+	})
+}
+func setupDNSDatabaseConnection(env string) (string, string, string, error) {
 	var err error
 	/// Load Configuration
 	barroth_config.ENV, err = barroth_config.LoadConfig(env)
 	if err != nil {
-		return "", "", err
+		return "", "", "", err
 	}
 	/// Database Connection
 	databaseDNS := databases.NewConfig(barroth_config.ENV).DBConnString()
-	redisDNS := databases.NewConfig(barroth_config.ENV).RedisConnString()
-	return databaseDNS, redisDNS, nil
+	redisTokenDNS := databases.NewConfig(barroth_config.ENV).TokenRedisConnString()
+	redisResetPasswordDNS := databases.NewConfig(barroth_config.ENV).ResetPasswordRedisConnString()
+	return databaseDNS, redisTokenDNS, redisResetPasswordDNS, nil
 }
 
 func createDatabaseConnection(dial gorm.Dialector) error {

@@ -24,5 +24,8 @@ func InitAllRoutes() *fiber.App {
 
 	permissions := NewPermissionRoutes(barroth_config.ENV)
 	permissions.Install(app)
+
+	forgotpassword := NewForgotPasswordRoutes(barroth_config.ENV)
+	forgotpassword.Install(app)
 	return app
 }

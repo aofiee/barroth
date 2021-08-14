@@ -17,14 +17,14 @@ func TestNewConfig(t *testing.T) {
 		}
 		expectedDB := barroth_config.ENV.DbUser + ":" + barroth_config.ENV.DbPassword + "@tcp(database:3306)/" + barroth_config.ENV.DbName + "?charset=utf8mb4&parseTime=True&loc=Local"
 
-		expectedQueue := barroth_config.ENV.RdHost + ":" + barroth_config.ENV.RdPort
+		expectedQueue := barroth_config.ENV.TokenRdHost + ":" + barroth_config.ENV.TokenRdPort
 
 		db := NewConfig(barroth_config.ENV)
 		assert.Equal(t, "*databases.DBConfig", reflect.TypeOf(db).String(), "db config")
 		dns := db.DBConnString()
 		assert.Equal(t, expectedDB, dns, "dns database")
 
-		queueDNS := db.RedisConnString()
+		queueDNS := db.TokenRedisConnString()
 		assert.Equal(t, expectedQueue, queueDNS, "dns queue")
 	})
 }

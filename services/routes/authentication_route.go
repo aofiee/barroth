@@ -43,7 +43,7 @@ func (r *authenticationRoutes) Install(app *fiber.App) {
 			Slug:        "/auth/refresh_token",
 		},
 	)
-	repo := repositories.NewAuthenticationRepository(databases.DB, databases.QueueClient)
+	repo := repositories.NewAuthenticationRepository(databases.DB, databases.TokenQueueClient)
 	u := usecases.NewAuthenticationUseCase(repo)
 	handler := deliveries.NewAuthenHandler(u, &moduleRoute)
 	e := app.Group("/auth")

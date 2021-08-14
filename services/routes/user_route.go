@@ -71,21 +71,12 @@ func (r *userRoutes) Install(app *fiber.App) {
 			Method:      fiber.MethodPut,
 			Slug:        UsersSlug,
 		},
-		models.ModuleMethodSlug{
-			Name:        "User Reset Password",
-			Description: "User reset password by mail gun APIs",
-			Method:      fiber.MethodPut,
-			Slug:        "/reset_password",
-		},
 	)
 	repo := repositories.NewUserRepository(databases.DB)
 	u := usecases.NewUserUseCase(repo)
 	handler := deliveries.NewUserHandelr(u, &moduleRoute)
 
-	e := app.Group("/reset_password")
-	e.Put("/:id", handler.ResetPassword)
-
-	e = app.Group("/user", authHandler.AuthorizationRequired(), authHandler.IsRevokeToken, authHandler.CheckRoutingPermission)
+	e := app.Group("/user", authHandler.AuthorizationRequired(), authHandler.IsRevokeToken, authHandler.CheckRoutingPermission)
 	e.Post("/", handler.NewUser)
 	e.Put("/:id", handler.UpdateUser)
 	e.Get("/:id", handler.GetUser)

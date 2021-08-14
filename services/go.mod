@@ -15,6 +15,7 @@ require (
 	github.com/golang-jwt/jwt v3.2.1+incompatible
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/mailgun/mailgun-go/v4 v4.5.2
+	github.com/segmentio/ksuid v1.0.4
 	github.com/spf13/viper v1.8.1
 	github.com/stretchr/objx v0.1.1 // indirect
 	github.com/stretchr/testify v1.7.0

@@ -27,7 +27,7 @@ const (
 
 func TestLogin(t *testing.T) {
 	SetupMock(t)
-	repo := NewAuthenticationRepository(databases.DB, databases.QueueClient)
+	repo := NewAuthenticationRepository(databases.DB, databases.TokenQueueClient)
 	assert.Equal(t, authenticationRepositoryType, reflect.TypeOf(repo).String(), "TestLogin")
 
 	columns := []string{"id", "created_at", "updated_at", "deleted_at", "email", "password", "name", "telephone", "image", "uuid", "status"}
@@ -42,7 +42,7 @@ func TestLogin(t *testing.T) {
 
 func TestCheckPasswordHash(t *testing.T) {
 	SetupMock(t)
-	repo := NewAuthenticationRepository(databases.DB, databases.QueueClient)
+	repo := NewAuthenticationRepository(databases.DB, databases.TokenQueueClient)
 	assert.Equal(t, authenticationRepositoryType, reflect.TypeOf(repo).String(), "TestCheckPasswordHash")
 
 	repoHash := NewUserRepository(databases.DB)
@@ -57,7 +57,7 @@ func TestCheckPasswordHash(t *testing.T) {
 
 func TestGetRoleNameByUserIDSuccess(t *testing.T) {
 	SetupMock(t)
-	repo := NewAuthenticationRepository(databases.DB, databases.QueueClient)
+	repo := NewAuthenticationRepository(databases.DB, databases.TokenQueueClient)
 	assert.Equal(t, authenticationRepositoryType, reflect.TypeOf(repo).String(), "TestGetRoleNameByUserID")
 
 	column := []string{"role_items.name"}
@@ -69,7 +69,7 @@ func TestGetRoleNameByUserIDSuccess(t *testing.T) {
 }
 func TestGetRoleNameByUserIDFail(t *testing.T) {
 	SetupMock(t)
-	repo := NewAuthenticationRepository(databases.DB, databases.QueueClient)
+	repo := NewAuthenticationRepository(databases.DB, databases.TokenQueueClient)
 	assert.Equal(t, authenticationRepositoryType, reflect.TypeOf(repo).String(), "TestGetRoleNameByUserID")
 
 	column := []string{"role_items.name"}
@@ -82,9 +82,9 @@ func TestGetRoleNameByUserIDFail(t *testing.T) {
 func TestSaveToken(t *testing.T) {
 	SetupMock(t)
 	rd, mock := redismock.NewClientMock()
-	databases.QueueClient = rd
+	databases.TokenQueueClient = rd
 	uuid := utils.UUIDv4()
-	repo := NewAuthenticationRepository(databases.DB, databases.QueueClient)
+	repo := NewAuthenticationRepository(databases.DB, databases.TokenQueueClient)
 	assert.Equal(t, authenticationRepositoryType, reflect.TypeOf(repo).String(), "TestSaveToken")
 
 	now := time.Now()
@@ -96,10 +96,10 @@ func TestSaveToken(t *testing.T) {
 func TestDeleteToken(t *testing.T) {
 	SetupMock(t)
 	rd, redisMock := redismock.NewClientMock()
-	databases.QueueClient = rd
+	databases.TokenQueueClient = rd
 
 	uuid := utils.UUIDv4()
-	repo := NewAuthenticationRepository(databases.DB, databases.QueueClient)
+	repo := NewAuthenticationRepository(databases.DB, databases.TokenQueueClient)
 	assert.Equal(t, authenticationRepositoryType, reflect.TypeOf(repo).String(), "TestDeleteToken")
 
 	redisMock.ExpectDel(uuid).SetVal(0)
@@ -109,8 +109,8 @@ func TestDeleteToken(t *testing.T) {
 func TestAuthenticationGetUserSuccess(t *testing.T) {
 	SetupMock(t)
 	rd, _ := redismock.NewClientMock()
-	databases.QueueClient = rd
-	repo := NewAuthenticationRepository(databases.DB, databases.QueueClient)
+	databases.TokenQueueClient = rd
+	repo := NewAuthenticationRepository(databases.DB, databases.TokenQueueClient)
 	assert.Equal(t, authenticationRepositoryType, reflect.TypeOf(repo).String(), "TestAuthenticationGetUser")
 	UUID := utils.UUIDv4()
 	columns := []string{"id", "created_at", "updated_at", "deleted_at", "email", "password", "name", "telephone", "image", "uuid", "status"}
@@ -124,8 +124,8 @@ func TestAuthenticationGetUserSuccess(t *testing.T) {
 func TestAuthenticationGetUserFail(t *testing.T) {
 	SetupMock(t)
 	rd, _ := redismock.NewClientMock()
-	databases.QueueClient = rd
-	repo := NewAuthenticationRepository(databases.DB, databases.QueueClient)
+	databases.TokenQueueClient = rd
+	repo := NewAuthenticationRepository(databases.DB, databases.TokenQueueClient)
 	assert.Equal(t, authenticationRepositoryType, reflect.TypeOf(repo).String(), "TestAuthenticationGetUser")
 	UUID := utils.UUIDv4()
 
@@ -138,9 +138,9 @@ func TestAuthenticationGetUserFail(t *testing.T) {
 func TestGetAccessUUIDFromRedis(t *testing.T) {
 	SetupMock(t)
 	rd, mock := redismock.NewClientMock()
-	databases.QueueClient = rd
+	databases.TokenQueueClient = rd
 	uuid := utils.UUIDv4()
-	repo := NewAuthenticationRepository(databases.DB, databases.QueueClient)
+	repo := NewAuthenticationRepository(databases.DB, databases.TokenQueueClient)
 	assert.Equal(t, authenticationRepositoryType, reflect.TypeOf(repo).String(), "TestGetAccessUUIDFromRedis")
 	uuidResult := utils.UUIDv4()
 	mock.ExpectGet(uuid).SetVal(uuidResult)
@@ -150,7 +150,7 @@ func TestGetAccessUUIDFromRedis(t *testing.T) {
 }
 func TestCheckRoutePermission(t *testing.T) {
 	SetupMock(t)
-	repo := NewAuthenticationRepository(databases.DB, databases.QueueClient)
+	repo := NewAuthenticationRepository(databases.DB, databases.TokenQueueClient)
 	assert.Equal(t, authenticationRepositoryType, reflect.TypeOf(repo).String(), "TestCheckRoutePermission")
 	column := []string{"permissions.is_exec"}
 	mock.ExpectQuery("^SELECT permissions.is_exec FROM *").WithArgs("RoleName", fiber.MethodGet, "/test").

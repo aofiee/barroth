@@ -6,6 +6,7 @@ const (
 
 	ERR_PARSE_JSON_FAIL          = "cannot parse json"
 	ERR_MAIL_GUN_FORBIDDEN       = "mailgun forbidden"
+	ERR_TEMPLATE_PARSE_DATA      = "cannot parse template data"
 	ERR_INPUT_ERROR              = "input error"
 	ERR_CREATE_ROLE_SUCCESSFUL   = "create role successful"
 	ERR_CANNOT_CREATE_ROLE       = "cannot create role"
@@ -46,4 +47,5 @@ const (
 	ERR_RESTORE_USER_FROM_TRASH_TO_INBOX_SUCCESSFUL        = "restore user successful"
 	ERR_SEND_LINK_RESET_PASSWORD_TO_EMAIL_SUCCESSFUL       = "send link reset password to email successful"
 	ERR_CANNOT_RESTORE_USER_FROM_TRASH_TO_INBOX_SUCCESSFUL = "cannot restore user"
+	ERR_CANNOT_CREATE_HASHLINK_IN_REDIS                    = "cannot create hash in redis"
 )

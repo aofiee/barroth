@@ -34,6 +34,7 @@ func NewInstallationRoutes(config barroth_config.Config) *installationRoutes {
 
 func (i *installationRoutes) Setup() *fiber.App {
 	app := fiber.New()
+	app.Static("/static", "../public")
 	app.Use(requestid.New())
 	app.Use(logger.New(logger.Config{
 		Format:     "${pid} ${status} - ${method} ${path}\n",
@@ -65,7 +66,7 @@ func (i *installationRoutes) Install(app *fiber.App) {
 	sysUseCase := usecases.NewSystemUseCase(sysRepo)
 	installHandler := deliveries.NewSystemHandelr(sysUseCase, &moduleRoute)
 
-	authRepo = repositories.NewAuthenticationRepository(databases.DB, databases.QueueClient)
+	authRepo = repositories.NewAuthenticationRepository(databases.DB, databases.TokenQueueClient)
 	authUseCase = usecases.NewAuthenticationUseCase(authRepo)
 	authHandler = deliveries.GetAuthHandlerUsecase(authUseCase)
 
