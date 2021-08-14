@@ -24,16 +24,30 @@ services:
       PMA_HOSTS: database
     networks:
       - diablos
-  redis:
+  redis_token:
     image: "redis:latest"
-    container_name: redis
-    hostname: redis
+    container_name: redis_token
+    hostname: redis_token
     command: ["redis-server", "--include", "/usr/local/etc/redis/redis.conf"]
     ports:
       - "6379:6379"
     volumes:
-      - "./redis/data:/var/lib/redis"
-      - "./redis/redis.conf:/usr/local/etc/redis/redis.conf"
+      - "./redis/token:/var/lib/redis"
+      - "./redis/conf/token.conf:/usr/local/etc/redis/redis.conf"
+    environment:
+      - REDIS_REPLICATION_MODE=master
+    networks:
+      - diablos
+  redis_resetpassword:
+    image: "redis:latest"
+    container_name: redis_resetpassword
+    hostname: redis_resetpassword
+    command: ["redis-server", "--include", "/usr/local/etc/redis/redis.conf"]
+    ports:
+      - "6380:6379"
+    volumes:
+      - "./redis/forgotpassword:/var/lib/redis"
+      - "./redis/conf/forgotpassword.conf:/usr/local/etc/redis/redis.conf"
     environment:
       - REDIS_REPLICATION_MODE=master
     networks:
@@ -52,7 +66,8 @@ services:
     # command: go run main.go
     links:
       - database
-      - redis
+      - redis_token
+      - redis_resetpassword
     networks:
       - diablos
     depends_on:

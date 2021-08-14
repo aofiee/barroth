@@ -3,6 +3,8 @@
 database/
 queue/
 redis/data/
+redis/forgotpassword/
+redis/token/
 queue
 web/node_modules/
 web/
