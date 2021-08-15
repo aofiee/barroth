@@ -27,7 +27,7 @@
 > http://localhost:15672/
 > user = guest , password = guest
 
-## Mock
+## Mockery
 
 go get github.com/vektra/mockery/.../
 mockery -all -recursive -dir=./domains
