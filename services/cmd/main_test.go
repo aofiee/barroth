@@ -31,29 +31,33 @@ func SetupMock(t *testing.T) {
 func TestSetupDatabase(t *testing.T) {
 	SetupMock(t)
 	t.Run("TEST_LOAD_FAIL_ENV", func(t *testing.T) {
-		dbDNS, queueDNS, err := setupDNSDatabaseConnection("./")
+		dbDNS, tokenQueueDNS, resetQueueDNS, err := setupDNSDatabaseConnection("./")
 		if err != nil {
 			assert.NotEqual(t, nil, err, err.Error())
 			assert.Equal(t, "", dbDNS, constants.ERR_DNS_CONNECTION_EMPTY)
-			assert.Equal(t, "", queueDNS, constants.ERR_DNS_CONNECTION_EMPTY)
+			assert.Equal(t, "", tokenQueueDNS, constants.ERR_DNS_CONNECTION_EMPTY)
+			assert.Equal(t, "", resetQueueDNS, constants.ERR_DNS_CONNECTION_EMPTY)
 		}
 	})
 	t.Run("TEST_LOAD_SUCCESS_ENV", func(t *testing.T) {
-		dbDNS, queueDNS, err := setupDNSDatabaseConnection("./")
+		dbDNS, tokenQueueDNS, resetQueueDNS, err := setupDNSDatabaseConnection("./")
 		if err != nil {
 			assert.NotEqual(t, nil, err, err.Error())
 			assert.Equal(t, "", dbDNS, constants.ERR_DNS_CONNECTION_EMPTY)
-			assert.Equal(t, "", queueDNS, constants.ERR_DNS_CONNECTION_EMPTY)
+			assert.Equal(t, "", tokenQueueDNS, constants.ERR_DNS_CONNECTION_EMPTY)
+			assert.Equal(t, "", resetQueueDNS, constants.ERR_DNS_CONNECTION_EMPTY)
 		}
 		assert.NotEqual(t, "", dbDNS, constants.ERR_DNS_CONNECTION_EMPTY)
-		assert.NotEqual(t, "", queueDNS, constants.ERR_DNS_CONNECTION_EMPTY)
+		assert.Equal(t, "", tokenQueueDNS, constants.ERR_DNS_CONNECTION_EMPTY)
+		assert.Equal(t, "", resetQueueDNS, constants.ERR_DNS_CONNECTION_EMPTY)
 	})
 	t.Run("DATABASE_TEST", func(t *testing.T) {
-		dbDNS, queueDNS, err := setupDNSDatabaseConnection("./")
+		dbDNS, tokenQueueDNS, resetQueueDNS, err := setupDNSDatabaseConnection("./")
 		if err != nil {
 			assert.NotEqual(t, nil, err, err.Error())
 			assert.Equal(t, "", dbDNS, constants.ERR_DNS_CONNECTION_EMPTY)
-			assert.Equal(t, "", queueDNS, constants.ERR_DNS_CONNECTION_EMPTY)
+			assert.Equal(t, "", tokenQueueDNS, constants.ERR_DNS_CONNECTION_EMPTY)
+			assert.Equal(t, "", resetQueueDNS, constants.ERR_DNS_CONNECTION_EMPTY)
 		}
 		dial := mysql.New(mysql.Config{
 			DSN:        "sqlmock_db_0",
@@ -69,7 +73,8 @@ func TestSetupDatabase(t *testing.T) {
 		if err != nil {
 			assert.NotEqual(t, nil, err, err.Error())
 		}
-		createQueueConnection(queueDNS, barroth_config.ENV.TokenRdPassword)
+		createTokenQueueConnection(tokenQueueDNS, barroth_config.ENV.TokenRdPassword)
+		createTokenQueueConnection(resetQueueDNS, barroth_config.ENV.ResetpasswordRdPassword)
 
 	})
 }
