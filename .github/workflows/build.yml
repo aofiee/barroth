@@ -19,6 +19,9 @@ jobs:
       - name: Get dependencies
         run: |
           cd ./services && go mod tidy
+      - name: Go Run Test
+        run: |
+          cd ./services && go test "./..." -coverprofile="coverage.out" -covermode=count -json > report.json
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
