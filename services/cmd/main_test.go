@@ -48,8 +48,8 @@ func TestSetupDatabase(t *testing.T) {
 			assert.Equal(t, "", resetQueueDNS, constants.ERR_DNS_CONNECTION_EMPTY)
 		}
 		assert.NotEqual(t, "", dbDNS, constants.ERR_DNS_CONNECTION_EMPTY)
-		assert.Equal(t, "", tokenQueueDNS, constants.ERR_DNS_CONNECTION_EMPTY)
-		assert.Equal(t, "", resetQueueDNS, constants.ERR_DNS_CONNECTION_EMPTY)
+		assert.NotEqual(t, "", tokenQueueDNS, constants.ERR_DNS_CONNECTION_EMPTY)
+		assert.NotEqual(t, "", resetQueueDNS, constants.ERR_DNS_CONNECTION_EMPTY)
 	})
 	t.Run("DATABASE_TEST", func(t *testing.T) {
 		dbDNS, tokenQueueDNS, resetQueueDNS, err := setupDNSDatabaseConnection("./")
