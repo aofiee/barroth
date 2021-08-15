@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@v2
       - name: Get dependencies
         run: |
-          go mod tidy
+          cd ./services && go mod tidy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
