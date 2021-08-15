@@ -22,6 +22,11 @@ jobs:
       - name: Go Run Test
         run: |
           cd ./services && go test "./..." -coverprofile="coverage.out" -covermode=count -json > report.json
+      - name: fix code coverage paths
+        working-directory: ./services
+        run: |
+          sed -i 's/\/home\/runner\/work\/barroth\/barroth\//\/github\/workspace\//g' coverage.out
+          sed -i 's/\/home\/runner\/work\/barroth\/barroth\//\/github\/workspace\//g' report.json
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
