@@ -2,8 +2,6 @@
 
 [![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=aofiee_golang-clean-architecture)](https://sonarcloud.io/dashboard?id=aofiee_golang-clean-architecture)
 
-Go fiber JWT token , refresh token on Redis
-
 ## Setup
 
 1. docker-compose up --build
