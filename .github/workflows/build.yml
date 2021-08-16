@@ -27,6 +27,8 @@ jobs:
         run: |
           sed -i 's/^barroth/services/' coverage.out
           sed -i 's/^barroth/services/' report.json
+          pwd
+          ls -la
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
