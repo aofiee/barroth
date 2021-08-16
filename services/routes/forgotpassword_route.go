@@ -36,4 +36,6 @@ func (f *forgotPasswordRoute) Install(app *fiber.App) {
 	handler := deliveries.NewForgotPasswordHandler(u, &moduleRoute)
 	e := app.Group("/reset_password")
 	e.Put("/:id", handler.ResetPassword)
+	e.Get("/:id", handler.ResetPasswordForm)
+	e.Post("/:id", handler.ResetPasswordFormExec)
 }

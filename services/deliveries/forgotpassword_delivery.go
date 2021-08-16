@@ -3,6 +3,7 @@ package deliveries
 import (
 	"bytes"
 	"context"
+	"errors"
 	"text/template"
 	"time"
 
@@ -28,6 +29,12 @@ type (
 	templateResetPassword struct {
 		AppName  string
 		LinkHash string
+		SiteURL  string
+		AppPort  string
+	}
+	paramsResetPassword struct {
+		Password   string `json:"password" form:"password" validate:"required,min=6,max=64"`
+		RePassword string `json:"re_password" form:"re_password" validate:"required,min=6,max=64"`
 	}
 )
 
@@ -65,10 +72,12 @@ func (f *forgotPasswordHandler) ResetPassword(c *fiber.Ctx) error {
 	subject := config.ENV.AppName + " reset password"
 	recipient := param.Email
 	message := mg.NewMessage(sender, subject, "", recipient)
-	t, _ := template.ParseFiles("../views/change_password/change_password.html")
+	t, _ := template.ParseFiles("../views/change_password/mail_change_password.html")
 	tplData := templateResetPassword{
 		AppName:  config.ENV.AppName,
+		SiteURL:  config.ENV.SiteURL,
 		LinkHash: linkHash,
+		AppPort:  config.ENV.AppPort,
 	}
 	var tpl bytes.Buffer
 	if err := t.Execute(&tpl, tplData); err != nil {
@@ -88,5 +97,49 @@ func (f *forgotPasswordHandler) ResetPassword(c *fiber.Ctx) error {
 		"error": nil,
 		"id":    id,
 		"data":  resp,
+	})
+}
+
+func (f *forgotPasswordHandler) ResetPasswordForm(c *fiber.Ctx) error {
+	ok := f.forgotPasswordUseCase.CheckForgotPasswordHashIsExpire(c.Params("id"))
+	if !ok {
+		return c.Render("../views/change_password/result.html", fiber.Map{
+			"error": errors.New("Error 404 - Page not found"),
+			"msg":   nil,
+		})
+	}
+	tplData := templateResetPassword{
+		AppName:  config.ENV.AppName,
+		SiteURL:  config.ENV.SiteURL,
+		LinkHash: c.Params("id"),
+		AppPort:  config.ENV.AppPort,
+	}
+	return c.Render("../views/change_password/reset_password.html", fiber.Map{
+		"tplData": tplData,
+	})
+}
+func (f *forgotPasswordHandler) ResetPasswordFormExec(c *fiber.Ctx) error {
+	var params paramsResetPassword
+	err := c.BodyParser(&params)
+	if err != nil {
+		return helpers.FailOnError(c, err, constants.ERR_PARSE_JSON_FAIL, fiber.StatusBadRequest)
+	}
+	errorResponse := helpers.ValidateStruct(&params)
+	if errorResponse != nil {
+		return c.Render("../views/change_password/result.html", fiber.Map{
+			"error": errors.New(constants.ERR_PASSWORD_VALIDATE),
+			"msg":   nil,
+		})
+	}
+	err = f.forgotPasswordUseCase.ResetPassword(c.Params("id"), params.Password, params.RePassword)
+	if err != nil {
+		return c.Render("../views/change_password/result.html", fiber.Map{
+			"error": err,
+			"msg":   nil,
+		})
+	}
+	return c.Render("../views/change_password/result.html", fiber.Map{
+		"error": nil,
+		"msg":   constants.ERR_RESET_PASSWORD_COMPLETED,
 	})
 }

@@ -48,4 +48,8 @@ const (
 	ERR_SEND_LINK_RESET_PASSWORD_TO_EMAIL_SUCCESSFUL       = "send link reset password to email successful"
 	ERR_CANNOT_RESTORE_USER_FROM_TRASH_TO_INBOX_SUCCESSFUL = "cannot restore user"
 	ERR_CANNOT_CREATE_HASHLINK_IN_REDIS                    = "cannot create hash in redis"
+	ERR_PASSWORD_VALIDATE                                  = "password must be 6-64 character"
+	ERR_PASSWORD_DOES_NOT_MATCH                            = "password and confirm password does not match"
+	ERR_HASH_PASSWORD_NOT_FOUND                            = "reset password link has expired"
+	ERR_RESET_PASSWORD_COMPLETED                           = "reset password link has been completed"
 )
