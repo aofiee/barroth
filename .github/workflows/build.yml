@@ -29,9 +29,8 @@ jobs:
           ls -la
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
-        run: |
-          pwd
-          ls -la
+        with:
+          projectBaseDir: ./services
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
