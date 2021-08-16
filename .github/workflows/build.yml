@@ -25,8 +25,8 @@ jobs:
       - name: fix code coverage paths
         working-directory: ./services
         run: |
-          sed -i 's/\/home\/runner\/work\/barroth\/barroth\//\/github\/workspace\/services\//g' coverage.out
-          sed -i 's/\/home\/runner\/work\/barroth\/barroth\//\/github\/workspace\/services\//g' report.json
+          sed -i 's/^barroth/services/' coverage.out
+          sed -i 's/^barroth/services/' report.json
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
