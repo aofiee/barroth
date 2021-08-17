@@ -1,12 +1,17 @@
 package usecases
 
 import (
+	"bytes"
+	"context"
 	"errors"
+	"text/template"
 	"time"
 
 	"github.com/aofiee/barroth/constants"
+	"github.com/aofiee/barroth/databases"
 	"github.com/aofiee/barroth/domains"
 	"github.com/aofiee/barroth/models"
+	"github.com/mailgun/mailgun-go/v4"
 	"github.com/segmentio/ksuid"
 )
 
@@ -56,4 +61,22 @@ func (f *forgotPasswordUserCase) ResetPassword(hash, password, rePassword string
 	}
 	err = f.forgotPasswordRepo.DeleteHash(hash)
 	return err
+}
+func (f *forgotPasswordUserCase) SendMail(domain, apikey, sender, subject, recipient, body string) error {
+	mg := mailgun.NewMailgun(domain, apikey)
+	if databases.MockMailServer != nil {
+		mg.SetAPIBase(databases.MockMailServer.URL())
+	}
+	message := mg.NewMessage(sender, subject, "", recipient)
+	message.SetHtml(body)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+	_, _, err := mg.Send(ctx, message)
+	return err
+}
+func (f *forgotPasswordUserCase) MailHTML(view string, data interface{}) (string, error) {
+	t, _ := template.ParseFiles(view)
+	var tpl bytes.Buffer
+	err := t.Execute(&tpl, data)
+	return tpl.String(), err
 }

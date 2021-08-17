@@ -2,7 +2,6 @@ package repositories
 
 import (
 	"context"
-	"log"
 	"time"
 
 	"github.com/aofiee/barroth/domains"
@@ -28,7 +27,6 @@ func NewForgotPasswordRepository(conn *gorm.DB, queue *redis.Client) domains.For
 
 func (f *forgotPasswordRepository) CreateForgotPasswordHash(email, hash string, expire time.Duration) error {
 	ctx := context.Background()
-	log.Println("hash, email, expire", hash, email, expire)
 	err := f.queue.Set(ctx, hash, email, expire).Err()
 	return err
 }

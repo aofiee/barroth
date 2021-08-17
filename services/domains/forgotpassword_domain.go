@@ -11,6 +11,8 @@ type (
 		CreateForgotPasswordHash(email string) (hash string, err error)
 		CheckForgotPasswordHashIsExpire(hash string) (ok bool)
 		ResetPassword(hash, password, rePassword string) (err error)
+		SendMail(domain, apikey, sender, subject, recipient, body string) (err error)
+		MailHTML(view string, data interface{}) (body string, err error)
 	}
 	ForgorPasswordRepository interface {
 		CreateForgotPasswordHash(email, hash string, expire time.Duration) (err error)

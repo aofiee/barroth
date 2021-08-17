@@ -1,6 +1,15 @@
 # Readme
 
-[![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=aofiee_golang-clean-architecture)](https://sonarcloud.io/dashboard?id=aofiee_golang-clean-architecture)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=aofiee_golang-clean-architecture&metric=alert_status)](https://sonarcloud.io/dashboard?id=aofiee_golang-clean-architecture)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=aofiee_golang-clean-architecture&metric=coverage)](https://sonarcloud.io/dashboard?id=aofiee_golang-clean-architecture)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=aofiee_golang-clean-architecture&metric=ncloc)](https://sonarcloud.io/dashboard?id=aofiee_golang-clean-architecture)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=aofiee_golang-clean-architecture&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=aofiee_golang-clean-architecture)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=aofiee_golang-clean-architecture&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=aofiee_golang-clean-architecture)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=aofiee_golang-clean-architecture&metric=security_rating)](https://sonarcloud.io/dashboard?id=aofiee_golang-clean-architecture)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=aofiee_golang-clean-architecture&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=aofiee_golang-clean-architecture)
+[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=aofiee_golang-clean-architecture&metric=sqale_index)](https://sonarcloud.io/dashboard?id=aofiee_golang-clean-architecture)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=aofiee_golang-clean-architecture&metric=code_smells)](https://sonarcloud.io/dashboard?id=aofiee_golang-clean-architecture)
+[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=aofiee_golang-clean-architecture&metric=duplicated_lines_density)](https://sonarcloud.io/dashboard?id=aofiee_golang-clean-architecture)
 
 ## Setup
 
