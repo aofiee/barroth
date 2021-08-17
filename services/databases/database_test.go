@@ -17,7 +17,9 @@ func TestNewConfig(t *testing.T) {
 		}
 		expectedDB := barroth_config.ENV.DbUser + ":" + barroth_config.ENV.DbPassword + "@tcp(database:3306)/" + barroth_config.ENV.DbName + "?charset=utf8mb4&parseTime=True&loc=Local"
 
-		expectedQueue := barroth_config.ENV.TokenRdHost + ":" + barroth_config.ENV.TokenRdPort
+		expectedTokenQueue := barroth_config.ENV.TokenRdHost + ":" + barroth_config.ENV.TokenRdPort
+
+		expectedResetPasswordQueue := barroth_config.ENV.ResetpasswordRdHost + ":" + barroth_config.ENV.ResetpasswordRdPort
 
 		db := NewConfig(barroth_config.ENV)
 		assert.Equal(t, "*databases.DBConfig", reflect.TypeOf(db).String(), "db config")
@@ -25,6 +27,9 @@ func TestNewConfig(t *testing.T) {
 		assert.Equal(t, expectedDB, dns, "dns database")
 
 		queueDNS := db.TokenRedisConnString()
-		assert.Equal(t, expectedQueue, queueDNS, "dns queue")
+		assert.Equal(t, expectedTokenQueue, queueDNS, "dns queue")
+
+		queueDNS = db.ResetPasswordRedisConnString()
+		assert.Equal(t, expectedResetPasswordQueue, queueDNS, "dns queue")
 	})
 }

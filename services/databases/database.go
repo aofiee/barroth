@@ -2,12 +2,14 @@ package databases
 
 import (
 	barroth_config "github.com/aofiee/barroth/config"
+	"github.com/mailgun/mailgun-go/v4"
 	"gorm.io/gorm"
 )
 
 var (
-	DB      *gorm.DB
-	dbError error
+	DB             *gorm.DB
+	dbError        error
+	MockMailServer mailgun.MockServer
 )
 
 type (
