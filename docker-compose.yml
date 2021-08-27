@@ -53,7 +53,6 @@ services:
     networks:
       - diablos
   api:
-    # image: golang:1.16-alpine
     build:
       context: .
       dockerfile: ./services/go-dev.Dockerfile
@@ -63,7 +62,6 @@ services:
     working_dir: /services/cmd
     ports:
       - 8181:8181
-    # command: go run main.go
     links:
       - database
       - redis_token
@@ -72,6 +70,15 @@ services:
       - diablos
     depends_on:
       - database
+  backend:
+    build:
+      context: .
+      dockerfile: ./web/react-dev.Dockerfile
+    volumes:
+      - ./web:/web
+    working_dir: /web
+    ports:
+      - "3000:3000"
 networks:
   diablos:
     driver: bridge

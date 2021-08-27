@@ -7,7 +7,6 @@ redis/forgotpassword/
 redis/token/
 queue
 web/node_modules/
-web/
 *.bak
 .DS_Store
 tmp/
