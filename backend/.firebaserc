@@ -1,0 +1,14 @@
+{
+  "projects": {
+    "default": "aofiee-developer"
+  },
+  "targets": {
+    "aofiee-developer": {
+      "hosting": {
+        "barroth": [
+          "barroth"
+        ]
+      }
+    }
+  }
+}

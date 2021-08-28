@@ -70,15 +70,6 @@ services:
       - diablos
     depends_on:
       - database
-  backend:
-    build:
-      context: .
-      dockerfile: ./web/react-dev.Dockerfile
-    volumes:
-      - ./web:/web
-    working_dir: /web
-    ports:
-      - "3000:3000"
 networks:
   diablos:
     driver: bridge

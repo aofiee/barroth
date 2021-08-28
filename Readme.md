@@ -40,3 +40,5 @@
 
 go get github.com/vektra/mockery/.../
 mockery -all -recursive -dir=./domains
+
+./node_modules/.bin/eslint --init
