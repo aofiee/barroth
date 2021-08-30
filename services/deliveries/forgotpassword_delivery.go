@@ -96,7 +96,7 @@ func (f *forgotPasswordHandler) ResetPasswordForm(c *fiber.Ctx) error {
 	ok := f.forgotPasswordUseCase.CheckForgotPasswordHashIsExpire(c.Params("id"))
 	if !ok {
 		return c.Render("../views/change_password/result.html", fiber.Map{
-			"error": errors.New("Error 404 - Page not found"),
+			"error": errors.New("error 404 - Page not found"),
 			"msg":   nil,
 		})
 	}

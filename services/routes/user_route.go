@@ -17,8 +17,9 @@ type (
 )
 
 const (
-	UserSlug  = "/user"
-	UsersSlug = "/users"
+	UserSlug     = "/user"
+	UsersSlug    = "/users"
+	RegisterSlug = "/register"
 )
 
 func NewUserRoutes(config barroth_config.Config) *userRoutes {
@@ -71,12 +72,21 @@ func (r *userRoutes) Install(app *fiber.App) {
 			Method:      fiber.MethodPut,
 			Slug:        UsersSlug,
 		},
+		models.ModuleMethodSlug{
+			Name:        "Register User",
+			Description: "Register New User From Frontend",
+			Method:      fiber.MethodPost,
+			Slug:        RegisterSlug,
+		},
 	)
 	repo := repositories.NewUserRepository(databases.DB)
 	u := usecases.NewUserUseCase(repo)
 	handler := deliveries.NewUserHandelr(u, &moduleRoute)
 
-	e := app.Group("/user", authHandler.AuthorizationRequired(), authHandler.IsRevokeToken, authHandler.CheckRoutingPermission)
+	e := app.Group("/register")
+	e.Post("/", handler.RegisterUser)
+
+	e = app.Group("/user", authHandler.AuthorizationRequired(), authHandler.IsRevokeToken, authHandler.CheckRoutingPermission)
 	e.Post("/", handler.NewUser)
 	e.Put("/:id", handler.UpdateUser)
 	e.Get("/:id", handler.GetUser)

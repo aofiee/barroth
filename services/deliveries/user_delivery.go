@@ -4,6 +4,7 @@ import (
 	"strconv"
 	"strings"
 
+	barroth_config "github.com/aofiee/barroth/config"
 	"github.com/aofiee/barroth/constants"
 	"github.com/aofiee/barroth/databases"
 	"github.com/aofiee/barroth/domains"
@@ -25,6 +26,13 @@ type (
 		Telephone string `json:"telephone" form:"telephone" validate:"required,min=10,max=50"`
 		Name      string `json:"name" form:"name" validate:"required,min=6,max=255"`
 		RoleID    int    `json:"role_id" form:"role_id" validate:"required,number"`
+	}
+	paramsRegister struct {
+		Email       string `json:"email" form:"email" validate:"required,email,min=6,max=255"`
+		UUID        string `json:"uuid" form:"uuid" validate:"required,min=28,max=128"`
+		Provider    string `json:"provider" form:"provider" validate:"required,min=5,max=255"`
+		DisplayName string `json:"display_name" form:"display_name"`
+		PhotoURL    string `json:"photo_url" form:"photo_url"`
 	}
 	paramUUID struct {
 		UsersID []string `json:"users_id" validate:"required"`
@@ -63,6 +71,46 @@ func NewUserHandelr(usecase domains.UserUseCase, u *[]models.ModuleMethodSlug) *
 		userUseCase: usecase,
 	}
 }
+
+func (u *userHandler) RegisterUser(c *fiber.Ctx) error {
+	var nu paramsRegister
+	err := c.BodyParser(&nu)
+	if err != nil {
+		return helpers.FailOnError(c, err, constants.ERR_PARSE_JSON_FAIL, fiber.StatusBadRequest)
+	}
+	errorResponse := helpers.ValidateStruct(&nu)
+	if errorResponse != nil {
+		return c.Status(fiber.StatusNotAcceptable).JSON(fiber.Map{
+			"msg":   constants.ERR_INPUT_ERROR,
+			"error": errorResponse,
+		})
+	}
+	user := models.Users{
+		Email:    nu.Email,
+		Name:     nu.DisplayName,
+		UUID:     nu.UUID,
+		Provider: nu.Provider,
+		Image:    nu.PhotoURL,
+	}
+	err = u.userUseCase.CreateUser(&user)
+	if err != nil {
+		return helpers.FailOnError(c, err, constants.ERR_CANNOT_CREATE_USER, fiber.StatusBadRequest)
+	}
+	roldID, _ := strconv.ParseUint(barroth_config.ENV.CustomerRoleID, 10, 32)
+	role := models.UserRoles{
+		RoleItemID: uint(roldID),
+		UserID:     user.ID,
+	}
+	err = u.userUseCase.SetUserRole(&role, user.ID)
+	if err != nil {
+		return helpers.FailOnError(c, err, constants.ERR_CANNOT_CREATE_ROLE, fiber.StatusBadRequest)
+	}
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"msg":   constants.ERR_CREATE_USER_SUCCESSFUL,
+		"error": nil,
+	})
+}
+
 func (u *userHandler) NewUser(c *fiber.Ctx) error {
 	var nu paramsUser
 	err := c.BodyParser(&nu)
@@ -81,6 +129,7 @@ func (u *userHandler) NewUser(c *fiber.Ctx) error {
 		Password:  nu.Password,
 		Name:      nu.Name,
 		Telephone: nu.Telephone,
+		Provider:  "backend",
 	}
 	err = u.userUseCase.CreateUser(&user)
 	if err != nil {
