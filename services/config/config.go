@@ -36,6 +36,7 @@ type (
 		TelephoneAdministrator  string `mapstructure:"TELEPHONE_ADMINISTRATOR"`
 		MyDomain                string `mapstructure:"MYDOMAIN"`
 		MailGunApiKey           string `mapstructure:"MAIL_GUN_PRIVATE_API_KEY"`
+		CustomerRoleID          string `mapstructure:"CUSTOMER_ROLE_ID"`
 	}
 )
 

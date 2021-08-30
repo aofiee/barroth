@@ -49,6 +49,7 @@ func (s *systemHandler) SystemInstallation(c *fiber.Ctx) error {
 			Password:  barroth_config.ENV.PasswordAdministrator,
 			Telephone: barroth_config.ENV.TelephoneAdministrator,
 			UUID:      utils.UUIDv4(),
+			Provider:  "system",
 		}
 		role := models.RoleItems{
 			Name:        "Administrator",

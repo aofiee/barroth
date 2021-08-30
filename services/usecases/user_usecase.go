@@ -26,7 +26,9 @@ func (u *userUseCase) CreateUser(user *models.Users) error {
 	}
 	err = u.userRepo.GetUserByEmail(user, user.Email)
 	if err != nil {
-		user.UUID = utils.UUIDv4()
+		if user.UUID == "" {
+			user.UUID = utils.UUIDv4()
+		}
 		err = u.userRepo.CreateUser(user)
 		return err
 	}

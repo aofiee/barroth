@@ -11,6 +11,7 @@ import (
 	"github.com/aofiee/barroth/models"
 	"github.com/bxcodec/faker"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/utils"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -50,6 +51,107 @@ func UserMockSetup(t *testing.T) (mockUseCase *mocks.UserUseCase, handler *userH
 	mockUseCase = new(mocks.UserUseCase)
 	handler = NewUserHandelr(mockUseCase, &mr)
 	return
+}
+func TestRegisterUserHandlerJsonNotSend(t *testing.T) {
+	_, handler := UserMockSetup(t)
+	app := fiber.New()
+	app.Post("/register", handler.RegisterUser)
+	req, err := http.NewRequest("POST", "/register", nil)
+	req.Header.Set(fiber.HeaderContentType, contentType)
+	assert.NoError(t, err)
+	resp, err := app.Test(req)
+	assert.NoError(t, err)
+	assert.Equal(t, 400, resp.StatusCode, "completed")
+}
+func TestRegisterUserHandlerJsonValidateFail(t *testing.T) {
+	mockUseCase, handler := UserMockSetup(t)
+	app := fiber.New()
+	params := paramsRegister{
+		Email:       userEmail,
+		UUID:        utils.UUIDv4(),
+		Provider:    "-",
+		DisplayName: userFullName,
+		PhotoURL:    "-",
+	}
+	data, _ := json.Marshal(&params)
+	payload := bytes.NewReader(data)
+
+	mockUseCase.On("CreateUser", mock.AnythingOfType(mockUserType)).Return(nil)
+	app.Post("/register", handler.RegisterUser)
+	req, err := http.NewRequest("POST", "/register", payload)
+	req.Header.Set(fiber.HeaderContentType, contentType)
+	assert.NoError(t, err)
+	resp, err := app.Test(req)
+	assert.NoError(t, err)
+	assert.Equal(t, 406, resp.StatusCode, "completed")
+}
+func TestRegisterUserHandlerSetUserRoleFail(t *testing.T) {
+	mockUseCase, handler := UserMockSetup(t)
+	app := fiber.New()
+	params := paramsRegister{
+		Email:       userEmail,
+		UUID:        utils.UUIDv4(),
+		Provider:    "facebook.com",
+		DisplayName: userFullName,
+		PhotoURL:    "-",
+	}
+	data, _ := json.Marshal(&params)
+	payload := bytes.NewReader(data)
+
+	mockUseCase.On("CreateUser", mock.AnythingOfType(mockUserType)).Return(nil)
+	mockUseCase.On("SetUserRole", mock.AnythingOfType(mockUserRolesType), uint(0)).Return(errors.New("error to set user role"))
+	app.Post("/register", handler.RegisterUser)
+	req, err := http.NewRequest("POST", "/register", payload)
+	req.Header.Set(fiber.HeaderContentType, contentType)
+	assert.NoError(t, err)
+	resp, err := app.Test(req)
+	assert.NoError(t, err)
+	assert.Equal(t, 400, resp.StatusCode, "completed")
+}
+func TestRegisterUserHandlerFail(t *testing.T) {
+	mockUseCase, handler := UserMockSetup(t)
+	app := fiber.New()
+	params := paramsRegister{
+		Email:       userEmail,
+		UUID:        utils.UUIDv4(),
+		Provider:    "google.com",
+		DisplayName: userFullName,
+		PhotoURL:    "-",
+	}
+	data, _ := json.Marshal(&params)
+	payload := bytes.NewReader(data)
+
+	mockUseCase.On("CreateUser", mock.AnythingOfType(mockUserType)).Return(errors.New("error TestNewUserHandlerFail"))
+	app.Post("/register", handler.RegisterUser)
+	req, err := http.NewRequest("POST", "/register", payload)
+	req.Header.Set(fiber.HeaderContentType, contentType)
+	assert.NoError(t, err)
+	resp, err := app.Test(req)
+	assert.NoError(t, err)
+	assert.Equal(t, 400, resp.StatusCode, "completed")
+}
+func TestRegisterUserHandlerSuccess(t *testing.T) {
+	mockUseCase, handler := UserMockSetup(t)
+	app := fiber.New()
+	params := paramsRegister{
+		Email:       userEmail,
+		UUID:        utils.UUIDv4(),
+		Provider:    "apple.com",
+		DisplayName: userFullName,
+		PhotoURL:    "-",
+	}
+	data, _ := json.Marshal(&params)
+	payload := bytes.NewReader(data)
+
+	mockUseCase.On("CreateUser", mock.AnythingOfType(mockUserType)).Return(nil)
+	mockUseCase.On("SetUserRole", mock.AnythingOfType(mockUserRolesType), uint(0)).Return(nil)
+	app.Post("/register", handler.RegisterUser)
+	req, err := http.NewRequest("POST", "/register", payload)
+	req.Header.Set(fiber.HeaderContentType, contentType)
+	assert.NoError(t, err)
+	resp, err := app.Test(req)
+	assert.NoError(t, err)
+	assert.Equal(t, 200, resp.StatusCode, "completed")
 }
 func TestNewUserHandlerJsonNotSend(t *testing.T) {
 	_, handler := UserMockSetup(t)
