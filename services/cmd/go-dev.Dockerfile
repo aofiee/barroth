@@ -1,4 +1,4 @@
-FROM golang:1.16-alpine
+FROM golang:1.20.11-alpine
 RUN mkdir /services
 ADD . /services/
 WORKDIR /services/cmd
